@@ -1,0 +1,185 @@
+{
+    "versao":  "2026-10-27-095006",
+    "arquivos":  [
+                     {
+                         "caminho":  "cardapio/.mantenha",
+                         "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                     },
+                     {
+                         "caminho":  "cardapio/Baguete.jpg",
+                         "sha256":  "0e7c17aa903a8f7b19a5566ca6cbad125023217df18c0320b310da6342f3df58"
+                     },
+                     {
+                         "caminho":  "cardapio/Biscoitos Amanteigados 500g.jpg",
+                         "sha256":  "0759c0fe2ad01e657007f1daaee54efda610075f1d0a9aa077c09f778bba025d"
+                     },
+                     {
+                         "caminho":  "cardapio/Bolo Piscininha (Cenoura com Chocolate).jpg",
+                         "sha256":  "bbaf2a38b3ff60950e1d6c820ac2830d4cd19c4335a30a3a67880887945c2160"
+                     },
+                     {
+                         "caminho":  "cardapio/Bolo Piscininha (Chocolate).jpg",
+                         "sha256":  "4b4d6ffac3e4b8b353b3b166b35437a6298f23020a40c64e9157ff9d869009b3"
+                     },
+                     {
+                         "caminho":  "cardapio/Bolo Piscininha (Ferrero).jpg",
+                         "sha256":  "72880455fa8a756260229f8977058113852a7722e71853039b98e3247aeb2135"
+                     },
+                     {
+                         "caminho":  "cardapio/Bolo Piscininha (Milho com Queijo).jpg",
+                         "sha256":  "4b47c2317ad18f8fac97d8179a897a5001869cd1a2f4e244654e262c9a7b7443"
+                     },
+                     {
+                         "caminho":  "cardapio/Caseirinhos.jpg",
+                         "sha256":  "648c8ef7a972dfb4bafc41f8279ae352279086be33b59552edca5bc330fb42ee"
+                     },
+                     {
+                         "caminho":  "cardapio/Docinhos 50 uni.jpg",
+                         "sha256":  "e0c9cdbbd195fdb6fa94465b2b0af46e9af75393e6dac388c8adf288e5adf488"
+                     },
+                     {
+                         "caminho":  "cardapio/Docinhos Gourmet 50 uni.jpg",
+                         "sha256":  "b5cf0e82e4bf55c1ced5f30fd413940381c2fbd657287ea5316be465e309fa34"
+                     },
+                     {
+                         "caminho":  "cardapio/Donuts Recheado.jpg",
+                         "sha256":  "2b5e944e5c608dc36dad3cd5b3194948b38127d2a7860ce4f21df3abf8b73db8"
+                     },
+                     {
+                         "caminho":  "cardapio/Massa de Pizza (2 un).jpg",
+                         "sha256":  "bf73eac9551d4af63d6946a0c6557ddba5536dbb459cb815fe315f5580fc83dd"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Croissant 500g.jpg",
+                         "sha256":  "83bc5d08f81caefdfa53afdb9451e0512fb77b1d635e198a5b59266b4256a14f"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Croissant Doce 500g.jpg",
+                         "sha256":  "4bbae1d9b65ffa57d3bc96256d2794880aab7aebd81271198bdd465a44c6d50e"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Folhados 500g.jpg",
+                         "sha256":  "2deff4439dae8f2e72eb9dcf58cc7ad50e3584b631397890eb1bb320d3d57314"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Hambúrguer.jpg",
+                         "sha256":  "2020973c03504b7dae19ff1d428c6cc04e59447d9f82fe9059c01b595c7648f3"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Pizza.jpg",
+                         "sha256":  "f4cc39ed6556030666d5feed42a7fde6306daa674d4a518286d1b0c73b16bbcc"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Salgado Assado Doce 500g.jpg",
+                         "sha256":  "4f4c9c03fdc3ee503f522634354ddffb98e5f8333f9a17fcb3e83d82a94c0d85"
+                     },
+                     {
+                         "caminho":  "cardapio/Mini Sonho.jpg",
+                         "sha256":  "59c86f69b62a7ee7e68454655b7b237cd6c24e8c0eba8c21e08049b62a8277bc"
+                     },
+                     {
+                         "caminho":  "cardapio/Pão de Cachorro Quente.jpg",
+                         "sha256":  "939aac76f9293bc686edea4a66761e6e4a6d5761de37f60edebdd48a4c98631e"
+                     },
+                     {
+                         "caminho":  "cardapio/Pão de Hambúrguer.jpg",
+                         "sha256":  "544dcaa940d2e3ac4a7703b779f55b59908d330dad34c469a836e369cb2d181b"
+                     },
+                     {
+                         "caminho":  "cardapio/Pão de Queijo 500g.jpg",
+                         "sha256":  "6610b4a16356da4a16a9179757601141724894a6968f07d4e29c9da51db5937d"
+                     },
+                     {
+                         "caminho":  "cardapio/Pão de Queijo Recheado 500g.jpg",
+                         "sha256":  "1a8d2661d2d8077cd287a9338598b8ef71543e54d9a50626056ad820389e8d7d"
+                     },
+                     {
+                         "caminho":  "cardapio/Pão Recheado.jpg",
+                         "sha256":  "5b8277f20f423a419ba718c36435cddd43527f9adee2688415361f380f98c211"
+                     },
+                     {
+                         "caminho":  "cardapio/Pudim.jpg",
+                         "sha256":  "d727369264413b56f952b141c1af63d6ec60796bc84ce4b29345cd9aed73c3d1"
+                     },
+                     {
+                         "caminho":  "cardapio/Quindim.jpg",
+                         "sha256":  "8f41ec6f6005965cbb096f828919f67a581cb306232168ef0e7dce6609e02f8e"
+                     },
+                     {
+                         "caminho":  "cardapio/Rabanada 500g.jpg",
+                         "sha256":  "e62bc906e352cda9500b429e01cc6aef4b5aa1e08c06121bb20423b62e8d826a"
+                     },
+                     {
+                         "caminho":  "cardapio/Rabanada Recheada 500g.jpg",
+                         "sha256":  "27e5b4503b86746a0c0a841c85357aba918d64c3972bf48e838ccd24beb16023"
+                     },
+                     {
+                         "caminho":  "cardapio/Rosquinhas de Laranja 200g.jpg",
+                         "sha256":  "0b7ace7a469c5429d0b0a30e52542cfe58d6535df189880e7409e93f66744e46"
+                     },
+                     {
+                         "caminho":  "cardapio/Salgadinho Assado 500g.jpg",
+                         "sha256":  "264482d2b24257392be84780083bd5488f4eb6b7eae77ce505448a07c577220a"
+                     },
+                     {
+                         "caminho":  "cardapio/Salgado Frito Misto.jpg",
+                         "sha256":  "eb3d75375f171d24fdbfe219e56b2df47704b9cd46322e266e846cfdba350444"
+                     },
+                     {
+                         "caminho":  "cardapio/Sanduíche a Metro.jpg",
+                         "sha256":  "2fd95cc7e164b7acd387897689a25b448ec7377864767b4c2d77afbfe7db3c36"
+                     },
+                     {
+                         "caminho":  "cardapio/Torta com Massa Casquinha.jpg",
+                         "sha256":  "81ccebaf9f61007e8b91aca8f2b28edf4c9eabcd1db8cb152c88f10d4a100bf4"
+                     },
+                     {
+                         "caminho":  "cardapio/Torta Salgada 45 Fatias.jpg",
+                         "sha256":  "55624eccaba42a0d3145b195c2f04d05bdb201b5613a02a8fd76fc5ac1459a21"
+                     },
+                     {
+                         "caminho":  "cardapio/Torta Salgada.jpg",
+                         "sha256":  "1a517715bbf06d972a31fe832b7d896023ffb2b80e8dce3cd8e56d432515b96e"
+                     },
+                     {
+                         "caminho":  "config.json",
+                         "sha256":  "fd65b0bcd43c56fcf08d1584a9436c899855f9512d428defc95321062aa35ff1"
+                     },
+                     {
+                         "caminho":  "divulgacao/.mantenha",
+                         "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                     },
+                     {
+                         "caminho":  "iniciar.vbs",
+                         "sha256":  "6818ef504a591482f67dc52454d2521c1cd422d8251f2e7392715d3e55794be7"
+                     },
+                     {
+                         "caminho":  "INSTALAR.bat",
+                         "sha256":  "79456b84cc36661ef047a989680a94aa73028392eebf0b5c18c7b127334b2f30"
+                     },
+                     {
+                         "caminho":  "LEIA-ME.txt",
+                         "sha256":  "e90c46419bf8a7df98da5c2c6d24972cb8c9c3bd2474a26b096988304245e8f4"
+                     },
+                     {
+                         "caminho":  "logo.png",
+                         "sha256":  "085512af988f8b6d9b3363511637605f713e243e5e0084b2c0c8145988775e11"
+                     },
+                     {
+                         "caminho":  "logo-nome.png",
+                         "sha256":  "8aa1baa61e9f3eea4483f1349be4e6b263c5f6015796a0c981063daf0ff31799"
+                     },
+                     {
+                         "caminho":  "PARAR.bat",
+                         "sha256":  "799e7185736fef5b639994fe367c9ce18a79fe03a8cb7d42e2eebd3a1e01fb7d"
+                     },
+                     {
+                         "caminho":  "TelaCliente.ps1",
+                         "sha256":  "4c4c055de98f90d22f87573509d97263d8452f1759d05e55327684fd26a7cdd6"
+                     },
+                     {
+                         "caminho":  "web/index.html",
+                         "sha256":  "f8c713c79e9d43b227c930ddb68ee8059da9d3db9af32c90d6eb9d0f14595c36"
+                     }
+                 ]
+}

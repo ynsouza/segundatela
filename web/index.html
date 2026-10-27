@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tela do Cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordo: #80220B;
+    --bordo-esc: #5A1607;
+    --bordo-vivo: #9C2E13;
+    --ouro: #F4C95D;
+    --ouro-esc: #C99A2E;
+    --verde: #1E5B3A;
+    --rosa: #FBF3F0;
+    --rosa2: #F1DDD6;
+    --rosa3: #E4C2B8;
+    --branco: #FFFFFF;
+    --tinta: #2B130D;
+    --tinta2: #6F4A40;
+    --sombra: 0 18px 46px rgba(90, 22, 7, .12), 0 3px 10px rgba(90, 22, 7, .06);
+    --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --sans: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    --suave: cubic-bezier(.22, .7, .2, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--branco); color: var(--tinta); font-family: var(--sans); cursor: none; user-select: none; }
+  #palco { position: fixed; inset: 0; }
+
+  /* ---------- cenas ---------- */
+  .cena { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
+  .cena.ativa { opacity: 1; visibility: visible; }
+  .cena.ativa .entra { animation: entra .9s var(--suave) both; }
+  .cena.ativa .entra.d1 { animation-delay: .12s; }
+  .cena.ativa .entra.d2 { animation-delay: .24s; }
+  .cena.ativa .entra.d3 { animation-delay: .36s; }
+  @keyframes entra { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- logo (sempre sobre fundo branco) ---------- */
+  .logo { display: flex; align-items: center; }
+  .logo img { height: 100%; width: auto; object-fit: contain; display: block; }
+  .logo .nome-txt { font-family: var(--serif); font-weight: 600; color: var(--bordo); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; line-height: 1; font-size: 82%; }
+
+  /* ---------- véu de transição ---------- */
+  #veu { position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; pointer-events: none;
+         background: radial-gradient(ellipse at 50% 50%, var(--branco) 40%, var(--rosa) 100%);
+         opacity: 0; transition: opacity .55s ease; }
+  #veu.ativo { opacity: 1; }
+  #veu .marca { height: 44vh; display: grid; place-items: center; opacity: 0; transform: scale(.9); transition: transform 1s var(--suave), opacity .5s ease; }
+  #veu.ativo .marca { opacity: 1; transform: scale(1); }
+  #veu.saindo .marca { opacity: 0; transform: scale(1.06); transition: transform .8s var(--suave), opacity .6s ease; }
+  #veu .marca .logo { height: 44vh; }
+  #veu .marca .logo .nome-txt { font-size: 9vh; }
+
+  /* ---------- divulgação (Natal) ---------- */
+  #cena-promo { background: var(--bordo-esc); }
+  .slide { position: absolute; inset: 0 0 11vh 0; opacity: 0; transition: opacity 1.4s ease; overflow: hidden; }
+  .slide.vis { opacity: 1; }
+  @keyframes kenburns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.12) translate(-1.5%, -1%); } }
+  @keyframes respiraFoto { from { transform: scale(1); } to { transform: scale(1.035); } }
+  @keyframes gira { to { transform: rotate(360deg); } }
+
+  /* rótulo (textos sobre a foto ou sobre o fundo bordô) */
+  .rotulo { position: absolute; z-index: 3; color: var(--branco); }
+  .rotulo .selo { display: inline-flex; align-items: center; gap: .5em; background: var(--ouro); color: var(--bordo-esc); font-weight: 700; font-size: 2.6vh; letter-spacing: .14em; text-transform: uppercase; padding: .4em 1.05em; border-radius: 999px; box-shadow: 0 .6vh 1.6vh rgba(40, 6, 0, .35); }
+  .rotulo .selo svg { width: 1em; height: 1em; fill: currentColor; flex: none; }
+  .rotulo h2 { font-family: var(--serif); font-weight: 800; font-size: 8.6vh; line-height: 1.03; margin: 2.2vh 0 1.6vh; text-shadow: 0 .6vh 2.4vh rgba(30, 5, 0, .5); }
+  .rotulo .selo + h2 { margin-top: 2.4vh; }
+  .rotulo p { font-size: 3.5vh; line-height: 1.34; color: #FFF0E2; max-width: 46vw; text-shadow: 0 .3vh 1.6vh rgba(30, 5, 0, .6); }
+  .rotulo .preco { display: inline-flex; align-items: baseline; gap: .45em; margin-top: 2.2vh; background: var(--ouro); color: var(--bordo-esc); font-family: var(--serif); font-weight: 800; font-size: 7.4vh; line-height: 1.1;
+                   padding: .06em .5em .12em; border-radius: 999px; transform: rotate(-3deg); box-shadow: 0 1vh 2.6vh rgba(30, 5, 0, .45); }
+  .rotulo .preco small { font-family: var(--sans); font-size: .34em; font-weight: 600; letter-spacing: .02em; }
+  .rotulo .info { margin-top: 2.6vh; display: flex; width: fit-content; align-items: center; gap: .6em; font-weight: 600; font-size: 3vh; color: var(--branco);
+                  background: rgba(255, 255, 255, .16); border: 1.5px solid rgba(255, 255, 255, .42); padding: .4em .9em; border-radius: 1.6vh; }
+  .rotulo .info svg { width: 1.2em; height: 1.2em; flex: none; stroke: var(--branco); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .slide.vis .rotulo > * { animation: entra 1s var(--suave) both; }
+  .slide.vis .rotulo > *:nth-child(2) { animation-delay: .14s; }
+  .slide.vis .rotulo > *:nth-child(3) { animation-delay: .28s; }
+  .slide.vis .rotulo > *:nth-child(4) { animation-delay: .42s; }
+  .slide.vis .rotulo > *:nth-child(5) { animation-delay: .56s; }
+
+  /* foto do produto (tela cheia quando a foto é larga; moldura quando é quadrada/vertical) */
+  .slide.foto { background: linear-gradient(135deg, var(--bordo-vivo) 0%, var(--bordo) 50%, var(--bordo-esc) 100%); }
+  .slide.foto .fundo { position: absolute; left: -6%; top: -6%; width: 112%; height: 112%; object-fit: cover; filter: blur(26px) brightness(.55) saturate(1.1); opacity: .5; }
+  .slide.foto .principal { position: absolute; object-fit: cover; display: block; }
+  .slide.foto.larga .fundo { display: none; }
+  .slide.foto.larga .principal, .slide.video video { inset: 0; width: 100%; height: 100%; }
+  .slide.foto.larga.vis .principal { animation: kenburns var(--dur, 9s) linear both; }
+  .slide.foto.larga::after, .slide.video::after { content: ''; position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(0deg, rgba(58, 10, 2, .92) 0%, rgba(58, 10, 2, .58) 32%, transparent 62%), linear-gradient(180deg, rgba(58, 10, 2, .5) 0%, transparent 20%); }
+  .slide.video video { position: absolute; object-fit: cover; }
+  .slide.foto.larga .rotulo, .slide.video .rotulo { left: 5vw; bottom: 5.5vh; max-width: 70vw; }
+  .slide.foto.quadrada .principal { right: 5vw; top: 11vh; height: 71vh; width: auto; max-width: 50vw; border: .9vh solid var(--branco); border-radius: 2.6vh; box-shadow: 0 3vh 7vh rgba(30, 5, 0, .55); background: var(--branco); }
+  .slide.foto.quadrada.vis .principal { animation: respiraFoto var(--dur, 9s) ease-in-out both; }
+  .slide.foto.quadrada .rotulo { left: 5vw; top: 54%; transform: translateY(-50%); max-width: 41vw; }
+  .slide.foto.quadrada .rotulo h2 { font-size: 7.6vh; }
+  .slide.foto.quadrada .rotulo p { max-width: 38vw; font-size: 3.2vh; }
+  .slide.foto.sem-rotulo.quadrada .principal { right: 0; left: 0; margin: 0 auto; }
+
+  /* só texto (ofertas e avisos) */
+  .slide.texto { color: var(--branco);
+    background: radial-gradient(circle at 85% 20%, rgba(255, 255, 255, .10), transparent 45%),
+                linear-gradient(135deg, var(--bordo-vivo) 0%, var(--bordo) 45%, var(--bordo-esc) 100%); }
+  .slide.texto .rotulo { left: 6.5vw; top: 54%; transform: translateY(-50%); max-width: 62vw; }
+  .slide.texto .rotulo h2 { font-size: 9.2vh; }
+  .slide.texto .rotulo p { max-width: 50vw; }
+  .slide.texto .emblema { position: absolute; right: -7vh; top: 50%; width: 76vh; height: 76vh; margin-top: -34vh; opacity: .14; stroke: var(--branco); fill: none; stroke-width: 2.2; stroke-linecap: round; }
+  .slide.texto.vis .emblema { animation: gira 80s linear infinite; }
+
+  /* mosaico de polaroids */
+  .slide.mosaico { color: var(--branco); background: radial-gradient(circle at 50% 0%, rgba(200, 80, 50, .4), transparent 60%), linear-gradient(135deg, var(--bordo-vivo) 0%, var(--bordo) 50%, var(--bordo-esc) 100%); }
+  .mosaico .cab-mos { position: absolute; top: 11vh; left: 0; right: 0; text-align: center; }
+  .mosaico .cab-mos h2 { font-family: var(--serif); font-weight: 800; font-size: 7.4vh; line-height: 1.05; text-shadow: 0 .6vh 2.4vh rgba(30, 5, 0, .5); }
+  .mosaico .cab-mos p { margin-top: 1.2vh; font-size: 3.4vh; color: #FFE9D6; font-weight: 500; }
+  .polaroides { position: absolute; left: 0; right: 0; bottom: 3.6vh; display: flex; justify-content: center; align-items: flex-end; gap: 3.2vw; }
+  .pola { background: var(--branco); padding: 1.3vh 1.3vh 0; border-radius: .8vh; box-shadow: 0 2.4vh 5vh rgba(30, 5, 0, .55); width: 25vw; opacity: 0; transform: translateY(0) rotate(var(--r)); }
+  .pola img { width: 100%; height: 38vh; object-fit: cover; display: block; border-radius: .4vh; }
+  .pola figcaption { font-family: var(--serif); font-weight: 700; font-size: 3.4vh; color: var(--bordo); text-align: center; padding: 1.2vh .6vh 1.5vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slide.vis .pola { animation: caiPola 1s var(--suave) both; }
+  .slide.vis .pola:nth-child(2) { animation-delay: .18s; }
+  .slide.vis .pola:nth-child(3) { animation-delay: .36s; }
+  @keyframes caiPola { from { opacity: 0; transform: translateY(calc(var(--y, 0vh) - 16vh)) rotate(0deg); } to { opacity: 1; transform: translateY(var(--y, 0vh)) rotate(var(--r)); } }
+
+  /* faixa de baixo */
+  .faixa { position: absolute; left: 0; right: 0; bottom: 0; height: 11vh; z-index: 5; display: flex; align-items: center; justify-content: space-between;
+           padding: 0 4.5vw; background: var(--branco); border-top: .7vh solid var(--ouro); box-shadow: 0 -6px 24px rgba(60, 12, 4, .22); }
+  .faixa .logo { height: 4.6vh; }
+  .faixa .logo .nome-txt { font-size: 4.2vh; }
+  .faixa .natal { display: flex; align-items: center; gap: .55em; font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 3.1vh; color: var(--bordo); }
+  .faixa .natal svg { height: 4.2vh; width: auto; }
+  .faixa .site { font-size: 2.6vh; font-weight: 500; color: var(--tinta2); }
+  .faixa .site b { color: var(--bordo); font-weight: 700; }
+  .faixa > * { flex: none; white-space: nowrap; }
+  .pontos { display: flex; gap: .9vh; }
+  /* muitos slides: uma barrinha de progresso no lugar das bolinhas */
+  .pontos.barra { width: 12vw; height: 1.1vh; border-radius: 1vh; background: var(--rosa3); overflow: hidden; }
+  .pontos.barra b { display: block; height: 100%; border-radius: 1vh; background: var(--bordo); transition: width .6s var(--suave); }
+  .pontos i { width: 1.1vh; height: 1.1vh; border-radius: 50%; background: var(--rosa3); transition: all .6s var(--suave); }
+  .pontos i.on { width: 3.4vh; border-radius: 1vh; background: var(--bordo); }
+
+  /* ---------- itens (pensado para monitor de 11") ---------- */
+  #cena-itens { background: linear-gradient(180deg, var(--branco) 0%, var(--rosa) 100%); padding: 2.6vh 2.4vw; display: grid; grid-template-rows: auto 1fr auto; gap: 1.8vh; }
+  .topo { display: flex; align-items: center; justify-content: space-between; height: 8vh; }
+  .topo .logo { height: 4.8vh; }
+  .topo .logo .nome-txt { font-size: 4.4vh; }
+  .topo h1 { font-family: var(--serif); font-weight: 700; font-size: 5.4vh; color: var(--bordo); }
+  .cartao { background: #fff; border-radius: 2.2vh; box-shadow: var(--sombra); position: relative; overflow: hidden; border: 1px solid var(--rosa2); }
+  .tabela { display: flex; flex-direction: column; min-height: 0; }
+  .cab, .linha { display: grid; grid-template-columns: 1fr 14vw 19vw; align-items: center; column-gap: 2vw; padding: 0 2.4vw; }
+  .cab { height: 6.4vh; flex: none; border-bottom: 2px solid var(--rosa2); font-weight: 700; font-size: 2.6vh; letter-spacing: .14em; text-transform: uppercase; color: var(--bordo); }
+  .cab span:nth-child(2) { text-align: center; } .cab span:nth-child(3) { text-align: right; }
+  .mais-acima { position: absolute; left: 50%; top: 1.2vh; z-index: 3; font-weight: 700; font-size: 2.3vh; letter-spacing: .04em; color: var(--branco);
+                background: var(--bordo); padding: .35em .95em; border-radius: 999px; opacity: 0; transform: translate(-50%, -.6vh); transition: opacity .4s ease, transform .4s var(--suave); }
+  .mais-acima.vis { opacity: 1; transform: translate(-50%, 0); }
+  .tabela .cab { position: relative; }
+  .linhas { flex: 1; min-height: 0; position: relative; overflow: hidden; --lh: 9.4vh; }
+  .linhas.rolando { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%); }
+  .trilho { will-change: transform; }
+  .linha { height: var(--lh); flex: none; position: relative; border-top: 1px solid #F5E8E4; transition: height .35s var(--suave); }
+  .linha:first-child { border-top: 0; }
+  .linha canvas { height: calc(var(--lh) * .8); width: auto; max-width: 100%; display: block; }
+  .linha .c2 canvas { margin: 0 auto; } .linha .c3 canvas { margin-left: auto; }
+  .linha.nova { background: linear-gradient(90deg, rgba(128, 34, 11, .11), rgba(128, 34, 11, .03)); }
+  .linha.nova::before { content: ''; position: absolute; left: 0; top: 12%; bottom: 12%; width: .55vw; border-radius: 0 6px 6px 0; background: var(--bordo); }
+  .linha.chegou { animation: chega .55s var(--suave) both; }
+  @keyframes chega { from { opacity: 0; transform: translateY(2.5vh); } to { opacity: 1; transform: none; } }
+  .aguarde { position: absolute; inset: 6.4vh 0 0 0; display: grid; place-items: center; color: var(--tinta2); font-size: 3vh; font-weight: 500; }
+  .aguarde::before { content: ''; position: absolute; inset: 0;
+     background: linear-gradient(100deg, transparent 30%, rgba(128, 34, 11, .07) 50%, transparent 70%); background-size: 220% 100%; animation: brilho 1.8s linear infinite; }
+  @keyframes brilho { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+  .tabela.com-itens .aguarde { display: none; }
+  .rodape { height: 19vh; display: flex; align-items: center; justify-content: space-between; padding: 0 2.6vw; color: var(--branco); border-radius: 2.2vh; box-shadow: var(--sombra);
+            background: linear-gradient(120deg, var(--bordo-vivo) 0%, var(--bordo) 50%, var(--bordo-esc) 100%); }
+  .rodape .rot b { display: block; font-family: var(--serif); font-weight: 700; font-size: 6vh; line-height: 1; }
+  .rodape .rot canvas { height: 3.6vh; width: auto; display: block; margin-top: 1.4vh; }
+  #valorTotal { height: 12vh; width: auto; max-width: 52vw; display: block; }
+
+  /* ---------- QR (avaliação) ---------- */
+  #cena-qr { color: var(--branco); overflow: hidden;
+    background: radial-gradient(circle at 78% 42%, rgba(200, 80, 50, .5) 0%, rgba(200, 80, 50, 0) 48%),
+                linear-gradient(135deg, var(--bordo-vivo) 0%, var(--bordo) 50%, var(--bordo-esc) 100%); }
+  .qr-corpo { position: absolute; left: 0; right: 0; top: 11vh; bottom: 21vh; display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: 2vw; padding: 0 4.5vw 0 5vw; }
+  #cena-qr.sem-fotos .qr-corpo { top: 12vh; bottom: 4vh; }
+  .qr-texto { position: relative; z-index: 2; }
+  .logo-cartao { display: inline-block; background: var(--branco); border-radius: 2vh; padding: 1.2vh 2vw; box-shadow: 0 1.2vh 3vh rgba(60, 10, 0, .35); }
+  .logo-cartao .logo { height: 9vh; }
+  .logo-cartao .logo .nome-txt { font-size: 3.4vh; }
+  .estrelas { display: flex; gap: 1vw; margin-top: 2.4vh; }
+  .estrelas svg { width: 6.4vh; height: 6.4vh; filter: drop-shadow(0 .5vh .8vh rgba(60, 10, 0, .5)); opacity: 0; transform: scale(.2) rotate(-40deg); }
+  .cena.ativa .estrelas svg { animation: pipoca .7s var(--suave) forwards, brilha 2.8s ease-in-out infinite; }
+  .cena.ativa .estrelas svg:nth-child(1) { animation-delay: .45s, 1.6s; }
+  .cena.ativa .estrelas svg:nth-child(2) { animation-delay: .6s, 1.9s; }
+  .cena.ativa .estrelas svg:nth-child(3) { animation-delay: .75s, 2.2s; }
+  .cena.ativa .estrelas svg:nth-child(4) { animation-delay: .9s, 2.5s; }
+  .cena.ativa .estrelas svg:nth-child(5) { animation-delay: 1.05s, 2.8s; }
+  @keyframes pipoca { 60% { opacity: 1; transform: scale(1.25) rotate(8deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+  @keyframes brilha { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.14) rotate(-6deg); } }
+  .qr-texto h1 { margin-top: 2vh; font-family: var(--serif); font-weight: 800; font-size: 7.2vh; line-height: 1.04; text-shadow: 0 .6vh 2vh rgba(60, 10, 0, .4); }
+  .qr-texto p { margin-top: 1.6vh; font-size: 3.4vh; line-height: 1.36; color: #FFE8D2; font-weight: 500; max-width: 44vw; }
+  .obrigado { margin-top: 2.4vh; display: inline-flex; align-items: center; gap: .6em; background: var(--ouro); color: var(--bordo-esc); font-weight: 700; font-size: 2.8vh; padding: 1vh 1.6vw; border-radius: 999px; box-shadow: 0 .8vh 2vh rgba(60, 10, 0, .3); }
+  .qr-cartao { position: relative; z-index: 2; justify-self: center; background: var(--branco); padding: 2.6vh 2.6vh 2vh; border-radius: 3.6vh; box-shadow: 0 2vh 5vh rgba(50, 8, 0, .55); border: .8vh solid var(--ouro); }
+  .qr-cartao::before { content: ''; position: absolute; inset: -2.2vh; border-radius: 5.4vh; border: .4vh dashed rgba(255, 224, 150, .7); }
+  .cena.ativa .qr-cartao::before { animation: respira 3s ease-in-out infinite; }
+  @keyframes respira { 50% { transform: scale(1.03); opacity: .45; } }
+  .qr-cartao .laco { position: absolute; left: 50%; top: -6.2vh; width: 15vh; margin-left: -7.5vh; z-index: 3; filter: drop-shadow(0 .6vh .8vh rgba(40, 6, 0, .4)); }
+  #qr { width: 38vh; height: 38vh; display: grid; place-items: center; }
+  #cena-qr.sem-fotos #qr { width: 46vh; height: 46vh; }
+  #qr svg { width: 100%; height: 100%; display: block; }
+  #qr .semlink { text-align: center; font-size: 2.4vh; color: var(--tinta2); padding: 2vh; }
+  .qr-cartao .dica { text-align: center; margin-top: 1.4vh; font-size: 3.2vh; font-weight: 800; color: var(--bordo); line-height: 1.15; }
+  .qr-cartao .dica small { display: block; font-size: 2.2vh; font-weight: 500; color: #8a5a4a; margin-top: .3vh; }
+  .qr-fotos { position: absolute; left: 0; right: 0; bottom: 2.4vh; height: 16vh; overflow: hidden; z-index: 2;
+              -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+  #cena-qr.sem-fotos .qr-fotos { display: none; }
+  .qr-fotos .trilho { display: flex; gap: 1.5vw; width: max-content; height: 100%; animation: corre var(--dur, 40s) linear infinite; }
+  .qr-fotos img { height: 100%; width: 21vh; object-fit: cover; border-radius: 2vh; border: .5vh solid var(--ouro); box-shadow: 0 1vh 2.4vh rgba(40, 6, 0, .45); flex: none; }
+  @keyframes corre { to { transform: translateX(-50%); } }
+
+  /* ---------- camada de Natal (neve + pisca-pisca), só nas cenas de divulgação e avaliação ---------- */
+  #natal { position: absolute; inset: 0; z-index: 20; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
+  body.natal #natal { opacity: 1; }
+  #neve { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #guirlanda { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
+  .lampada { animation: pisca 2.6s ease-in-out infinite; filter: drop-shadow(0 0 6px var(--c)); }
+  @keyframes pisca { 0%, 100% { opacity: 1; } 50% { opacity: .42; } }
+</style>
+</head>
+<body>
+<div id="palco">
+
+  <section id="cena-promo" class="cena">
+    <div id="slides"></div>
+    <div class="faixa">
+      <div class="logo" data-logo="nome"></div>
+      <div class="natal"><svg viewBox="0 0 24 28"><path fill="#1E5B3A" d="M12 1l6 8h-3.5l5 7H15l6 8H3l6-8H4.5l5-7H6z"/><rect x="10.3" y="23.5" width="3.4" height="4" fill="#7a3a1a"/><circle cx="12" cy="2.6" r="1.7" fill="#F4C95D"/></svg>Feliz Natal!</div>
+      <div class="site">Encomendas: <b id="siteCardapio">padaria-silmar.vercel.app</b></div>
+      <div class="pontos" id="pontos"></div>
+    </div>
+  </section>
+
+  <section id="cena-itens" class="cena">
+    <div class="topo entra">
+      <div class="logo" data-logo="nome"></div>
+      <h1>Seu pedido</h1>
+    </div>
+    <div class="cartao tabela entra d1" id="tabela">
+      <div class="cab"><span>Produto</span><span>Qtd.</span><span>Valor</span></div>
+      <div class="mais-acima" id="maisAcima">Mais itens acima</div>
+      <div class="linhas" id="linhas"><div class="trilho" id="trilho"></div></div>
+      <div class="aguarde">Registrando seus itens…</div>
+    </div>
+    <div class="rodape entra d2">
+      <div class="rot"><b>Total</b><canvas id="qtdProdutos"></canvas></div>
+      <canvas id="valorTotal"></canvas>
+    </div>
+  </section>
+
+  <section id="cena-qr" class="cena sem-fotos">
+    <div class="qr-corpo">
+      <div class="qr-texto">
+        <div class="logo-cartao entra"><div class="logo" data-logo></div></div>
+        <div class="estrelas"><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg></div>
+        <h1 class="entra d1" id="qrTitulo">Sua opinião é o nosso melhor presente!</h1>
+        <p class="entra d2" id="qrTexto">Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.</p>
+        <div class="obrigado entra d3">Boas Festas e obrigado pela preferência! ♥</div>
+      </div>
+      <div class="qr-cartao entra d2">
+        <svg class="laco" viewBox="0 0 120 76"><path d="M60 42 C36 4 4 8 8 32 C11 52 42 50 60 42Z" fill="#F4C95D" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><path d="M60 42 C84 4 116 8 112 32 C109 52 78 50 60 42Z" fill="#F4C95D" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><path d="M55 44 L36 72 L53 65 L60 50Z" fill="#E7B545" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><path d="M65 44 L84 72 L67 65 L60 50Z" fill="#E7B545" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="60" cy="42" rx="10" ry="9" fill="#F9DB85" stroke="#B8832A" stroke-width="2.5"/></svg>
+        <div id="qr"></div>
+        <div class="dica">Aponte a câmera<small>Leva menos de 1 minuto</small></div>
+      </div>
+    </div>
+    <div class="qr-fotos"><div class="trilho" id="qrTrilho"></div></div>
+  </section>
+
+  <div id="natal"><canvas id="neve"></canvas><svg id="guirlanda" viewBox="0 0 1366 92"></svg></div>
+
+  <div id="veu">
+    <div class="marca">
+      <div class="logo" data-logo></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   Gerador de QR Code (byte mode, correção M) — sem dependências
+   ===================================================================== */
+const QR = (() => {
+  const ECC = [-1,10,16,26,18,24,16,18,22,22,26,30,22,22,24,24,28,28,26,26,26,26,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28];
+  const BLK = [-1,1,1,1,2,2,4,4,4,5,5,5,8,9,9,10,10,11,13,14,16,17,17,18,20,21,23,25,26,28,29,31,33,35,37,38,40,43,45,47,49];
+  const raw = v => { let r = (16 * v + 128) * v + 64; if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; } return r; };
+  const dataCw = v => Math.floor(raw(v) / 8) - ECC[v] * BLK[v];
+  const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; };
+  const divisor = d => { const r = new Array(d).fill(0); r[d - 1] = 1; let root = 1;
+    for (let i = 0; i < d; i++) { for (let j = 0; j < d; j++) { r[j] = mul(r[j], root); if (j + 1 < d) r[j] ^= r[j + 1]; } root = mul(root, 2); } return r; };
+  const resto = (data, div) => { const r = div.map(() => 0);
+    for (const b of data) { const f = b ^ r.shift(); r.push(0); div.forEach((c, i) => { r[i] ^= mul(c, f); }); } return r; };
+  const MASK = [(x,y)=>(x+y)%2===0,(x,y)=>y%2===0,(x,y)=>x%3===0,(x,y)=>(x+y)%3===0,(x,y)=>(Math.floor(x/3)+Math.floor(y/2))%2===0,
+                (x,y)=>x*y%2+x*y%3===0,(x,y)=>(x*y%2+x*y%3)%2===0,(x,y)=>((x+y)%2+x*y%3)%2===0];
+
+  function penalidade(M, n) {
+    let p = 0;
+    for (let k = 0; k < 2; k++) for (let a = 0; a < n; a++) {
+      let run = 1;
+      for (let b = 1; b < n; b++) {
+        const cur = k ? M[b][a] : M[a][b], prev = k ? M[b - 1][a] : M[a][b - 1];
+        if (cur === prev) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1;
+      }
+    }
+    for (let y = 0; y < n - 1; y++) for (let x = 0; x < n - 1; x++) { const c = M[y][x]; if (c === M[y][x+1] && c === M[y+1][x] && c === M[y+1][x+1]) p += 3; }
+    let esc = 0; M.forEach(l => l.forEach(c => { if (c) esc++; }));
+    p += (Math.ceil(Math.abs(esc * 20 - n * n * 10) / (n * n)) - 1) * 10;
+    return p;
+  }
+
+  function gerar(texto) {
+    const bytes = Array.from(new TextEncoder().encode(texto));
+    let v = 1;
+    for (; v <= 40; v++) if (4 + (v < 10 ? 8 : 16) + bytes.length * 8 <= dataCw(v) * 8) break;
+    if (v > 40) throw new Error('Link longo demais');
+    const bits = []; const put = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+    put(4, 4); put(bytes.length, v < 10 ? 8 : 16); bytes.forEach(b => put(b, 8));
+    const cap = dataCw(v) * 8;
+    put(0, Math.min(4, cap - bits.length)); put(0, (8 - bits.length % 8) % 8);
+    for (let pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) put(pad, 8);
+    const data = []; for (let i = 0; i < bits.length; i += 8) { let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; data.push(b); }
+
+    const nb = BLK[v], el = ECC[v], rc = Math.floor(raw(v) / 8), nCurto = nb - rc % nb, lenCurto = Math.floor(rc / nb);
+    const div = divisor(el), blocos = []; let k = 0;
+    for (let i = 0; i < nb; i++) {
+      const dat = data.slice(k, k + lenCurto - el + (i < nCurto ? 0 : 1)); k += dat.length;
+      const ecc = resto(dat, div); if (i < nCurto) dat.push(0); blocos.push(dat.concat(ecc));
+    }
+    const cw = [];
+    for (let i = 0; i < blocos[0].length; i++) for (let j = 0; j < nb; j++) if (i !== lenCurto - el || j >= nCurto) cw.push(blocos[j][i]);
+
+    const n = v * 4 + 17;
+    const M = Array.from({ length: n }, () => Array(n).fill(false));
+    const F = Array.from({ length: n }, () => Array(n).fill(false));
+    const set = (x, y, d) => { M[y][x] = d; F[y][x] = true; };
+    for (let i = 0; i < n; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+    const finder = (cx, cy) => { for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const d = Math.max(Math.abs(dx), Math.abs(dy)), x = cx + dx, y = cy + dy;
+      if (x >= 0 && x < n && y >= 0 && y < n) set(x, y, d !== 2 && d !== 4); } };
+    finder(3, 3); finder(n - 4, 3); finder(3, n - 4);
+    const al = [];
+    if (v > 1) { const na = Math.floor(v / 7) + 2; const step = v === 32 ? 26 : Math.ceil((v * 4 + 4) / (na * 2 - 2)) * 2;
+      al.push(6); for (let p = n - 7; al.length < na; p -= step) al.splice(1, 0, p); }
+    for (let i = 0; i < al.length; i++) for (let j = 0; j < al.length; j++) {
+      if ((i === 0 && j === 0) || (i === 0 && j === al.length - 1) || (i === al.length - 1 && j === 0)) continue;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(al[i] + dx, al[j] + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }
+    const formato = m => {
+      const d = m; let r = d; for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+      const b = ((d << 10) | r) ^ 0x5412, g = i => ((b >>> i) & 1) !== 0;
+      for (let i = 0; i <= 5; i++) set(8, i, g(i)); set(8, 7, g(6)); set(8, 8, g(7)); set(7, 8, g(8));
+      for (let i = 9; i < 15; i++) set(14 - i, 8, g(i));
+      for (let i = 0; i < 8; i++) set(n - 1 - i, 8, g(i)); for (let i = 8; i < 15; i++) set(8, n - 15 + i, g(i));
+      set(8, n - 8, true);
+    };
+    formato(0);
+    if (v >= 7) { let r = v; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25); const b = (v << 12) | r;
+      for (let i = 0; i < 18; i++) { const bit = ((b >>> i) & 1) !== 0, a = n - 11 + i % 3, c = Math.floor(i / 3); set(a, c, bit); set(c, a, bit); } }
+    let i = 0;
+    for (let right = n - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (let vert = 0; vert < n; vert++) for (let j = 0; j < 2; j++) {
+        const x = right - j, up = ((right + 1) & 2) === 0, y = up ? n - 1 - vert : vert;
+        if (!F[y][x] && i < cw.length * 8) { M[y][x] = ((cw[i >>> 3] >>> (7 - (i & 7))) & 1) !== 0; i++; }
+      }
+    }
+    const aplicar = m => { for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!F[y][x] && MASK[m](x, y)) M[y][x] = !M[y][x]; };
+    let melhor = 0, menor = Infinity;
+    for (let m = 0; m < 8; m++) { aplicar(m); formato(m); const p = penalidade(M, n); if (p < menor) { menor = p; melhor = m; } aplicar(m); }
+    aplicar(melhor); formato(melhor);
+    return { n, M };
+  }
+
+  function svg(texto, cor) {
+    const { n, M } = gerar(texto), q = 4, t = n + q * 2; let d = '';
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (M[y][x]) d += 'M' + (x + q) + ' ' + (y + q) + 'h1v1h-1z';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + t + ' ' + t + '" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="' + d + '" fill="' + (cor || '#000') + '"/></svg>';
+  }
+  return { svg };
+})();
+
+/* =====================================================================
+   Tela do cliente
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const DEMO = new URLSearchParams(location.search).has('demo');
+let cfg = { nome: 'Padaria Silmar', logo: false, logoNome: false };
+let cenaAtual = null, trocando = false, pendente = null;
+let ultimoVi = -1, ultimoVt = -1, ultimoQr = null;
+
+// Estrela no mesmo desenho das estrelas da logo (usada como marca d'água nas ofertas)
+const ESTRELA = '<path d="M60 6 L75.4 39.2 L112 43.6 L85 68.6 L92.2 104.8 L60 87 L27.8 104.8 L35 68.6 L8 43.6 L44.6 39.2 Z"/>';
+
+function desenharLogos() {
+  const txt = `<span class="nome-txt">${esc(cfg.nome || 'Padaria Silmar')}</span>`;
+  document.querySelectorAll('[data-logo]').forEach(el => {
+    const soNome = el.dataset.logo === 'nome';
+    if (soNome) el.innerHTML = cfg.logoNome ? `<img src="/logo-nome" alt="">` : txt;
+    else el.innerHTML = cfg.logo ? `<img src="/logo" alt="">` : txt;
+  });
+}
+
+function esc(t) { return String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+/* ---------- troca de cena com o véu ---------- */
+function mostrarCena(c) {
+  document.body.classList.toggle('natal', c === 'promo' || c === 'qr');
+  document.querySelectorAll('.cena').forEach(s => s.classList.toggle('ativa', s.id === 'cena-' + c));
+  if (c === 'itens') limparBuffers();
+  if (c === 'promo') iniciarSlides(); else pararSlides();
+  cenaAtual = c;
+}
+
+function trocarCena(c) {
+  if (c === cenaAtual && !trocando) return;
+  if (trocando) { pendente = c; return; }
+  trocando = true;
+  const veu = $('#veu');
+  veu.classList.remove('saindo');
+  void veu.offsetWidth;
+  veu.classList.add('ativo');
+  setTimeout(() => {
+    mostrarCena(c);
+    setTimeout(() => {
+      veu.classList.add('saindo');
+      veu.classList.remove('ativo');
+      setTimeout(() => {
+        veu.classList.remove('saindo');
+        trocando = false;
+        if (pendente && pendente !== cenaAtual) { const p = pendente; pendente = null; trocarCena(p); } else pendente = null;
+      }, 700);
+    }, 380);
+  }, 620);
+}
+
+/* ---------- itens ao vivo: recorta a lista do PDV e amplia ---------- */
+// Medidas relativas às áreas capturadas (config.json -> "layout"). Valores padrão medidos no caixa.
+let L = {
+  linha_centro: 88, linha_passo: 60.6, linha_meia_altura: 13, max_linhas: 6,
+  col_produto: [5, 362], col_qtd: [412, 525], col_valor: [870, 1030],
+  total_valor: [300, 125, 232, 42], total_produtos: [8, 12, 150, 30]
+};
+const fonteItens = document.createElement('canvas'), fonteTotal = document.createElement('canvas');
+let linhasAntes = 0;
+// Memória do pedido: cada posição da lista do PDV guarda a imagem do item, mesmo depois que ele sai da tela do caixa
+let pedido = [], totalPedido = 0, versaoLinha = 0;
+
+function limparBuffers() {
+  $('#trilho').innerHTML = ''; $('#tabela').classList.remove('com-itens');
+  ['#valorTotal', '#qtdProdutos'].forEach(id => { const c = $(id); c.width = 1; c.height = 1; });
+  pedido = []; totalPedido = 0; versaoLinha = 0; linhasAntes = 0; ultimoVi = -1; ultimoVt = -1;
+  pararRolagem(); $('#maisAcima').classList.remove('vis');
+}
+
+// Copia um pedaço da captura e repinta o texto na cor da marca, com fundo transparente.
+// Primeiro amplia a imagem original (tons de cinza suaves) e só depois transforma em letra:
+// assim a borda das letras sai nítida e lisa, sem o borrado de ampliar a letra já pintada.
+function recortar(origem, x, y, w, h, cor) {
+  const sx = origem.getContext('2d', { willReadFrequently: true });
+  x = Math.max(0, Math.round(x)); y = Math.max(0, Math.round(y));
+  w = Math.min(Math.round(w), origem.width - x); h = Math.min(Math.round(h), origem.height - y);
+  if (w <= 0 || h <= 0) return { canvas: null, tinta: 0 };
+  const p = sx.getImageData(x, y, w, h).data;
+  let tinta = 0, minX = w, maxX = -1;
+  for (let i = 0; i < p.length; i += 4) {
+    const lum = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
+    if ((226 - lum) / 150 > 0.35) { tinta++; const px = (i / 4) % w; if (px < minX) minX = px; if (px > maxX) maxX = px; }
+  }
+  if (maxX < 0) return { canvas: null, tinta: 0 };
+  // corta as sobras dos lados para o texto ocupar o espaço certo
+  const ini = Math.max(0, minX - 3), larg = Math.min(w, maxX + 4) - ini;
+  const E = L.ampliacao || 4;
+  const c = document.createElement('canvas'); c.width = larg * E; c.height = h * E;
+  const g = c.getContext('2d', { willReadFrequently: true }); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.drawImage(origem, x + ini, y, larg, h, 0, 0, c.width, c.height);
+  // Curva suave entre "fundo" e "letra": borda firme, sem serrilhado nem halo cinza
+  const claro = L.texto_claro || 205, escuro = L.texto_escuro || 100;
+  const img = g.getImageData(0, 0, c.width, c.height), q = img.data;
+  for (let i = 0; i < q.length; i += 4) {
+    const lum = 0.299 * q[i] + 0.587 * q[i + 1] + 0.114 * q[i + 2];
+    const t = Math.max(0, Math.min(1, (claro - lum) / (claro - escuro)));
+    q[i] = cor[0]; q[i + 1] = cor[1]; q[i + 2] = cor[2]; q[i + 3] = Math.round(t * t * (3 - 2 * t) * 255);
+  }
+  g.putImageData(img, 0, 0);
+  return { canvas: c, tinta };
+}
+
+function copiarPara(destino, r) {
+  if (!r.canvas) { destino.width = 1; destino.height = 1; return; }
+  destino.width = r.canvas.width; destino.height = r.canvas.height;
+  destino.getContext('2d').drawImage(r.canvas, 0, 0);
+}
+
+const COR_TEXTO = [43, 19, 13], COR_CLARA = [255, 255, 255];
+
+// Quando o PDV abre um pop-up, ele escurece o fundo. Nessas horas a tela do cliente congela.
+function escurecida(canvas, x, y, w, h) {
+  x = Math.max(0, Math.round(x)); y = Math.max(0, Math.round(y));
+  w = Math.min(Math.round(w), canvas.width - x); h = Math.min(Math.round(h), canvas.height - y);
+  if (w <= 0 || h <= 0) return false;
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(x, y, w, h).data;
+  let soma = 0, n = 0;
+  for (let i = 0; i < p.length; i += 16) { soma += 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2]; n++; }
+  return n > 0 && soma / n < (L.limite_brilho || 205);
+}
+
+// Procura faixas de texto escuro na coluna do produto
+function acharLinhas(canvas) {
+  const x0 = L.col_produto[0], w = L.col_produto[1] - L.col_produto[0], H = canvas.height;
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(x0, 0, w, H).data;
+  const tinta = [];
+  for (let y = 0; y < H; y++) {
+    let n = 0;
+    for (let x = 0; x < w; x += 2) { const i = (y * w + x) * 4; if (0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2] < 120) n++; }
+    tinta.push(n >= 2);
+  }
+  const faixas = []; let ini = -1, ult = -1;
+  for (let y = 0; y <= H; y++) {
+    if (y < H && tinta[y]) { if (ini < 0) ini = y; ult = y; }
+    else if (ini >= 0 && (y >= H || y - ult > 4)) { faixas.push({ topo: ini, base: ult }); ini = -1; }
+  }
+  const minimo = L.linha_altura_min || 8, maximo = L.linha_altura_max || 30;
+  return faixas.filter(f => {
+    const alt = f.base - f.topo + 1;
+    if (alt < minimo || alt > maximo) return false;
+    if (f.topo <= 2 || f.base >= H - 3) return false;            // linha cortada na borda da lista
+    const cy = (f.topo + f.base) / 2;
+    return cy - L.linha_meia_altura >= 0 && cy + L.linha_meia_altura <= H;
+  });
+}
+
+// O cabeçalho "PRODUTO" do PDV é cinza-claro; se ele está no topo, a lista não está rolada
+function temCabecalho(canvas) {
+  const c = L.cabecalho || [10, 18, 100, 14];
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(c[0], c[1], c[2], c[3]).data;
+  let n = 0;
+  for (let i = 0; i < p.length; i += 4) { const lum = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2]; if (lum > 120 && lum < 200) n++; }
+  return n > (L.cabecalho_minimo || 60);
+}
+
+// Barra de rolagem da lista do PDV: diz o tamanho da lista inteira e quanto ela está rolada
+function lerBarra(canvas) {
+  const W = canvas.width, H = canvas.height, x0 = Math.max(0, W - (L.barra_busca || 150));
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(x0, 0, W - x0, H).data, w = W - x0;
+  const cinza = (x, y) => { const i = (y * w + x) * 4, r = p[i], g = p[i + 1], b = p[i + 2];
+    const lum = 0.299 * r + 0.587 * g + 0.114 * b; return lum > 145 && lum < 218 && Math.max(r, g, b) - Math.min(r, g, b) < 16; };
+  let melhor = null;
+  const corridas = [];
+  for (let x = 0; x < w; x++) {
+    let ini = -1, maior = null;
+    for (let y = 0; y <= H; y++) {
+      if (y < H && cinza(x, y)) { if (ini < 0) ini = y; }
+      else if (ini >= 0) { const c = { topo: ini, base: y - 1 }; if (!maior || c.base - c.topo > maior.base - maior.topo) maior = c; ini = -1; }
+    }
+    corridas.push(maior);
+    if (maior && maior.base - maior.topo >= 30 && (!melhor || maior.base - maior.topo > melhor.base - melhor.topo)) melhor = { ...maior, x };
+  }
+  if (!melhor) return null;
+  // largura da barra: colunas vizinhas com corrida parecida
+  let a = melhor.x, b = melhor.x;
+  const parecida = c => c && Math.abs(c.topo - melhor.topo) < 6 && Math.abs(c.base - melhor.base) < 6;
+  while (a > 0 && parecida(corridas[a - 1])) a--;
+  while (b < w - 1 && parecida(corridas[b + 1])) b++;
+  if (b - a < 5) return null;                         // fino demais para ser a barra
+  return { topo: melhor.topo, tam: melhor.base - melhor.topo + 1, x0: x0 + a, x1: x0 + b };
+}
+
+// Acha as colunas de uma linha: o nome vai até o lápis azul; depois vêm quantidade, preço, desconto e total
+function analisarLinha(canvas, y, h, limiteX) {
+  const W = Math.min(canvas.width, limiteX || canvas.width);
+  y = Math.max(0, Math.round(y)); h = Math.min(Math.round(h), canvas.height - y);
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, y, W, h).data;
+  const azul = new Uint16Array(W), tinta = new Uint16Array(W);
+  for (let yy = 0; yy < h; yy++) for (let x = 0; x < W; x++) {
+    const i = (yy * W + x) * 4, r = p[i], g = p[i + 1], b = p[i + 2];
+    if (b > r + 60 && b > 150) azul[x]++;
+    else if (0.299 * r + 0.587 * g + 0.114 * b < 150) tinta[x]++;
+  }
+  let la = -1, lb = -1;
+  for (let x = 0; x < W; x++) if (azul[x] >= 2) { if (la < 0) la = x; lb = x; }
+  const grupos = []; let ini = -1, ult = -1;
+  for (let x = 0; x <= W; x++) {
+    if (x < W && tinta[x]) { if (ini < 0) ini = x; else if (x - ult > 22) { grupos.push([ini, ult]); ini = x; } ult = x; }
+  }
+  if (ini >= 0) grupos.push([ini, ult]);
+  if (la < 0 || lb - la > 40) return null;            // sem lápis: usa as posições fixas
+  const depois = grupos.filter(g => g[0] > lb + 4);
+  const largos = depois.filter(g => g[1] - g[0] >= 28);
+  if (!depois.length || !largos.length) return null;
+  const folga = 6;
+  return {
+    nome: [L.col_produto[0], la - folga],
+    qtd: [depois[0][0] - folga, depois[0][1] + folga],
+    valor: [largos[largos.length - 1][0] - folga, largos[largos.length - 1][1] + folga]
+  };
+}
+
+// "Impressão digital" de uma linha, para saber se ela mudou
+function assinatura(canvas, y, h, limiteX) {
+  const x0 = L.col_produto[0], x1 = Math.min(canvas.width, limiteX || canvas.width), w = x1 - x0;
+  y = Math.max(0, Math.round(y)); h = Math.min(Math.round(h), canvas.height - y);
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(x0, y, w, h).data;
+  const GX = 96, GY = 4, g = new Float32Array(GX * GY), n = new Float32Array(GX * GY);
+  for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx += 2) {
+    const i = (yy * w + xx) * 4, lum = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
+    const c = Math.min(GY - 1, Math.floor(yy * GY / h)) * GX + Math.min(GX - 1, Math.floor(xx * GX / w));
+    g[c] += Math.max(0, Math.min(1, (226 - lum) / 150)); n[c]++;
+  }
+  for (let i = 0; i < g.length; i++) g[i] = n[i] ? g[i] / n[i] : 0;
+  return g;
+}
+function iguais(a, b) {
+  if (!a || !b) return false;
+  let soma = 0, maior = 0;
+  for (let i = 0; i < a.length; i++) { const d = Math.abs(a[i] - b[i]); soma += d; if (d > maior) maior = d; }
+  return soma / a.length < (L.limite_igual || 0.003) && maior < (L.limite_celula || 0.12);
+}
+
+function desenharItens(img) {
+  fonteItens.width = img.naturalWidth; fonteItens.height = img.naturalHeight;
+  fonteItens.getContext('2d', { willReadFrequently: true }).drawImage(img, 0, 0);
+  const f = L.faixa_branca_itens || [0, 0, 8, 435];
+  if (escurecida(fonteItens, f[0], f[1], f[2], f[3])) return;   // pop-up aberto: mantém a última lista
+
+  const CAB = L.cabecalho_altura || 58, PASSO = L.linha_passo || 60.6;
+  const barra = lerBarra(fonteItens);
+  let rolagem = 0, total = null;
+  if (barra) {
+    const V = L.barra_trilho || fonteItens.height, conteudo = V * V / barra.tam;
+    rolagem = barra.topo * conteudo / V;
+    total = Math.max(0, Math.round((conteudo - CAB) / PASSO));
+  }
+
+  // Linhas visíveis agora, com a posição de cada uma na lista inteira
+  const vistos = [];
+  acharLinhas(fonteItens).forEach(fx => {
+    const cy = (fx.topo + fx.base) / 2;
+    const idx = Math.floor((rolagem + cy - CAB) / PASSO);
+    if (idx < 0) return;                                            // cabeçalho do PDV
+    vistos.push({ idx, cy });
+  });
+  // As linhas visíveis são sempre seguidas: corrige qualquer arredondamento
+  for (let k = 1; k < vistos.length; k++) vistos[k].idx = vistos[0].idx + k;
+  if (total === null) total = vistos.length ? vistos[vistos.length - 1].idx + 1 : 0;
+  if (vistos.length && vistos[vistos.length - 1].idx >= total) total = vistos[vistos.length - 1].idx + 1;
+
+  // Item removido: o que estava abaixo da parte visível pode ter mudado de lugar
+  if (total < totalPedido && vistos.length) {
+    const ultimoVisto = vistos[vistos.length - 1].idx;
+    for (let i = ultimoVisto + 1; i < pedido.length; i++) delete pedido[i];
+  }
+  const totalAnterior = totalPedido;
+  pedido.length = Math.min(pedido.length, total);
+  totalPedido = total;
+
+  const limiteX = barra ? barra.x0 - 3 : fonteItens.width;
+  vistos.forEach(v => { v.sig = assinatura(fonteItens, v.cy - L.linha_meia_altura, L.linha_meia_altura * 2, limiteX); });
+
+  // Confere com a memória: se as linhas batem melhor uma posição acima/abaixo, corrige
+  if (barra && vistos.length && total === totalAnterior) {   // só quando a lista apenas rolou
+    const pontos = d => vistos.reduce((n, v) => n + (pedido[v.idx + d] && iguais(pedido[v.idx + d].sig, v.sig) ? 1 : 0), 0);
+    const base = pontos(0); let melhorD = 0, melhorP = base;
+    for (const d of [-2, -1, 1, 2]) { const pt = pontos(d); if (pt > melhorP) { melhorP = pt; melhorD = d; } }
+    if (melhorD && melhorP >= base + 2 && vistos[0].idx + melhorD >= 0) {
+      vistos.forEach(v => v.idx += melhorD);
+      if (vistos[vistos.length - 1].idx >= totalPedido) totalPedido = vistos[vistos.length - 1].idx + 1;
+    }
+  }
+
+  vistos.forEach(v => {
+    const y = v.cy - L.linha_meia_altura, h = L.linha_meia_altura * 2;
+    const atual = pedido[v.idx];
+    if (atual && iguais(atual.sig, v.sig)) return;
+    const col = analisarLinha(fonteItens, y, h, limiteX) || { nome: L.col_produto, qtd: L.col_qtd, valor: L.col_valor };
+    const nome = recortar(fonteItens, col.nome[0], y, col.nome[1] - col.nome[0], h, COR_TEXTO);
+    if (!nome.canvas) return;
+    pedido[v.idx] = {
+      sig: v.sig, ver: ++versaoLinha, nome,
+      qtd: recortar(fonteItens, col.qtd[0], y, col.qtd[1] - col.qtd[0], h, COR_TEXTO),
+      valor: recortar(fonteItens, col.valor[0], y, col.valor[1] - col.valor[0], h, COR_TEXTO)
+    };
+  });
+  renderLista();
+}
+
+/* ---------- lista completa na tela do cliente ---------- */
+function criarLinha() {
+  const el = document.createElement('div'); el.className = 'linha';
+  ['c1', 'c2', 'c3'].forEach(cl => { const c = document.createElement('div'); c.className = cl; c.appendChild(document.createElement('canvas')); el.appendChild(c); });
+  return el;
+}
+
+function renderLista() {
+  const trilho = $('#trilho');
+  const indices = [];
+  for (let i = 0; i < totalPedido; i++) if (pedido[i]) indices.push(i);
+  while (trilho.children.length > indices.length) trilho.lastChild.remove();
+  indices.forEach((idx, k) => {
+    let el = trilho.children[k];
+    if (!el) { el = criarLinha(); trilho.appendChild(el); }
+    const r = pedido[idx];
+    if (el._ver !== r.ver) {
+      const cvs = el.querySelectorAll('canvas');
+      copiarPara(cvs[0], r.nome); copiarPara(cvs[1], r.qtd); copiarPara(cvs[2], r.valor);
+      el._ver = r.ver;
+    }
+    el.classList.toggle('nova', k === indices.length - 1);
+    if (k < indices.length - 1) el.classList.remove('chegou');
+  });
+  const n = indices.length, cresceu = n > linhasAntes, mudou = n !== linhasAntes;
+  if (cresceu && n) { const ult = trilho.lastChild; ult.classList.remove('chegou'); void ult.offsetWidth; ult.classList.add('chegou'); }
+  linhasAntes = n;
+  $('#tabela').classList.toggle('com-itens', n > 0);
+  if (mudou) ajustarLista(n, cresceu);
+}
+
+// Encaixa todos os itens: diminui as linhas até um limite confortável de leitura;
+// passando disso, a lista rola sozinha, devagar, mostrando todos os itens
+function ajustarLista(n, cresceu) {
+  const caixa = $('#linhas'), vh = innerHeight / 100;
+  const disp = caixa.clientHeight, maxH = (L.linha_tela_max || 9.4) * vh, minH = (L.linha_tela_min || 7) * vh;
+  const h = n ? Math.max(minH, Math.min(maxH, disp / n)) : maxH;
+  caixa.style.setProperty('--lh', h + 'px');
+  const sobra = n * h - disp;
+  const aviso = $('#maisAcima');
+  if (sobra > 1) {
+    caixa.classList.add('rolando');
+    aviso.textContent = `${n} itens no pedido`; aviso.classList.add('vis');
+    iniciarRolagem(sobra, cresceu);
+  } else {
+    caixa.classList.remove('rolando'); aviso.classList.remove('vis');
+    pararRolagem(); moverTrilho(0, 0.5);
+  }
+}
+
+let timerRolagem = null;
+function moverTrilho(y, seg, curva) {
+  const t = $('#trilho');
+  t.style.transition = seg ? `transform ${seg}s ${curva || 'ease-in-out'}` : 'none';
+  t.style.transform = `translateY(${-y}px)`;
+}
+function pararRolagem() { clearTimeout(timerRolagem); timerRolagem = null; }
+function iniciarRolagem(sobra, comecarNoFim) {
+  pararRolagem();
+  const espera = (ms, fn) => { timerRolagem = setTimeout(fn, ms); };
+  const noFim = () => { moverTrilho(sobra, 0.9); espera(900 + 5000, sobe); };          // mostra o item mais novo
+  const sobe = () => { moverTrilho(0, 1.6); espera(1600 + 3500, desce); };             // volta ao primeiro item
+  const desce = () => { const s = Math.max(3, sobra / ((L.velocidade_rolagem || 40) * innerHeight / 768));
+                        moverTrilho(sobra, s, 'linear'); espera(s * 1000 + 5000, sobe); };
+  if (comecarNoFim) noFim(); else desce();
+}
+
+function desenharTotal(img) {
+  fonteTotal.width = img.naturalWidth; fonteTotal.height = img.naturalHeight;
+  fonteTotal.getContext('2d', { willReadFrequently: true }).drawImage(img, 0, 0);
+  const ft = L.faixa_branca_total || [522, 0, 11, 176];
+  if (escurecida(fonteTotal, ft[0], ft[1], ft[2], ft[3])) return;  // pop-up aberto: mantém o último total
+  const v = L.total_valor, q = L.total_produtos;
+  copiarPara($('#valorTotal'), recortar(fonteTotal, v[0], v[1], v[2], v[3], COR_CLARA));
+  copiarPara($('#qtdProdutos'), recortar(fonteTotal, q[0], q[1], q[2], q[3], [241, 214, 206]));
+}
+
+function carregarCaptura(url, desenhar) {
+  const im = new Image();
+  im.onload = () => desenhar(im);
+  im.src = url;
+}
+
+/* ---------- QR ---------- */
+(function confete() {
+  const cores = ['#FFC83D', '#FFE08A', '#E4C2B8', '#F1DDD6', '#FFFFFF'];
+  const cena = document.getElementById('cena-qr');
+  for (let i = 0; i < 22; i++) {
+    const e = document.createElement('span'); e.className = 'conf';
+    const t = 1.1 + ((i * 37) % 10) / 6;
+    e.style.cssText = `left:${(i * 53) % 97}%;top:${8 + (i * 29) % 84}%;width:${t}vh;height:${t}vh;background:${cores[i % cores.length]};--d:${7 + (i % 5)}s;--a:${-(i % 9)}s;` + (i % 3 === 0 ? 'border-radius:20%;' : '');
+    cena.appendChild(e);
+  }
+})();
+
+// Link de avaliação no Google da Padaria Silmar: usado se o config.json instalado estiver sem "qr_link"
+const QR_PADRAO = 'https://g.page/r/CbaBbz-4ojjUEAE/review?utm_source=gbp&utm_medium=reviews&utm_campaign=qr';
+function desenharQr(link) {
+  link = String(link || '').trim() || QR_PADRAO;
+  const alvo = $('#qr');
+  if (!link) { alvo.innerHTML = '<div class="semlink">Link de avaliação ainda não configurado.<br>Preencha <b>qr_link</b> no config.json.</div>'; return; }
+  try { alvo.innerHTML = QR.svg(link, '#80220B'); } catch (e) { alvo.innerHTML = '<div class="semlink">Link longo demais para o QR Code.</div>'; }
+}
+
+/* ---------- divulgação ---------- */
+let slides = [], idxSlide = -1, timerSlide = null, tempoSlide = 8;
+
+// Slides do cardápio de encomendas. Podem ser trocados no config.json ("encomendas").
+let cardapio = 'https://padaria-silmar.vercel.app/', encomendasCfg = null;
+const ENCOMENDAS_PADRAO = [
+  { selo: 'Mais pedido', titulo: 'Sanduíche a metro', descricao: 'Recheado à sua escolha e feito na hora. Perfeito para eventos, confraternizações e celebrações.', info: 'Encomende com 48h de antecedência', icone: 'agenda' },
+  { selo: 'Encomendas', titulo: 'Da nossa cozinha para a sua ocasião especial', descricao: 'Do mini croissant ao sanduíche a metro: tudo pronto para a sua mesa.', info: 'Festas e celebrações: (22) 99254-5260', icone: 'whats' },
+  { selo: 'Para empresas', titulo: 'Coffee break personalizado', descricao: 'Para reuniões, eventos e confraternizações. Pagamento faturado para CNPJ, sujeito a análise.', info: 'Empresas: (22) 99223-2695', icone: 'whats' },
+  { selo: 'Peça pelo site', titulo: 'Escolha o dia e o horário de retirada', descricao: 'Pague por Pix ou cartão e receba a confirmação pelo WhatsApp.', info: 'Retirada das 7h20 às 19h', icone: 'relogio' }
+];
+const ICONES = {
+  agenda: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  relogio: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  whats: '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/><path d="M9 9.5c.3 1.6 1.9 3.6 4 4.6l1.3-1.1 2 1-.5 1.6c-3 .3-7.6-3.4-8-6.6L9.4 8l1 2z"/></svg>'
+};
+function siteCurto(u) { return String(u || '').replace(/^https?:\/\//, '').replace(/\/+$/, ''); }
+
+let ultimosItensPromo = [], fotosCardapio = [];
+async function carregarPromocoes() {
+  try {
+    const r = await fetch(DEMO ? 'demo/promocoes.json' : '/promocoes', { cache: 'no-store' });
+    const j = await r.json();
+    ultimosItensPromo = Array.isArray(j.itens) ? j.itens : (j.itens ? [j.itens] : []);
+    fotosCardapio = Array.isArray(j.cardapio) ? j.cardapio : (j.cardapio ? [j.cardapio] : []);
+    montarSlides(intercalar(ultimosItensPromo));
+    montarFotosQr();
+  } catch (e) { if (!slides.length) montarSlides(intercalar([])); }
+}
+
+// Compara nomes sem acento, maiúscula ou pontuação ("Sanduíche a metro" = "sanduiche-a-metro.jpg")
+// "R$ 2,50 a unidade" -> preço grande e "a unidade" menor
+function precoHtml(p) {
+  const m = String(p).match(/^\s*(R\$\s*[\d.,]+)\s*(.*)$/i);
+  return m ? `<div class="preco">${esc(m[1])}${m[2] ? `<small>${esc(m[2])}</small>` : ''}</div>` : `<div class="preco">${esc(p)}</div>`;
+}
+
+function chave(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/^\d+[\s._-]*/, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
+
+// Slides do cardápio: os textos do config (com a foto do produto, se houver) + uma foto por slide da pasta "cardapio"
+function slidesCardapio() {
+  const base = (Array.isArray(encomendasCfg) && encomendasCfg.length ? encomendasCfg : ENCOMENDAS_PADRAO);
+  const usadas = new Set();
+  const acharFoto = it => {
+    const alvo = chave(it.foto || it.titulo);
+    const f = fotosCardapio.find(f => !usadas.has(f.arquivo) && (chave(f.nome) === alvo || (!it.foto && alvo && chave(legendaDoArquivo(f.nome).titulo) === alvo)));
+    if (f) usadas.add(f.arquivo);
+    return f ? f.arquivo : null;
+  };
+  const lista = base.map(e => ({ ...e, tipo: 'encomenda', fotoUrl: acharFoto(e) }));
+  fotosCardapio.filter(f => !usadas.has(f.arquivo)).forEach(f => {
+    const leg = legendaDoArquivo(f.nome);
+    lista.push({ tipo: 'encomenda', selo: 'Do nosso cardápio', titulo: leg.titulo, preco: leg.preco, fotoUrl: f.arquivo,
+                 info: 'Encomende com 48h de antecedência', icone: 'agenda' });
+  });
+  // Intercala: com foto, sem foto, com foto...
+  const com = lista.filter(i => i.fotoUrl), sem = lista.filter(i => !i.fotoUrl), saida = [];
+  for (let i = 0; i < Math.max(com.length, sem.length); i++) { if (com[i]) saida.push(com[i]); if (sem[i]) saida.push(sem[i]); }
+  return saida;
+}
+
+// Todas as fotos de produto disponíveis (pasta "cardapio" + imagens da pasta "divulgacao")
+function todasFotos() {
+  const a = fotosCardapio.map(f => ({ url: f.arquivo, nome: legendaDoArquivo(f.nome).titulo }));
+  const b = ultimosItensPromo.filter(i => i.tipo === 'imagem').map(i => ({ url: i.arquivo, nome: legendaDoArquivo(i.nome || '').titulo }));
+  return a.concat(b);
+}
+
+const SLIDE_NATAL = { tipo: 'texto', selo: 'Boas Festas', titulo: 'Feliz Natal!', descricao: 'A equipe da Padaria Silmar deseja a você e à sua família um Natal cheio de sabor e alegria.' };
+
+// Alterna: cardápio, oferta/foto da loja, cardápio... e espalha os destaques (textos, mosaico e Natal)
+// por igual entre as fotos, para não ficarem todos juntos no começo
+function intercalar(outros) {
+  const enc = slidesCardapio();
+  const base = []; const n = Math.max(enc.length, outros.length);
+  for (let i = 0; i < n; i++) { if (enc[i]) base.push(enc[i]); if (outros[i]) base.push(outros[i]); }
+  const temFoto = it => !!it.fotoUrl || it.tipo === 'imagem' || it.tipo === 'video';
+  const comFoto = base.filter(temFoto), destaques = base.filter(it => !temFoto(it));
+  const fotos = todasFotos();
+  if (fotos.length >= 3) {
+    const k = fotos.length;
+    destaques.splice(Math.min(1, destaques.length), 0, { tipo: 'mosaico', fotos: [fotos[0], fotos[Math.floor(k / 3)], fotos[Math.floor(2 * k / 3)]] });
+  }
+  destaques.splice(Math.min(3, destaques.length), 0, SLIDE_NATAL);
+  if (!comFoto.length) return destaques;
+  const passo = Math.max(1, Math.floor(comFoto.length / destaques.length));
+  const lista = []; let d = 0;
+  comFoto.forEach((it, i) => { lista.push(it); if ((i + 1) % passo === 0 && d < destaques.length) lista.push(destaques[d++]); });
+  while (d < destaques.length) lista.push(destaques[d++]);
+  return lista;
+}
+
+function legendaDoArquivo(nome) {
+  const limpo = nome.replace(/^\d+[\s._-]*/, '');
+  const [titulo, preco] = limpo.split(/\s+-\s+/);
+  return { titulo: titulo || '', preco: preco || '' };
+}
+
+const FLOCO = (() => { let t = ''; for (const a of [0, 60, 120]) t += `<g transform="rotate(${a} 60 60)"><path d="M60 6 V114 M60 24 L47 11 M60 24 L73 11 M60 96 L47 109 M60 96 L73 109 M60 42 L51 33 M60 42 L69 33 M60 78 L51 87 M60 78 L69 87"/></g>`; return t; })();
+
+function rotuloHtml(d) {
+  return `<div class="rotulo">
+    ${d.selo ? `<span class="selo"><svg viewBox="0 0 120 120">${ESTRELA}</svg>${esc(d.selo)}</span>` : ''}
+    ${d.titulo ? `<h2>${esc(d.titulo)}</h2>` : ''}
+    ${d.descricao ? `<p>${esc(d.descricao)}</p>` : ''}
+    ${d.preco ? precoHtml(d.preco) : ''}
+    ${d.info ? `<div class="info">${ICONES[d.icone] || ICONES.agenda}<span>${esc(d.info)}</span></div>` : ''}
+  </div>`;
+}
+
+function slideFoto(d, url) {
+  const el = document.createElement('div');
+  const temRotulo = !!(d.titulo || d.selo || d.descricao || d.preco || d.info);
+  el.className = 'slide foto quadrada' + (temRotulo ? '' : ' sem-rotulo');
+  el.innerHTML = `<img class="fundo" src="${url}" alt=""><img class="principal" src="${url}" alt="">` + (temRotulo ? rotuloHtml(d) : '');
+  const im = el.querySelector('.principal');
+  const ajustar = () => { if (im.naturalWidth / im.naturalHeight >= 1.6) { el.classList.remove('quadrada'); el.classList.add('larga'); } };
+  if (im.complete && im.naturalWidth) ajustar(); else im.addEventListener('load', ajustar);
+  return el;
+}
+
+function montarSlides(itens) {
+  const chave = JSON.stringify(itens);
+  if (chave === montarSlides.ultima) return;
+  montarSlides.ultima = chave;
+  const caixa = $('#slides'); caixa.innerHTML = '';
+  slides = itens.map(it => {
+    let el;
+    if (it.tipo === 'encomenda' && it.fotoUrl) {
+      el = slideFoto(it, it.fotoUrl);
+    } else if (it.tipo === 'imagem') {
+      const leg = legendaDoArquivo(it.nome || '');
+      el = slideFoto({ titulo: leg.titulo, preco: leg.preco }, it.arquivo);
+    } else if (it.tipo === 'video') {
+      const leg = legendaDoArquivo(it.nome || '');
+      el = document.createElement('div'); el.className = 'slide video';
+      el.innerHTML = `<video src="${it.arquivo}" muted playsinline preload="auto"></video>` + (leg.titulo ? rotuloHtml({ titulo: leg.titulo, preco: leg.preco }) : '');
+    } else if (it.tipo === 'mosaico') {
+      el = document.createElement('div'); el.className = 'slide mosaico';
+      const rot = [-4, 2.5, -2.5], desl = ['0vh', '-3vh', '0vh'];
+      el.innerHTML = `<div class="cab-mos"><h2>Natal com sabor de Silmar</h2><p>Do nosso forno para a sua mesa</p></div>
+        <div class="polaroides">${it.fotos.map((f, i) => `<figure class="pola" style="--r:${rot[i]}deg;--y:${desl[i]}"><img src="${f.url}" alt=""><figcaption>${esc(f.nome || 'Padaria Silmar')}</figcaption></figure>`).join('')}</div>`;
+    } else {
+      el = document.createElement('div'); el.className = 'slide texto';
+      el.innerHTML = `<svg class="emblema" viewBox="0 0 120 120">${FLOCO}</svg>` + rotuloHtml(it);
+    }
+    el.dataset.tipo = it.tipo === 'video' ? 'video' : 'x';
+    caixa.appendChild(el);
+    return el;
+  });
+  const barra = slides.length > 12;
+  $('#pontos').classList.toggle('barra', barra);
+  $('#pontos').innerHTML = barra ? '<b></b>' : slides.length > 1 ? slides.map(() => '<i></i>').join('') : '';
+  idxSlide = -1;
+  if (cenaAtual === 'promo') { pararSlides(); proximoSlide(); }
+}
+
+function proximoSlide() {
+  clearTimeout(timerSlide);
+  if (!slides.length) return;
+  const ant = slides[idxSlide];
+  idxSlide = (idxSlide + 1) % slides.length;
+  const el = slides[idxSlide];
+  if (ant && ant !== el) { ant.classList.remove('vis'); const v = ant.querySelector('video'); if (v) setTimeout(() => v.pause(), 1400); }
+  el.style.setProperty('--dur', (tempoSlide + 2) + 's');
+  el.classList.remove('vis'); void el.offsetWidth; el.classList.add('vis');
+  document.querySelectorAll('#pontos i').forEach((p, i) => p.classList.toggle('on', i === idxSlide));
+  const prog = $('#pontos b'); if (prog) prog.style.width = ((idxSlide + 1) / slides.length * 100) + '%';
+  if (slides.length === 1 && el.dataset.tipo !== 'video') return;
+  const v = el.querySelector('video');
+  if (v) {
+    v.currentTime = 0; v.play().catch(() => {});
+    v.onended = () => proximoSlide();
+    timerSlide = setTimeout(proximoSlide, 90000);
+  } else {
+    timerSlide = setTimeout(proximoSlide, tempoSlide * 1000);
+  }
+}
+function iniciarSlides() { if (idxSlide === -1 || !slides[idxSlide] || !slides[idxSlide].classList.contains('vis')) { idxSlide = idxSlide; } proximoSlide(); }
+function pararSlides() { clearTimeout(timerSlide); document.querySelectorAll('#slides video').forEach(v => v.pause()); }
+
+/* ---------- relógio ---------- */
+function relogio() {
+  const d = new Date(); if (!$('#relogio')) return;
+  $('#relogio').textContent = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) + ' · ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+setInterval(relogio, 10000); relogio();
+
+/* ---------- ciclo principal ---------- */
+let versaoPagina = null;
+function aplicar(s) {
+  if (s.pagina) { if (versaoPagina === null) versaoPagina = s.pagina; else if (s.pagina !== versaoPagina) { location.reload(); return; } }
+  if (s.nome !== cfg.nome || s.logo !== cfg.logo || !!s.logoNome !== cfg.logoNome) { cfg.nome = s.nome; cfg.logo = s.logo; cfg.logoNome = !!s.logoNome; desenharLogos(); }
+  if (s.slide && s.slide !== tempoSlide) tempoSlide = s.slide;
+  if (s.layout && typeof s.layout === 'object') L = Object.assign({}, L, s.layout);
+  const novoCard = s.cardapio || 'https://padaria-silmar.vercel.app/', novasEnc = s.encomendas || null;
+  if (novoCard !== cardapio || JSON.stringify(novasEnc) !== JSON.stringify(encomendasCfg)) {
+    cardapio = novoCard; encomendasCfg = novasEnc; $('#siteCardapio').textContent = siteCurto(cardapio);
+    montarSlides(intercalar(ultimosItensPromo));
+  }
+  const TITULOS_ANTIGOS = ['Como foi seu atendimento?', 'Gostou do nosso atendimento?'];
+  const TEXTOS_ANTIGOS = ['Aponte a câmera do celular para o QR Code e conte pra gente.', 'Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.'];
+  if (s.qrTitulo && !TITULOS_ANTIGOS.includes(s.qrTitulo)) $('#qrTitulo').textContent = s.qrTitulo;
+  if (s.qrTexto && !TEXTOS_ANTIGOS.includes(s.qrTexto)) $('#qrTexto').textContent = s.qrTexto;
+  if (s.qr !== ultimoQr) { ultimoQr = s.qr; desenharQr(s.qr); }
+  if (s.cena !== cenaAtual) trocarCena(s.cena);
+  if (s.cena === 'itens') {
+    const pre = DEMO ? 'demo/' : '/cap/';
+    if (s.vi !== ultimoVi) { ultimoVi = s.vi; carregarCaptura(pre + 'itens.jpg?v=' + s.vi, desenharItens); }
+    if (s.vt !== ultimoVt) { ultimoVt = s.vt; carregarCaptura(pre + 'total.jpg?v=' + s.vt, desenharTotal); }
+  } else { ultimoVi = -1; ultimoVt = -1; }
+}
+
+async function consultar() {
+  try {
+    const r = await fetch(DEMO ? 'demo/estado.json' : '/estado', { cache: 'no-store' });
+    aplicar(await r.json());
+  } catch (e) { if (cenaAtual === null) trocarCena('promo'); }
+  setTimeout(consultar, 250);
+}
+
+/* ---------- fotos que passam embaixo do QR Code ---------- */
+function montarFotosQr() {
+  const fotos = todasFotos();
+  const cena = $('#cena-qr'), trilho = $('#qrTrilho');
+  const assin = JSON.stringify(fotos.map(f => f.url));
+  if (montarFotosQr.ultima === assin) return;
+  montarFotosQr.ultima = assin;
+  if (!fotos.length) { cena.classList.add('sem-fotos'); trilho.innerHTML = ''; return; }
+  let metade = fotos.slice();
+  while (metade.length < 8) metade = metade.concat(fotos);
+  trilho.style.setProperty('--dur', (metade.length * 5) + 's');
+  trilho.innerHTML = metade.concat(metade).map(f => `<img src="${f.url}" alt="">`).join('');
+  cena.classList.remove('sem-fotos');
+}
+
+/* ---------- Natal: pisca-pisca no alto e neve caindo ---------- */
+function montarGuirlanda() {
+  const svg = $('#guirlanda'), W = 1366, N = 8, seg = W / N, y0 = 6, ctl = 74;
+  const cores = ['#FFD166', '#FF5A4F', '#6BD18B', '#FFFFFF', '#FFB347'];
+  let d = `M0 ${y0}`, bulbos = '', k = 0;
+  for (let i = 0; i < N; i++) {
+    const x0 = i * seg, x1 = x0 + seg, cx = x0 + seg / 2;
+    d += ` Q${cx} ${ctl} ${x1} ${y0}`;
+    for (const t of [0.2, 0.5, 0.8]) {
+      const u = 1 - t, x = u * u * x0 + 2 * u * t * cx + t * t * x1, y = u * u * y0 + 2 * u * t * ctl + t * t * y0;
+      const c = cores[k % cores.length];
+      bulbos += `<g class="lampada" style="--c:${c};animation-delay:${((k * 0.37) % 2.6).toFixed(2)}s" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="-3" y="-1" width="6" height="6" rx="1" fill="#3a2410"/><ellipse cx="0" cy="12" rx="6.5" ry="9" fill="${c}"/><ellipse cx="-2" cy="9" rx="1.8" ry="3" fill="#fff" opacity=".55"/></g>`;
+      k++;
+    }
+  }
+  const azevinho = lado => `<g transform="${lado < 0 ? 'translate(1366 0) scale(-1 1)' : ''}"><g fill="#1E5B3A" stroke="#13402a" stroke-width="1.2"><ellipse cx="22" cy="20" rx="26" ry="9" transform="rotate(35 22 20)"/><ellipse cx="46" cy="14" rx="24" ry="8" transform="rotate(10 46 14)"/><ellipse cx="16" cy="40" rx="22" ry="8" transform="rotate(62 16 40)"/></g><g fill="#D62828"><circle cx="26" cy="22" r="5.5"/><circle cx="35" cy="28" r="5.5"/><circle cx="30" cy="14" r="5.5"/></g></g>`;
+  svg.innerHTML = `<path d="${d}" fill="none" stroke="rgba(25,8,3,.75)" stroke-width="2.6"/>${bulbos}${azevinho(1)}${azevinho(-1)}`;
+}
+
+function iniciarNeve() {
+  const c = $('#neve'), x = c.getContext('2d');
+  let W = 0, H = 0, ultimo = 0;
+  const dim = () => { W = c.width = innerWidth; H = c.height = innerHeight; };
+  dim(); addEventListener('resize', dim);
+  const fl = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), r: 1.3 + Math.random() * 3.3, v: .035 + Math.random() * .09, s: Math.random() * 6.28, a: .55 + Math.random() * .45 }));
+  function passo(t) {
+    requestAnimationFrame(passo);
+    if (!document.body.classList.contains('natal')) return;
+    if (t - ultimo < 33) return;
+    const dt = Math.min((t - ultimo) / 1000, .1); ultimo = t;
+    x.clearRect(0, 0, W, H);
+    for (const f of fl) {
+      f.y += f.v * dt * 1.3; f.s += dt * .9;
+      if (f.y > 1.03) { f.y = -.03; f.x = Math.random(); }
+      const px = (f.x + Math.sin(f.s) * .012) * W, py = f.y * H;
+      x.globalAlpha = f.a; x.fillStyle = '#fff'; x.beginPath(); x.arc(px, py, f.r * (H / 768), 0, 6.283); x.fill();
+    }
+    x.globalAlpha = 1;
+  }
+  requestAnimationFrame(passo);
+}
+
+montarGuirlanda();
+iniciarNeve();
+desenharLogos();
+carregarPromocoes();
+setInterval(carregarPromocoes, 60000);
+consultar();
+</script>
+</body>
+</html>

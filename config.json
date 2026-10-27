@@ -1,0 +1,39 @@
+{
+  "nome_loja": "Padaria Silmar",
+
+  "qr_link": "https://g.page/r/CbaBbz-4ojjUEAE/review?utm_source=gbp&utm_medium=reviews&utm_campaign=qr",
+  "qr_titulo": "Sua opinião é o nosso melhor presente!",
+  "qr_texto": "Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.",
+  "qr_segundos_apos_pagamento": 30,
+
+  "tempo_slide_segundos": 9,
+
+  "cardapio_link": "https://padaria-silmar.vercel.app/",
+  "encomendas": [
+    { "selo": "Mais pedido", "titulo": "Sanduíche a metro", "descricao": "Recheado à sua escolha e feito na hora. Perfeito para eventos, confraternizações e celebrações.", "info": "Encomende com 48h de antecedência", "icone": "agenda" },
+    { "selo": "Encomendas", "titulo": "Da nossa cozinha para a sua ocasião especial", "descricao": "Do mini croissant ao sanduíche a metro: tudo pronto para a sua mesa.", "info": "Festas e celebrações: (22) 99254-5260", "icone": "whats" },
+    { "selo": "Para empresas", "titulo": "Coffee break personalizado", "descricao": "Para reuniões, eventos e confraternizações. Pagamento faturado para CNPJ, sujeito a análise.", "info": "Empresas: (22) 99223-2695", "icone": "whats" },
+    { "selo": "Peça pelo site", "titulo": "Escolha o dia e o horário de retirada", "descricao": "Pague por Pix ou cartão e receba a confirmação pelo WhatsApp.", "info": "Retirada das 7h20 às 19h", "icone": "relogio" }
+  ],
+
+  "promocoes": [],
+
+  "atualizacao": { "repositorio": "ynsouza/segundatela", "ramo": "main", "minutos": 10 },
+
+  "tela_cliente": 0,
+  "porta": 8765,
+  "qualidade_imagem": 88,
+
+  "area_itens":    { "x": 320,  "y": 150, "largura": 1052, "altura": 435 },
+  "area_total":    { "x": 1380, "y": 212, "largura": 535,  "altura": 176 },
+  "area_deteccao": { "x": 330,  "y": 212, "largura": 1030, "altura": 50 },
+  "deteccao_minimo": 25,
+
+  "layout": {
+    "linha_centro": 88, "linha_passo": 60.6, "linha_meia_altura": 13, "cabecalho_altura": 58,
+    "linha_tela_max": 9.4, "linha_tela_min": 7, "velocidade_rolagem": 40,
+    "col_produto": [5, 362], "col_qtd": [412, 525], "col_valor": [870, 1030],
+    "total_valor": [300, 125, 232, 42], "total_produtos": [8, 12, 150, 30],
+    "faixa_branca_itens": [0, 0, 8, 435], "faixa_branca_total": [522, 0, 11, 176], "limite_brilho": 205
+  }
+}

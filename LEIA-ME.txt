@@ -1,0 +1,70 @@
+TELA DO CLIENTE - PADARIA SILMAR
+================================
+
+INSTALAR
+  De dois cliques em INSTALAR.bat. O programa fica em C:\TelaCliente
+  e passa a abrir sozinho quando o Windows liga.
+
+COMO FUNCIONA
+  - Sem venda: a tela mostra a divulgacao (fotos, videos e ofertas).
+  - Caixa registrando itens: o cliente acompanha os itens e o total ao vivo.
+    Todos os itens do pedido aparecem. Se nao couberem, a lista rola sozinha, devagar.
+  - Caixa entrou no pagamento: aparece o QR Code de avaliacao.
+  - 30 segundos depois de finalizar a venda: volta para a divulgacao.
+
+TEMA DE NATAL
+  As telas de divulgacao e de avaliacao tem neve, pisca-pisca e mensagens de Natal.
+  O slide "Feliz Natal!" e o mosaico "Natal com sabor de Silmar" (precisa de 3 fotos)
+  entram sozinhos. As fotos da pasta cardapio tambem passam embaixo do QR Code.
+  Foto larga (16:9) ocupa a tela toda; foto quadrada ou vertical aparece em moldura.
+
+LOGO DA LOJA
+  A logo da Padaria Silmar ja vem instalada:
+     logo.png       -> logo completa (estrelas, nome e "desde 1997")
+     logo-nome.png  -> so o nome, usado nos espacos pequenos
+  Para trocar, substitua esses arquivos em C:\TelaCliente mantendo os nomes
+  (de preferencia PNG com fundo transparente). A tela atualiza sozinha.
+
+DIVULGACAO
+  Coloque fotos (.jpg, .png) ou videos (.mp4) na pasta C:\TelaCliente\divulgacao
+  O nome do arquivo vira a legenda. Exemplos:
+     01 Pao de queijo - R$ 1,40.jpg   -> titulo "Pao de queijo" e preco "R$ 1,40"
+     02 Bolo de cenoura.jpg           -> so o titulo
+     03 video-acai.mp4                -> video sem legenda
+  Os numeros no comeco definem a ordem e nao aparecem na tela.
+
+  FOTOS DO CARDAPIO DE ENCOMENDAS
+  Coloque fotos dos produtos do cardapio (https://padaria-silmar.vercel.app/)
+  na pasta C:\TelaCliente\cardapio  (.jpg, .png ou .webp).
+  O nome do arquivo vira a legenda. Exemplos:
+     Sanduiche a metro.jpg                -> foto ao lado do slide "Sanduiche a metro"
+     01 Mini croissant - R$ 2,50 a unidade.jpg  -> slide novo com titulo e preco
+     02 Bolo de aniversario.jpg           -> slide novo so com o titulo
+  Se o nome combinar com o titulo de um slide de "encomendas", a foto entra nele.
+  As demais viram slides "Do nosso cardapio". Eles se alternam com a divulgacao.
+  Textos e telefones: edite "encomendas" e "cardapio_link" no config.json.
+  As ofertas em texto ficam no config.json, em "promocoes" (deixe [] para nao usar).
+
+LINK DO QR CODE
+  Abra C:\TelaCliente\config.json no Bloco de Notas e coloque o link
+  entre as aspas de "qr_link". Salve. A tela atualiza sozinha.
+
+ATUALIZACAO AUTOMATICA (GITHUB)
+  O programa confere o GitHub da padaria 1 minuto depois de ligar e depois a cada
+  10 minutos, so quando nao tem venda na tela. Se tiver novidade, baixa so o que mudou
+  (programa, fotos, textos e config.json) e troca sozinho. Precisa de internet.
+  - Os arquivos substituidos ficam guardados em C:\TelaCliente\versao-anterior
+  - Se um programa novo nao conseguir iniciar, ele volta sozinho para o anterior.
+  - Fotos colocadas a mao nas pastas cardapio e divulgacao, que nao estejam no
+    GitHub, sao retiradas (ficam guardadas em versao-anterior). Mude as fotos pelo GitHub.
+  - O config.json do caixa tambem vem do GitHub: faca as mudancas por la.
+  - Para desligar: no config.json, "atualizacao": { "repositorio": "" }
+
+PARAR / LIGAR
+  PARAR.bat desliga. iniciar.vbs liga de novo.
+
+PROBLEMAS
+  O arquivo C:\TelaCliente\registro.log anota tudo o que o programa faz.
+  A pasta C:\TelaCliente\diagnostico guarda as ultimas 60 fotos da tela do caixa
+  tiradas durante as vendas. Se algo nao funcionar como esperado, compacte essa
+  pasta junto com o registro.log e envie.
