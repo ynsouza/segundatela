@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-10-27-101504",
+    "versao":  "2026-10-27-102019",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -159,7 +159,7 @@
                      },
                      {
                          "caminho":  "LEIA-ME.txt",
-                         "sha256":  "e90c46419bf8a7df98da5c2c6d24972cb8c9c3bd2474a26b096988304245e8f4"
+                         "sha256":  "f5d56757be430e9cd8be45e51ba2ec143a026a54ce04b4d4749dfa4bd2272ef2"
                      },
                      {
                          "caminho":  "logo.png",
@@ -179,7 +179,7 @@
                      },
                      {
                          "caminho":  "web/index.html",
-                         "sha256":  "4411bf08d3e1ff5e5ada5594759e46fb02a788087bd379da0b46db814f24c0d9"
+                         "sha256":  "4ce500fa194a0ef4ce185c65591984842bd3699970097d6a1c7305f8b488bae0"
                      }
                  ]
 }

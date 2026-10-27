@@ -15,7 +15,7 @@ COMO FUNCIONA
 TEMA DE NATAL
   As telas de divulgacao e de avaliacao tem neve, pisca-pisca e mensagens de Natal.
   O slide "Feliz Natal!" e o mosaico "Natal com sabor de Silmar" (precisa de 3 fotos)
-  entram sozinhos. As fotos da pasta cardapio tambem passam embaixo do QR Code.
+  entram sozinhos. Na tela do QR Code, a logo fica numa faixa branca embaixo.
   Foto larga (16:9) ocupa a tela toda; foto quadrada ou vertical aparece em moldura.
 
 LOGO DA LOJA

@@ -181,13 +181,9 @@
   #cena-qr { color: var(--branco); overflow: hidden;
     background: radial-gradient(circle at 78% 42%, rgba(200, 80, 50, .5) 0%, rgba(200, 80, 50, 0) 48%),
                 linear-gradient(135deg, var(--bordo-vivo) 0%, var(--bordo) 50%, var(--bordo-esc) 100%); }
-  .qr-corpo { position: absolute; left: 0; right: 0; top: 11vh; bottom: 21vh; display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: 2vw; padding: 0 4.5vw 0 5vw; }
-  #cena-qr.sem-fotos .qr-corpo { top: 12vh; bottom: 4vh; }
+  .qr-corpo { position: absolute; left: 0; right: 0; top: 11vh; bottom: 12vh; display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: 2vw; padding: 0 4.5vw 0 5vw; }
   .qr-texto { position: relative; z-index: 2; }
-  .logo-cartao { display: inline-block; background: var(--branco); border-radius: 2vh; padding: 1.2vh 2vw; box-shadow: 0 1.2vh 3vh rgba(60, 10, 0, .35); }
-  .logo-cartao .logo { height: 9vh; }
-  .logo-cartao .logo .nome-txt { font-size: 3.4vh; }
-  .estrelas { display: flex; gap: 1vw; margin-top: 2.4vh; }
+  .estrelas { display: flex; gap: 1vw; }
   .estrelas svg { width: 6.4vh; height: 6.4vh; filter: drop-shadow(0 .5vh .8vh rgba(60, 10, 0, .5)); opacity: 0; transform: scale(.2) rotate(-40deg); }
   .cena.ativa .estrelas svg { animation: pipoca .7s var(--suave) forwards, brilha 2.8s ease-in-out infinite; }
   .cena.ativa .estrelas svg:nth-child(1) { animation-delay: .45s, 1.6s; }
@@ -205,18 +201,15 @@
   .cena.ativa .qr-cartao::before { animation: respira 3s ease-in-out infinite; }
   @keyframes respira { 50% { transform: scale(1.03); opacity: .45; } }
   .qr-cartao .laco { position: absolute; left: 50%; top: -6.2vh; width: 15vh; margin-left: -7.5vh; z-index: 3; filter: drop-shadow(0 .6vh .8vh rgba(40, 6, 0, .4)); }
-  #qr { width: 38vh; height: 38vh; display: grid; place-items: center; }
-  #cena-qr.sem-fotos #qr { width: 46vh; height: 46vh; }
+  #qr { width: 46vh; height: 46vh; display: grid; place-items: center; }
   #qr svg { width: 100%; height: 100%; display: block; }
   #qr .semlink { text-align: center; font-size: 2.4vh; color: var(--tinta2); padding: 2vh; }
   .qr-cartao .dica { text-align: center; margin-top: 1.4vh; font-size: 3.2vh; font-weight: 800; color: var(--bordo); line-height: 1.15; }
   .qr-cartao .dica small { display: block; font-size: 2.2vh; font-weight: 500; color: #8a5a4a; margin-top: .3vh; }
-  .qr-fotos { position: absolute; left: 0; right: 0; bottom: 2.4vh; height: 16vh; overflow: hidden; z-index: 2;
-              -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
-  #cena-qr.sem-fotos .qr-fotos { display: none; }
-  .qr-fotos .trilho { display: flex; gap: 1.5vw; width: max-content; height: 100%; animation: corre var(--dur, 40s) linear infinite; }
-  .qr-fotos img { height: 100%; width: 21vh; object-fit: cover; border-radius: 2vh; border: .5vh solid var(--ouro); box-shadow: 0 1vh 2.4vh rgba(40, 6, 0, .45); flex: none; }
-  @keyframes corre { to { transform: translateX(-50%); } }
+  /* faixa branca com a logo, no mesmo estilo da faixa da divulgação */
+  .faixa-qr { justify-content: center; }
+  .faixa-qr .logo { height: 6.4vh; }
+  .faixa-qr .logo .nome-txt { font-size: 5.6vh; }
 
   /* ---------- camada de Natal (neve + pisca-pisca), só nas cenas de divulgação e avaliação ---------- */
   #natal { position: absolute; inset: 0; z-index: 20; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
@@ -257,10 +250,9 @@
     </div>
   </section>
 
-  <section id="cena-qr" class="cena sem-fotos">
+  <section id="cena-qr" class="cena">
     <div class="qr-corpo">
       <div class="qr-texto">
-        <div class="logo-cartao entra"><div class="logo" data-logo></div></div>
         <div class="estrelas"><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg></div>
         <h1 class="entra d1" id="qrTitulo">Sua opinião é o nosso melhor presente!</h1>
         <p class="entra d2" id="qrTexto">Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.</p>
@@ -272,7 +264,7 @@
         <div class="dica">Aponte a câmera<small>Leva menos de 1 minuto</small></div>
       </div>
     </div>
-    <div class="qr-fotos"><div class="trilho" id="qrTrilho"></div></div>
+    <div class="faixa faixa-qr"><div class="logo" data-logo="nome"></div></div>
   </section>
 
   <div id="natal"><canvas id="neve"></canvas><svg id="guirlanda" viewBox="0 0 1366 92"></svg></div>
@@ -823,7 +815,6 @@ async function carregarPromocoes() {
     ultimosItensPromo = Array.isArray(j.itens) ? j.itens : (j.itens ? [j.itens] : []);
     fotosCardapio = Array.isArray(j.cardapio) ? j.cardapio : (j.cardapio ? [j.cardapio] : []);
     montarSlides(intercalar(ultimosItensPromo));
-    montarFotosQr();
   } catch (e) { if (!slides.length) montarSlides(intercalar([])); }
 }
 
@@ -1016,21 +1007,6 @@ async function consultar() {
     aplicar(await r.json());
   } catch (e) { if (cenaAtual === null) trocarCena('promo'); }
   setTimeout(consultar, 250);
-}
-
-/* ---------- fotos que passam embaixo do QR Code ---------- */
-function montarFotosQr() {
-  const fotos = todasFotos();
-  const cena = $('#cena-qr'), trilho = $('#qrTrilho');
-  const assin = JSON.stringify(fotos.map(f => f.url));
-  if (montarFotosQr.ultima === assin) return;
-  montarFotosQr.ultima = assin;
-  if (!fotos.length) { cena.classList.add('sem-fotos'); trilho.innerHTML = ''; return; }
-  let metade = fotos.slice();
-  while (metade.length < 8) metade = metade.concat(fotos);
-  trilho.style.setProperty('--dur', (metade.length * 5) + 's');
-  trilho.innerHTML = metade.concat(metade).map(f => `<img src="${f.url}" alt="">`).join('');
-  cena.classList.remove('sem-fotos');
 }
 
 /* ---------- Natal: pisca-pisca no alto e neve caindo ---------- */
