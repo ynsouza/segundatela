@@ -32,7 +32,7 @@
   "layout": {
     "linha_centro": 88, "linha_passo": 60.6, "linha_meia_altura": 13, "cabecalho_altura": 58,
     "linha_tela_max": 9.4, "linha_tela_min": 7, "velocidade_rolagem": 40,
-    "col_produto": [5, 362], "col_qtd": [412, 525], "col_valor": [870, 1030],
+    "col_produto": [5, 352], "col_qtd": [412, 525], "col_valor": [860, 1005], "limite_direita": 1005,
     "total_valor": [300, 125, 232, 42], "total_produtos": [8, 12, 150, 30],
     "faixa_branca_itens": [0, 0, 8, 435], "faixa_branca_total": [522, 0, 11, 176], "limite_brilho": 205
   }

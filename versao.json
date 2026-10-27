@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-10-27-095306",
+    "versao":  "2026-10-27-101504",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -143,7 +143,7 @@
                      },
                      {
                          "caminho":  "config.json",
-                         "sha256":  "fd65b0bcd43c56fcf08d1584a9436c899855f9512d428defc95321062aa35ff1"
+                         "sha256":  "eb29170c7decf6d753a7017f7ec935fc11b897a5f027b19ef0f0ca994e57b77a"
                      },
                      {
                          "caminho":  "divulgacao/.mantenha",
@@ -179,7 +179,7 @@
                      },
                      {
                          "caminho":  "web/index.html",
-                         "sha256":  "f8c713c79e9d43b227c930ddb68ee8059da9d3db9af32c90d6eb9d0f14595c36"
+                         "sha256":  "4411bf08d3e1ff5e5ada5594759e46fb02a788087bd379da0b46db814f24c0d9"
                      }
                  ]
 }

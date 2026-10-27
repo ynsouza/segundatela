@@ -445,7 +445,7 @@ function trocarCena(c) {
 // Medidas relativas às áreas capturadas (config.json -> "layout"). Valores padrão medidos no caixa.
 let L = {
   linha_centro: 88, linha_passo: 60.6, linha_meia_altura: 13, max_linhas: 6,
-  col_produto: [5, 362], col_qtd: [412, 525], col_valor: [870, 1030],
+  col_produto: [5, 352], col_qtd: [412, 525], col_valor: [860, 1005], limite_direita: 1005,
   total_valor: [300, 125, 232, 42], total_produtos: [8, 12, 150, 30]
 };
 const fonteItens = document.createElement('canvas'), fonteTotal = document.createElement('canvas');
@@ -551,7 +551,8 @@ function lerBarra(canvas) {
   const W = canvas.width, H = canvas.height, x0 = Math.max(0, W - (L.barra_busca || 150));
   const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(x0, 0, W - x0, H).data, w = W - x0;
   const cinza = (x, y) => { const i = (y * w + x) * 4, r = p[i], g = p[i + 1], b = p[i + 2];
-    const lum = 0.299 * r + 0.587 * g + 0.114 * b; return lum > 145 && lum < 218 && Math.max(r, g, b) - Math.min(r, g, b) < 16; };
+    // cinza claro (parada) ou cinza escuro (quando alguém toca/arrasta a barra no PDV)
+    const lum = 0.299 * r + 0.587 * g + 0.114 * b; return lum > (L.barra_lum_min || 90) && lum < 218 && Math.max(r, g, b) - Math.min(r, g, b) < 16; };
   let melhor = null;
   const corridas = [];
   for (let x = 0; x < w; x++) {
@@ -661,7 +662,8 @@ function desenharItens(img) {
   pedido.length = Math.min(pedido.length, total);
   totalPedido = total;
 
-  const limiteX = barra ? barra.x0 - 3 : fonteItens.width;
+  // Nada depois daqui entra no recorte: é onde começa a barra de rolagem do PDV (mesmo se ela não for achada)
+  const limiteX = Math.min(barra ? barra.x0 - 3 : fonteItens.width, L.limite_direita || 1005);
   vistos.forEach(v => { v.sig = assinatura(fonteItens, v.cy - L.linha_meia_altura, L.linha_meia_altura * 2, limiteX); });
 
   // Confere com a memória: se as linhas batem melhor uma posição acima/abaixo, corrige
@@ -679,7 +681,7 @@ function desenharItens(img) {
     const y = v.cy - L.linha_meia_altura, h = L.linha_meia_altura * 2;
     const atual = pedido[v.idx];
     if (atual && iguais(atual.sig, v.sig)) return;
-    const col = analisarLinha(fonteItens, y, h, limiteX) || { nome: L.col_produto, qtd: L.col_qtd, valor: L.col_valor };
+    const col = analisarLinha(fonteItens, y, h, limiteX) || { nome: L.col_produto, qtd: L.col_qtd, valor: [L.col_valor[0], Math.min(L.col_valor[1], limiteX)] };
     const nome = recortar(fonteItens, col.nome[0], y, col.nome[1] - col.nome[0], h, COR_TEXTO);
     if (!nome.canvas) return;
     pedido[v.idx] = {
