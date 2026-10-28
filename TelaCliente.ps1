@@ -419,7 +419,8 @@ function Atender($cli) {
       '^/estado$' {
         $s = @{ cena = $Estado.cena; vi = $Estado.vItens; vt = $Estado.vTotal; qr = [string]$Cfg.qr_link
                 qrTitulo = [string]$Cfg.qr_titulo; qrTexto = [string]$Cfg.qr_texto; slide = [int]$Cfg.tempo_slide_segundos
-                nome = [string]$Cfg.nome_loja; logo = [bool](ArquivoLogo); logoNome = (Test-Path (Join-Path $Pasta 'logo-nome.png')); cardapio = [string]$Cfg.cardapio_link; encomendas = $Cfg.encomendas; layout = $Cfg.layout; pagina = [string](Get-Item (Join-Path $Pasta 'web\index.html')).LastWriteTime.Ticks }
+                nome = [string]$Cfg.nome_loja; logo = [bool](ArquivoLogo); logoNome = (Test-Path (Join-Path $Pasta 'logo-nome.png')); cardapio = [string]$Cfg.cardapio_link; encomendas = $Cfg.encomendas; layout = $Cfg.layout
+                tema = $(if ([string]$Cfg.tema) { [string]$Cfg.tema } else { 'natal' }); temas = $Cfg.temas; efeitos = $Cfg.efeitos; pagina = [string](Get-Item (Join-Path $Pasta 'web\index.html')).LastWriteTime.Ticks }
         Responder $ns 200 $Tipos['.json'] (Json $s); break
       }
       '^/cap/itens\.jpg$' { if ($Estado.jpgItens) { Responder $ns 200 $Estado.tipoCap $Estado.jpgItens } else { Responder $ns 404 'text/plain' $null }; break }

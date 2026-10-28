@@ -8,6 +8,10 @@
 
   "tempo_slide_segundos": 9,
 
+  "tema": "natal",
+  "efeitos": { "queda": true, "enfeite": true },
+  "temas": {},
+
   "cardapio_link": "https://padaria-silmar.vercel.app/",
   "encomendas": [
     { "selo": "Mais pedido", "titulo": "Sanduíche a metro", "descricao": "Recheado à sua escolha e feito na hora. Perfeito para eventos, confraternizações e celebrações.", "info": "Encomende com 48h de antecedência", "icone": "agenda" },

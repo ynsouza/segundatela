@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gerenciador da Segunda Tela</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordo: #80220B; --bordo-esc: #5A1607; --bordo-vivo: #9C2E13; --ouro: #F4C95D; --verde: #1E5B3A;
+    --fundo: #F6EFEC; --cartao: #FFFFFF; --linha: #EADBD5; --tinta: #2B130D; --tinta2: #6F4A40; --suave: #FBF5F2;
+    --serif: 'Playfair Display', Georgia, serif; --sans: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fundo); color: var(--tinta); font-family: var(--sans); font-size: 15px; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+
+  header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; padding: 12px 24px;
+           background: linear-gradient(120deg, var(--bordo-vivo), var(--bordo) 55%, var(--bordo-esc)); color: #fff; box-shadow: 0 4px 18px rgba(60, 12, 4, .25); }
+  header h1 { margin: 0; font-family: var(--serif); font-size: 22px; flex: 1; }
+  header h1 small { display: block; font-family: var(--sans); font-weight: 500; font-size: 12px; opacity: .8; }
+  #situacao { font-size: 13px; text-align: right; line-height: 1.35; }
+  #situacao b { color: var(--ouro); }
+  .botao { border: 0; border-radius: 10px; padding: 10px 18px; font-weight: 600; cursor: pointer; transition: transform .1s, opacity .2s; }
+  .botao:active { transform: scale(.97); }
+  .botao:disabled { opacity: .45; cursor: default; }
+  .publicar { background: var(--ouro); color: var(--bordo-esc); font-size: 16px; padding: 11px 22px; box-shadow: 0 3px 10px rgba(0, 0, 0, .2); }
+  .claro { background: rgba(255, 255, 255, .16); color: #fff; }
+  .secundario { background: var(--suave); color: var(--bordo); border: 1px solid var(--linha); }
+  .perigo { background: none; color: #a33; padding: 6px 10px; }
+
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 560px; gap: 24px; padding: 24px; max-width: 1500px; margin: 0 auto; }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .previa { position: static !important; } }
+  .coluna { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  section.bloco { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(90, 22, 7, .05); }
+  section.bloco > h2 { margin: 0 0 4px; font-family: var(--serif); font-size: 21px; color: var(--bordo); }
+  section.bloco > p.ajuda { margin: 0 0 16px; color: var(--tinta2); font-size: 13.5px; }
+
+  label.campo { display: block; margin-top: 12px; font-weight: 600; font-size: 13.5px; }
+  label.campo span.dica { font-weight: 400; color: var(--tinta2); }
+  input[type=text], input[type=url], input[type=number], textarea, select {
+    display: block; width: 100%; margin-top: 5px; padding: 9px 11px; border: 1px solid var(--linha); border-radius: 9px; background: #fff; }
+  textarea { resize: vertical; min-height: 58px; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--ouro); border-color: var(--ouro); }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+
+  /* temas */
+  .temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+  .tema { border: 2px solid var(--linha); background: var(--suave); border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; font-weight: 600; font-size: 13.5px; }
+  .tema .ic { height: 34px; display: grid; place-items: center; margin-bottom: 6px; }
+  .tema .ic svg { height: 30px; width: auto; }
+  .tema.sel { border-color: var(--bordo); background: #fff; box-shadow: 0 0 0 3px rgba(244, 201, 93, .6); }
+  .chaves { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 16px; }
+  .chave { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; }
+  .chave input { display: none; }
+  .chave i { width: 44px; height: 24px; border-radius: 99px; background: #d9c9c3; position: relative; transition: background .2s; flex: none; }
+  .chave i::after { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .2s; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); }
+  .chave input:checked + i { background: var(--verde); }
+  .chave input:checked + i::after { left: 23px; }
+  .textos-tema { margin-top: 6px; }
+  .textos-tema.oculto { display: none; }
+
+  /* listas (encomendas, ofertas) */
+  .item { border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px 14px; margin-bottom: 12px; background: var(--suave); }
+  .item .barra { display: flex; align-items: center; gap: 6px; }
+  .item .barra b { flex: 1; color: var(--bordo); font-size: 14px; }
+  .mini { border: 1px solid var(--linha); background: #fff; border-radius: 8px; width: 32px; height: 30px; cursor: pointer; }
+  .mini:disabled { opacity: .35; cursor: default; }
+
+  /* fotos */
+  .fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 12px; }
+  .foto { border: 1px solid var(--linha); border-radius: 12px; overflow: hidden; background: var(--suave); display: flex; flex-direction: column; }
+  .foto .img { height: 120px; background: #eee center / cover no-repeat; position: relative; }
+  .foto .img video { width: 100%; height: 100%; object-fit: cover; }
+  .foto .img .tag { position: absolute; left: 8px; top: 8px; background: rgba(0, 0, 0, .55); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+  .foto .info { padding: 8px 10px 10px; }
+  .foto .info input { margin-top: 4px; padding: 6px 8px; font-size: 13px; }
+  .foto .acoes { display: flex; gap: 4px; margin-top: 8px; }
+  .foto .acoes .perigo { margin-left: auto; }
+  .enviar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .enviar input[type=file] { display: none; }
+  .vazio { color: var(--tinta2); font-size: 13.5px; padding: 8px 0; }
+
+  /* prévia */
+  .previa { position: sticky; top: 88px; align-self: start; }
+  .previa section.bloco { padding: 16px; }
+  .moldura { width: 100%; aspect-ratio: 1366 / 768; position: relative; overflow: hidden; border-radius: 10px; background: #000; border: 6px solid #1d1d1d; }
+  .moldura iframe { position: absolute; left: 0; top: 0; width: 1366px; height: 768px; border: 0; transform-origin: 0 0; }
+  .abas { display: flex; gap: 8px; margin: 0 0 12px; }
+  .abas button { flex: 1; }
+  .abas button.sel { background: var(--bordo); color: #fff; border-color: var(--bordo); }
+
+  #aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 30px); opacity: 0; transition: all .3s; background: var(--tinta); color: #fff;
+           padding: 12px 20px; border-radius: 12px; font-weight: 500; z-index: 20; max-width: 90vw; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); }
+  #aviso.vis { opacity: 1; transform: translate(-50%, 0); }
+  #aviso.erro { background: #9b1c1c; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Gerenciador da Segunda Tela<small>Padaria Silmar · as mudanças aparecem na prévia na hora</small></h1>
+  <div id="situacao">Carregando…</div>
+  <button class="botao claro" id="btnDesfazer" title="Volta tudo para a última versão publicada">Desfazer mudanças</button>
+  <button class="botao publicar" id="btnPublicar">Publicar no caixa</button>
+</header>
+
+<main>
+  <div class="coluna">
+    <section class="bloco">
+      <h2>Tema da época</h2>
+      <p class="ajuda">Escolha o tema que aparece nas telas de divulgação e de avaliação. A tela de conferência do pedido não muda.</p>
+      <div class="temas" id="temas"></div>
+      <div class="chaves">
+        <label class="chave"><input type="checkbox" id="efQueda"><i></i>Efeito caindo (neve, confete, corações…)</label>
+        <label class="chave"><input type="checkbox" id="efEnfeite"><i></i>Enfeite no alto da tela</label>
+      </div>
+      <div class="textos-tema" id="textosTema">
+        <label class="campo">Mensagem na faixa de baixo <span class="dica">· deixe vazio para usar o texto padrão</span><input type="text" data-tt="faixa"></label>
+        <label class="campo">Título do slide especial<input type="text" data-tt="slide_titulo"></label>
+        <label class="campo">Texto do slide especial<textarea data-tt="slide_texto"></textarea></label>
+        <div class="duas">
+          <label class="campo">Título do mosaico de fotos<input type="text" data-tt="mosaico"></label>
+          <label class="campo">Agradecimento na tela de avaliação<input type="text" data-tt="obrigado"></label>
+        </div>
+        <p class="ajuda" style="margin:10px 0 0">Dica: escreva <b>{ano}</b> para mostrar o ano que está chegando (por exemplo, "Feliz {ano}!").</p>
+      </div>
+    </section>
+
+    <section class="bloco">
+      <h2>Tela de avaliação (QR Code)</h2>
+      <p class="ajuda">Aparece quando o caixa vai para o pagamento.</p>
+      <label class="campo">Link de avaliação do Google<input type="url" data-c="qr_link"></label>
+      <label class="campo">Título<input type="text" data-c="qr_titulo"></label>
+      <label class="campo">Texto<input type="text" data-c="qr_texto"></label>
+      <label class="campo">Segundos que o QR fica na tela depois de pagar<input type="number" min="5" max="300" data-c="qr_segundos_apos_pagamento" data-num></label>
+    </section>
+
+    <section class="bloco">
+      <h2>Encomendas e avisos</h2>
+      <p class="ajuda">Slides com texto sobre encomendas. Se uma foto do cardápio tiver o mesmo nome do título, ela aparece junto.</p>
+      <label class="campo">Site de encomendas <span class="dica">· aparece na faixa de baixo</span><input type="url" data-c="cardapio_link"></label>
+      <div id="encomendas" style="margin-top:16px"></div>
+      <button class="botao secundario" id="addEncomenda">+ Adicionar aviso</button>
+    </section>
+
+    <section class="bloco">
+      <h2>Ofertas</h2>
+      <p class="ajuda">Slides de oferta com preço. Deixe sem nenhuma se não quiser usar.</p>
+      <div id="ofertas"></div>
+      <button class="botao secundario" id="addOferta">+ Adicionar oferta</button>
+    </section>
+
+    <section class="bloco">
+      <h2>Fotos do cardápio</h2>
+      <p class="ajuda">Cada foto vira um slide "Do nosso cardápio". O nome e o preço aparecem na tela. As fotos são diminuídas sozinhas para não pesar.</p>
+      <div class="enviar"><label class="botao secundario">+ Enviar fotos<input type="file" accept="image/*" multiple data-envio="cardapio"></label><span class="vazio" data-cont="cardapio"></span></div>
+      <div class="fotos" id="fotos-cardapio"></div>
+    </section>
+
+    <section class="bloco">
+      <h2>Fotos e vídeos da divulgação</h2>
+      <p class="ajuda">Fotos da loja, artes prontas e vídeos curtos (.mp4). Aparecem alternando com o cardápio.</p>
+      <div class="enviar"><label class="botao secundario">+ Enviar fotos ou vídeos<input type="file" accept="image/*,video/mp4,video/webm" multiple data-envio="divulgacao"></label><span class="vazio" data-cont="divulgacao"></span></div>
+      <div class="fotos" id="fotos-divulgacao"></div>
+    </section>
+
+    <section class="bloco">
+      <h2>Geral</h2>
+      <div class="duas">
+        <label class="campo">Nome da loja<input type="text" data-c="nome_loja"></label>
+        <label class="campo">Segundos de cada slide<input type="number" min="4" max="60" data-c="tempo_slide_segundos" data-num></label>
+      </div>
+    </section>
+  </div>
+
+  <aside class="previa">
+    <section class="bloco">
+      <div class="abas">
+        <button class="botao secundario sel" data-cena="promo">Divulgação</button>
+        <button class="botao secundario" data-cena="qr">Avaliação (QR)</button>
+      </div>
+      <div class="moldura" id="moldura"><iframe id="tela" src="/tela/" title="Prévia da tela do cliente"></iframe></div>
+      <p class="ajuda" style="margin:10px 0 0;color:var(--tinta2);font-size:13px">Prévia de como fica a tela do cliente. Nada vai para o caixa até você clicar em <b>Publicar no caixa</b>.</p>
+    </section>
+  </aside>
+</main>
+<div id="aviso"></div>
+
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+let cfg = null, TEMAS = null, ICONES = {}, temaEditando = null;
+
+function aviso(txt, erro) {
+  const a = $('#aviso'); a.textContent = txt; a.classList.toggle('erro', !!erro); a.classList.add('vis');
+  clearTimeout(aviso.t); aviso.t = setTimeout(() => a.classList.remove('vis'), erro ? 7000 : 3500);
+}
+function esc(t) { return String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+async function api(caminho, opcoes) {
+  const r = await fetch(caminho, opcoes);
+  if (!r.ok) throw new Error((await r.text()) || 'Erro ' + r.status);
+  return r.json();
+}
+
+function mostrarSituacao(s) {
+  if (!s) return;
+  $('#situacao').innerHTML = s.pendentes
+    ? `<b>Há mudanças ainda não publicadas</b><br>Última publicação: ${esc(s.ultima_data)}`
+    : `Tudo publicado ✓<br>Última publicação: ${esc(s.ultima_data)}`;
+  $('#btnPublicar').disabled = !s.pendentes; $('#btnDesfazer').disabled = !s.pendentes;
+}
+
+/* ---------- salvar (sozinho, logo depois de cada mudança) ---------- */
+let timerSalvar = null;
+function salvar() { clearTimeout(timerSalvar); timerSalvar = setTimeout(salvarAgora, 500); }
+async function salvarAgora() {
+  clearTimeout(timerSalvar);
+  try { const r = await api('/api/config', { method: 'POST', body: JSON.stringify(cfg, null, 2) }); mostrarSituacao(r.situacao); }
+  catch (e) { aviso('Não consegui salvar: ' + e.message, true); }
+}
+
+/* ---------- campos simples ---------- */
+function ligarCampos() {
+  $$('[data-c]').forEach(el => {
+    const k = el.dataset.c; el.value = cfg[k] ?? '';
+    el.addEventListener('input', () => { cfg[k] = el.hasAttribute('data-num') ? (parseInt(el.value, 10) || 0) : el.value; salvar(); });
+  });
+}
+
+/* ---------- temas ---------- */
+function montarTemas() {
+  const ordem = ['nenhum', 'natal', 'anonovo', 'pascoa', 'junina', 'maes', 'pais'];
+  $('#temas').innerHTML = ordem.filter(id => TEMAS[id]).map(id => `<button class="tema" data-tema="${id}"><div class="ic">${ICONES[id] || '<span style="font-size:24px">—</span>'}</div>${esc(TEMAS[id].nome)}</button>`).join('');
+  $$('.tema').forEach(b => b.addEventListener('click', () => { cfg.tema = b.dataset.tema; mostrarTema(); salvar(); }));
+  cfg.efeitos = cfg.efeitos || {}; cfg.temas = (cfg.temas && !Array.isArray(cfg.temas)) ? cfg.temas : {};
+  $('#efQueda').checked = cfg.efeitos.queda !== false; $('#efEnfeite').checked = cfg.efeitos.enfeite !== false;
+  $('#efQueda').addEventListener('change', e => { cfg.efeitos.queda = e.target.checked; salvar(); });
+  $('#efEnfeite').addEventListener('change', e => { cfg.efeitos.enfeite = e.target.checked; salvar(); });
+  $$('[data-tt]').forEach(el => el.addEventListener('input', () => {
+    const id = temaEditando, k = el.dataset.tt, v = el.value.trim();
+    const t = cfg.temas[id] = cfg.temas[id] || {};
+    if (v) t[k] = el.value; else delete t[k];
+    if (!Object.keys(t).length) delete cfg.temas[id];
+    salvar();
+  }));
+  mostrarTema();
+}
+function mostrarTema() {
+  const id = TEMAS[cfg.tema] ? cfg.tema : 'natal'; temaEditando = id;
+  $$('.tema').forEach(b => b.classList.toggle('sel', b.dataset.tema === id));
+  const base = TEMAS[id], t = cfg.temas[id] || {};
+  const padrao = { faixa: base.faixa, slide_titulo: base.slide && base.slide.titulo, slide_texto: base.slide && base.slide.descricao, mosaico: base.mosaico, obrigado: base.obrigado };
+  $$('[data-tt]').forEach(el => { const k = el.dataset.tt; el.value = t[k] ?? ''; el.placeholder = padrao[k] || ''; });
+  // "Sem tema" não tem faixa nem slide especial
+  $$('[data-tt="faixa"], [data-tt="slide_titulo"], [data-tt="slide_texto"]').forEach(el => el.closest('label').style.display = id === 'nenhum' ? 'none' : '');
+  $('#efQueda').closest('.chaves').style.display = id === 'nenhum' ? 'none' : '';
+}
+
+/* ---------- listas: encomendas e ofertas ---------- */
+const LISTAS = {
+  encomendas: { el: '#encomendas', nome: 'Aviso', campos: [['selo', 'Etiqueta (ex.: Mais pedido)'], ['titulo', 'Título'], ['descricao', 'Descrição', 'area'], ['info', 'Linha de destaque (telefone, prazo…)'], ['icone', 'Ícone', 'icone']],
+                novo: () => ({ selo: 'Encomendas', titulo: 'Novo aviso', descricao: '', info: '', icone: 'agenda' }) },
+  promocoes: { el: '#ofertas', nome: 'Oferta', campos: [['selo', 'Etiqueta (ex.: Doce do dia)'], ['titulo', 'Produto'], ['descricao', 'Descrição', 'area'], ['preco', 'Preço (ex.: R$ 14,00)']],
+               novo: () => ({ selo: 'Oferta', titulo: 'Nova oferta', descricao: '', preco: 'R$ 0,00' }) }
+};
+function montarLista(chave) {
+  const L = LISTAS[chave], arr = cfg[chave] = Array.isArray(cfg[chave]) ? cfg[chave] : [], caixa = $(L.el);
+  if (!arr.length) { caixa.innerHTML = `<p class="vazio">Nenhum${chave === 'promocoes' ? 'a oferta' : ' aviso'} ainda.</p>`; return; }
+  caixa.innerHTML = arr.map((it, i) => `<div class="item"><div class="barra"><b>${L.nome} ${i + 1}</b>
+      <button class="mini" data-mov="-1" data-i="${i}" ${i === 0 ? 'disabled' : ''} title="Subir">↑</button>
+      <button class="mini" data-mov="1" data-i="${i}" ${i === arr.length - 1 ? 'disabled' : ''} title="Descer">↓</button>
+      <button class="botao perigo" data-rem="${i}">Remover</button></div>
+      ${L.campos.map(([k, rot, tipo]) => tipo === 'icone'
+        ? `<label class="campo">${rot}<select data-i="${i}" data-k="${k}"><option value="agenda">Calendário</option><option value="whats">WhatsApp</option><option value="relogio">Relógio</option></select></label>`
+        : `<label class="campo">${rot}${tipo === 'area' ? `<textarea data-i="${i}" data-k="${k}">${esc(it[k])}</textarea>` : `<input type="text" data-i="${i}" data-k="${k}" value="${esc(it[k])}">`}</label>`).join('')}
+    </div>`).join('');
+  caixa.querySelectorAll('select[data-k]').forEach(s => s.value = arr[s.dataset.i][s.dataset.k] || 'agenda');
+  caixa.querySelectorAll('[data-k]').forEach(el => el.addEventListener('input', () => { arr[el.dataset.i][el.dataset.k] = el.value; salvar(); }));
+  caixa.querySelectorAll('[data-mov]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.i, j = i + +b.dataset.mov; [arr[i], arr[j]] = [arr[j], arr[i]]; montarLista(chave); salvar(); }));
+  caixa.querySelectorAll('[data-rem]').forEach(b => b.addEventListener('click', () => { if (confirm('Remover este item?')) { arr.splice(+b.dataset.rem, 1); montarLista(chave); salvar(); } }));
+}
+
+/* ---------- fotos ---------- */
+// Nome do arquivo = legenda na tela: "03 Pudim - R$ 45,00.jpg"
+function partesNome(arq) {
+  const ext = (arq.match(/\.[^.]+$/) || [''])[0], sem = arq.slice(0, arq.length - ext.length);
+  const m = sem.match(/^(\d+)[\s._-]*(.*)$/), num = m ? m[1] : '', resto = m ? m[2] : sem;
+  const [titulo, ...p] = resto.split(/\s+-\s+/);
+  return { num, titulo: titulo || '', preco: p.join(' - '), ext };
+}
+function montarNome(num, titulo, preco, ext) {
+  const limpa = t => String(t || '').replace(/[\\/:*?"<>|]/g, '-').replace(/\s+/g, ' ').trim();
+  return (num ? num + ' ' : '') + (limpa(titulo) || 'Foto') + (limpa(preco) ? ' - ' + limpa(preco) : '') + ext;
+}
+let fotos = { cardapio: [], divulgacao: [] };
+async function carregarFotos() { fotos = await api('/api/fotos'); ['cardapio', 'divulgacao'].forEach(montarFotos); }
+function montarFotos(pasta) {
+  const lista = fotos[pasta] || [], caixa = $('#fotos-' + pasta);
+  $(`[data-cont="${pasta}"]`).textContent = lista.length ? `${lista.length} arquivo${lista.length > 1 ? 's' : ''}` : '';
+  if (!lista.length) { caixa.innerHTML = '<p class="vazio">Nenhuma foto ainda.</p>'; return; }
+  caixa.innerHTML = lista.map((f, i) => {
+    const p = partesNome(f.nome), url = `/foto/${pasta}/${encodeURIComponent(f.nome)}`;
+    return `<div class="foto"><div class="img" ${f.video ? '' : `style="background-image:url('${url}')"`}>${f.video ? `<video src="${url}" muted preload="metadata"></video><span class="tag">vídeo</span>` : ''}</div>
+      <div class="info"><input type="text" placeholder="Nome na tela" value="${esc(p.titulo)}" data-f="${i}" data-campo="titulo">
+      <input type="text" placeholder="Preço (opcional)" value="${esc(p.preco)}" data-f="${i}" data-campo="preco">
+      <div class="acoes"><button class="mini" data-fmov="-1" data-f="${i}" ${i === 0 ? 'disabled' : ''} title="Mais para a frente">←</button>
+      <button class="mini" data-fmov="1" data-f="${i}" ${i === lista.length - 1 ? 'disabled' : ''} title="Mais para trás">→</button>
+      <button class="botao perigo" data-frem="${i}">Apagar</button></div></div></div>`;
+  }).join('');
+  caixa.querySelectorAll('input[data-campo]').forEach(el => el.addEventListener('change', () => renomearFoto(pasta, +el.dataset.f)));
+  caixa.querySelectorAll('[data-fmov]').forEach(b => b.addEventListener('click', () => reordenar(pasta, +b.dataset.f, +b.dataset.fmov)));
+  caixa.querySelectorAll('[data-frem]').forEach(b => b.addEventListener('click', () => apagarFoto(pasta, +b.dataset.frem)));
+}
+async function renomear(pasta, de, para) {
+  if (de === para) return;
+  const r = await api(`/api/renomear?pasta=${pasta}&de=${encodeURIComponent(de)}&para=${encodeURIComponent(para)}`, { method: 'POST' });
+  mostrarSituacao(r.situacao);
+}
+async function renomearFoto(pasta, i) {
+  const f = fotos[pasta][i], p = partesNome(f.nome), caixa = $('#fotos-' + pasta);
+  const titulo = caixa.querySelector(`[data-f="${i}"][data-campo="titulo"]`).value, preco = caixa.querySelector(`[data-f="${i}"][data-campo="preco"]`).value;
+  try { await renomear(pasta, f.nome, montarNome(p.num, titulo, preco, p.ext)); } catch (e) { aviso(e.message, true); }
+  await carregarFotos();
+}
+// Muda a ordem numerando todos os arquivos: 01, 02, 03...
+async function reordenar(pasta, i, mov) {
+  const lista = fotos[pasta].slice(), j = i + mov; [lista[i], lista[j]] = [lista[j], lista[i]];
+  try {
+    const temp = [];
+    for (let k = 0; k < lista.length; k++) { const t = '~' + k + '~' + lista[k].nome; await renomear(pasta, lista[k].nome, t); temp.push(t); }
+    for (let k = 0; k < temp.length; k++) { const p = partesNome(lista[k].nome); await renomear(pasta, temp[k], montarNome(String(k + 1).padStart(2, '0'), p.titulo, p.preco, p.ext)); }
+  } catch (e) { aviso(e.message, true); }
+  await carregarFotos();
+}
+async function apagarFoto(pasta, i) {
+  const f = fotos[pasta][i];
+  if (!confirm(`Apagar "${partesNome(f.nome).titulo}"?`)) return;
+  try { const r = await api(`/api/apagar?pasta=${pasta}&nome=${encodeURIComponent(f.nome)}`, { method: 'POST' }); mostrarSituacao(r.situacao); } catch (e) { aviso(e.message, true); }
+  await carregarFotos();
+}
+// Diminui fotos grandes para no máximo 1600 px (fica leve e nítida na tela de 1366x768)
+function reduzir(arquivo) {
+  return new Promise((ok, falha) => {
+    const im = new Image(), url = URL.createObjectURL(arquivo);
+    im.onload = () => {
+      const m = 1600, k = Math.min(1, m / Math.max(im.width, im.height)), c = document.createElement('canvas');
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); c.toBlob(b => b ? ok(b) : falha(new Error('foto inválida')), 'image/jpeg', 0.88);
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); falha(new Error('não consegui abrir ' + arquivo.name)); };
+    im.src = url;
+  });
+}
+async function enviar(pasta, arquivos) {
+  let n = 0;
+  for (const a of arquivos) {
+    try {
+      const video = /^video\//.test(a.type);
+      if (video && a.size > 90 * 1024 * 1024) { aviso(`${a.name} é grande demais (máximo 90 MB).`, true); continue; }
+      const corpo = video ? a : await reduzir(a);
+      const base = a.name.replace(/\.[^.]+$/, ''), p = partesNome(base + '.x');
+      const ext = video ? (a.name.match(/\.[^.]+$/) || ['.mp4'])[0].toLowerCase() : '.jpg';
+      let nome = montarNome(p.num, p.titulo, p.preco, ext), k = 2;
+      while ((fotos[pasta] || []).some(f => f.nome.toLowerCase() === nome.toLowerCase())) nome = montarNome(p.num, p.titulo + ' ' + k++, p.preco, ext);
+      aviso(`Enviando ${a.name}…`);
+      const r = await api(`/api/foto?pasta=${pasta}&nome=${encodeURIComponent(nome)}`, { method: 'POST', body: corpo });
+      mostrarSituacao(r.situacao); n++;
+      fotos[pasta] = (fotos[pasta] || []).concat([{ nome }]);
+    } catch (e) { aviso(e.message, true); }
+  }
+  await carregarFotos();
+  if (n) aviso(`${n} arquivo${n > 1 ? 's enviados' : ' enviado'}. Confira o nome de cada um.`);
+}
+
+/* ---------- prévia ---------- */
+function ajustarPrevia() { const m = $('#moldura'); $('#tela').style.transform = `scale(${m.clientWidth / 1366})`; }
+addEventListener('resize', ajustarPrevia);
+$$('.abas button').forEach(b => b.addEventListener('click', async () => {
+  $$('.abas button').forEach(x => x.classList.toggle('sel', x === b));
+  await api('/api/previa?cena=' + b.dataset.cena, { method: 'POST' });
+}));
+
+/* ---------- publicar / desfazer ---------- */
+$('#btnPublicar').addEventListener('click', async () => {
+  const b = $('#btnPublicar'); b.disabled = true; b.textContent = 'Publicando…';
+  try { await salvarAgora(); const r = await api('/api/publicar', { method: 'POST' }); aviso(r.msg, !r.ok); mostrarSituacao(r.situacao); }
+  catch (e) { aviso('Não consegui publicar: ' + e.message, true); }
+  b.textContent = 'Publicar no caixa';
+});
+$('#btnDesfazer').addEventListener('click', async () => {
+  if (!confirm('Desfazer todas as mudanças que ainda não foram publicadas?')) return;
+  const r = await api('/api/desfazer', { method: 'POST' }); mostrarSituacao(r.situacao); location.reload();
+});
+$$('[data-envio]').forEach(inp => inp.addEventListener('change', () => { enviar(inp.dataset.envio, [...inp.files]); inp.value = ''; }));
+$('#addEncomenda').addEventListener('click', () => { cfg.encomendas.push(LISTAS.encomendas.novo()); montarLista('encomendas'); salvar(); });
+$('#addOferta').addEventListener('click', () => { cfg.promocoes.push(LISTAS.promocoes.novo()); montarLista('promocoes'); salvar(); });
+
+/* ---------- partida ---------- */
+async function iniciar() {
+  ajustarPrevia();
+  await api('/api/previa?cena=promo', { method: 'POST' });
+  cfg = await api('/api/config');
+  // os temas vêm da própria página da tela (mesmos nomes, ícones e textos)
+  const fr = $('#tela');
+  await new Promise(ok => { const ver = () => fr.contentWindow && fr.contentWindow.TEMAS_TELA ? ok() : setTimeout(ver, 100); ver(); });
+  TEMAS = fr.contentWindow.TEMAS_TELA; ICONES = fr.contentWindow.ICONES_TEMA || {};
+  ligarCampos(); montarTemas(); montarLista('encomendas'); montarLista('promocoes');
+  await carregarFotos();
+  mostrarSituacao(await api('/api/situacao'));
+}
+iniciar().catch(e => aviso('Erro ao abrir: ' + e.message, true));
+</script>
+</body>
+</html>

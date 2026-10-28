@@ -2,7 +2,7 @@
 # O caixa compara essa lista com os arquivos dele e baixa só o que mudou.
 $Pasta = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Fora = @('versao.json', 'gerar-versao.ps1', 'registro.log', 'registro.log.antigo', 'atualizacao-pendente')
-$PastasFora = @('.git', 'diagnostico', 'perfil-edge', 'versao-anterior', 'atualizando')
+$PastasFora = @('.git', 'gerenciador', 'diagnostico', 'perfil-edge', 'versao-anterior', 'atualizando')
 
 $arquivos = Get-ChildItem -LiteralPath $Pasta -Recurse -File | Where-Object {
   $rel = $_.FullName.Substring($Pasta.Length + 1)

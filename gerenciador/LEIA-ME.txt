@@ -1,0 +1,26 @@
+GERENCIADOR DA SEGUNDA TELA - PADARIA SILMAR
+============================================
+
+ABRIR
+  De dois cliques no atalho "Gerenciador da Segunda Tela" na Area de Trabalho
+  (ou em "Abrir Gerenciador.vbs" nesta pasta). Ele abre no navegador.
+
+O QUE DA PARA MUDAR
+  - Tema da epoca: Sem tema, Natal, Ano Novo, Pascoa, Festa Junina,
+    Dia das Maes e Dia dos Pais. Liga e desliga o efeito caindo e o enfeite do alto,
+    e troca as mensagens do tema.
+  - Tela de avaliacao: link do Google, titulo, texto e tempo na tela.
+  - Encomendas e avisos, ofertas, fotos do cardapio, fotos e videos da divulgacao.
+  - Nome da loja e tempo de cada slide.
+
+COMO FUNCIONA
+  1. Cada mudanca e salva sozinha e aparece na previa (lado direito).
+  2. Quando estiver tudo certo, clique em "Publicar no caixa".
+  3. O PC do caixa recebe sozinho em ate uns 15 minutos.
+  "Desfazer mudancas" volta tudo para a ultima versao publicada.
+
+IMPORTANTE
+  - Esta pasta (C:\Users\yanba\Documents\SegundaTela) e a copia oficial da segunda tela.
+    Nao apague e nao mova.
+  - Precisa de internet para publicar.
+  - O gerenciador fecha sozinho 3 horas depois de fechar o navegador.

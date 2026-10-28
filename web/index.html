@@ -128,8 +128,9 @@
            padding: 0 4.5vw; background: var(--branco); border-top: .7vh solid var(--ouro); box-shadow: 0 -6px 24px rgba(60, 12, 4, .22); }
   .faixa .logo { height: 4.6vh; }
   .faixa .logo .nome-txt { font-size: 4.2vh; }
-  .faixa .natal { display: flex; align-items: center; gap: .55em; font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 3.1vh; color: var(--bordo); }
-  .faixa .natal svg { height: 4.2vh; width: auto; }
+  .faixa .tema-msg { display: flex; align-items: center; gap: .55em; font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 3.1vh; color: var(--bordo); }
+  .faixa .tema-msg:empty { display: none; }
+  .faixa .tema-msg svg { height: 4.2vh; width: auto; }
   .faixa .site { font-size: 2.6vh; font-weight: 500; color: var(--tinta2); }
   .faixa .site b { color: var(--bordo); font-weight: 700; }
   .faixa > * { flex: none; white-space: nowrap; }
@@ -211,13 +212,17 @@
   .faixa-qr .logo { height: 6.4vh; }
   .faixa-qr .logo .nome-txt { font-size: 5.6vh; }
 
-  /* ---------- camada de Natal (neve + pisca-pisca), só nas cenas de divulgação e avaliação ---------- */
-  #natal { position: absolute; inset: 0; z-index: 20; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
-  body.natal #natal { opacity: 1; }
-  #neve { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* ---------- enfeites do tema da época (efeito caindo + enfeite no alto), só na divulgação e na avaliação ---------- */
+  #enfeites { position: absolute; inset: 0; z-index: 20; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
+  body.enfeitado #enfeites { opacity: 1; }
+  #queda { position: absolute; inset: 0; width: 100%; height: 100%; }
   #guirlanda { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
   .lampada { animation: pisca 2.6s ease-in-out infinite; filter: drop-shadow(0 0 6px var(--c)); }
   @keyframes pisca { 0%, 100% { opacity: 1; } 50% { opacity: .42; } }
+  .balanca { animation: balanca 3.2s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 0; }
+  @keyframes balanca { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+  /* o laço dourado no cartão do QR só combina com o Natal */
+  body:not([data-tema="natal"]) .qr-cartao .laco { display: none; }
 </style>
 </head>
 <body>
@@ -227,7 +232,7 @@
     <div id="slides"></div>
     <div class="faixa">
       <div class="logo" data-logo="nome"></div>
-      <div class="natal"><svg viewBox="0 0 24 28"><path fill="#1E5B3A" d="M12 1l6 8h-3.5l5 7H15l6 8H3l6-8H4.5l5-7H6z"/><rect x="10.3" y="23.5" width="3.4" height="4" fill="#7a3a1a"/><circle cx="12" cy="2.6" r="1.7" fill="#F4C95D"/></svg>Feliz Natal!</div>
+      <div class="tema-msg" id="temaMsg"></div>
       <div class="site">Encomendas: <b id="siteCardapio">padaria-silmar.vercel.app</b></div>
       <div class="pontos" id="pontos"></div>
     </div>
@@ -256,7 +261,7 @@
         <div class="estrelas"><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg><svg viewBox="0 0 24 24"><path fill="#FFC83D" stroke="#FFE08A" stroke-width=".6" stroke-linejoin="round" d="M12 1.8l2.9 6.5 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9l7.1-.7z"/></svg></div>
         <h1 class="entra d1" id="qrTitulo">Sua opinião é o nosso melhor presente!</h1>
         <p class="entra d2" id="qrTexto">Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.</p>
-        <div class="obrigado entra d3">Boas Festas e obrigado pela preferência! ♥</div>
+        <div class="obrigado entra d3" id="qrObrigado">Obrigado pela preferência! ♥</div>
       </div>
       <div class="qr-cartao entra d2">
         <svg class="laco" viewBox="0 0 120 76"><path d="M60 42 C36 4 4 8 8 32 C11 52 42 50 60 42Z" fill="#F4C95D" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><path d="M60 42 C84 4 116 8 112 32 C109 52 78 50 60 42Z" fill="#F4C95D" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><path d="M55 44 L36 72 L53 65 L60 50Z" fill="#E7B545" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><path d="M65 44 L84 72 L67 65 L60 50Z" fill="#E7B545" stroke="#B8832A" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="60" cy="42" rx="10" ry="9" fill="#F9DB85" stroke="#B8832A" stroke-width="2.5"/></svg>
@@ -267,7 +272,7 @@
     <div class="faixa faixa-qr"><div class="logo" data-logo="nome"></div></div>
   </section>
 
-  <div id="natal"><canvas id="neve"></canvas><svg id="guirlanda" viewBox="0 0 1366 92"></svg></div>
+  <div id="enfeites"><canvas id="queda"></canvas><svg id="guirlanda" viewBox="0 0 1366 92"></svg></div>
 
   <div id="veu">
     <div class="marca">
@@ -404,7 +409,7 @@ function esc(t) { return String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 
 /* ---------- troca de cena com o véu ---------- */
 function mostrarCena(c) {
-  document.body.classList.toggle('natal', c === 'promo' || c === 'qr');
+  document.body.classList.toggle('enfeitado', (c === 'promo' || c === 'qr') && temaAtivo.ativo);
   document.querySelectorAll('.cena').forEach(s => s.classList.toggle('ativa', s.id === 'cena-' + c));
   if (c === 'itens') limparBuffers();
   if (c === 'promo') iniciarSlides(); else pararSlides();
@@ -856,9 +861,7 @@ function todasFotos() {
   return a.concat(b);
 }
 
-const SLIDE_NATAL = { tipo: 'texto', selo: 'Boas Festas', titulo: 'Feliz Natal!', descricao: 'A equipe da Padaria Silmar deseja a você e à sua família um Natal cheio de sabor e alegria.' };
-
-// Alterna: cardápio, oferta/foto da loja, cardápio... e espalha os destaques (textos, mosaico e Natal)
+// Alterna: cardápio, oferta/foto da loja, cardápio... e espalha os destaques (textos, mosaico e mensagem da época)
 // por igual entre as fotos, para não ficarem todos juntos no começo
 function intercalar(outros) {
   const enc = slidesCardapio();
@@ -869,9 +872,9 @@ function intercalar(outros) {
   const fotos = todasFotos();
   if (fotos.length >= 3) {
     const k = fotos.length;
-    destaques.splice(Math.min(1, destaques.length), 0, { tipo: 'mosaico', fotos: [fotos[0], fotos[Math.floor(k / 3)], fotos[Math.floor(2 * k / 3)]] });
+    destaques.splice(Math.min(1, destaques.length), 0, { tipo: 'mosaico', titulo: temaAtivo.mosaico, fotos: [fotos[0], fotos[Math.floor(k / 3)], fotos[Math.floor(2 * k / 3)]] });
   }
-  destaques.splice(Math.min(3, destaques.length), 0, SLIDE_NATAL);
+  if (temaAtivo.slide) destaques.splice(Math.min(3, destaques.length), 0, temaAtivo.slide);
   if (!comFoto.length) return destaques;
   const passo = Math.max(1, Math.floor(comFoto.length / destaques.length));
   const lista = []; let d = 0;
@@ -928,11 +931,11 @@ function montarSlides(itens) {
     } else if (it.tipo === 'mosaico') {
       el = document.createElement('div'); el.className = 'slide mosaico';
       const rot = [-4, 2.5, -2.5], desl = ['0vh', '-3vh', '0vh'];
-      el.innerHTML = `<div class="cab-mos"><h2>Natal com sabor de Silmar</h2><p>Do nosso forno para a sua mesa</p></div>
+      el.innerHTML = `<div class="cab-mos"><h2>${esc(it.titulo)}</h2><p>Do nosso forno para a sua mesa</p></div>
         <div class="polaroides">${it.fotos.map((f, i) => `<figure class="pola" style="--r:${rot[i]}deg;--y:${desl[i]}"><img src="${f.url}" alt=""><figcaption>${esc(f.nome || 'Padaria Silmar')}</figcaption></figure>`).join('')}</div>`;
     } else {
       el = document.createElement('div'); el.className = 'slide texto';
-      el.innerHTML = `<svg class="emblema" viewBox="0 0 120 120">${FLOCO}</svg>` + rotuloHtml(it);
+      el.innerHTML = `<svg class="emblema" viewBox="0 0 120 120">${temaAtivo.id === 'natal' ? FLOCO : ESTRELA}</svg>` + rotuloHtml(it);
     }
     el.dataset.tipo = it.tipo === 'video' ? 'video' : 'x';
     caixa.appendChild(el);
@@ -983,15 +986,14 @@ function aplicar(s) {
   if (s.nome !== cfg.nome || s.logo !== cfg.logo || !!s.logoNome !== cfg.logoNome) { cfg.nome = s.nome; cfg.logo = s.logo; cfg.logoNome = !!s.logoNome; desenharLogos(); }
   if (s.slide && s.slide !== tempoSlide) tempoSlide = s.slide;
   if (s.layout && typeof s.layout === 'object') L = Object.assign({}, L, s.layout);
+  if (aplicarTema(s.tema || 'natal', s.temas || null, s.efeitos || null)) montarSlides(intercalar(ultimosItensPromo));
   const novoCard = s.cardapio || 'https://padaria-silmar.vercel.app/', novasEnc = s.encomendas || null;
   if (novoCard !== cardapio || JSON.stringify(novasEnc) !== JSON.stringify(encomendasCfg)) {
     cardapio = novoCard; encomendasCfg = novasEnc; $('#siteCardapio').textContent = siteCurto(cardapio);
     montarSlides(intercalar(ultimosItensPromo));
   }
-  const TITULOS_ANTIGOS = ['Como foi seu atendimento?', 'Gostou do nosso atendimento?'];
-  const TEXTOS_ANTIGOS = ['Aponte a câmera do celular para o QR Code e conte pra gente.', 'Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.'];
-  if (s.qrTitulo && !TITULOS_ANTIGOS.includes(s.qrTitulo)) $('#qrTitulo').textContent = s.qrTitulo;
-  if (s.qrTexto && !TEXTOS_ANTIGOS.includes(s.qrTexto)) $('#qrTexto').textContent = s.qrTexto;
+  if (s.qrTitulo) $('#qrTitulo').textContent = s.qrTitulo;
+  if (s.qrTexto) $('#qrTexto').textContent = s.qrTexto;
   if (s.qr !== ultimoQr) { ultimoQr = s.qr; desenharQr(s.qr); }
   if (s.cena !== cenaAtual) trocarCena(s.cena);
   if (s.cena === 'itens') {
@@ -1009,50 +1011,198 @@ async function consultar() {
   setTimeout(consultar, 250);
 }
 
-/* ---------- Natal: pisca-pisca no alto e neve caindo ---------- */
-function montarGuirlanda() {
-  const svg = $('#guirlanda'), W = 1366, N = 8, seg = W / N, y0 = 6, ctl = 74;
-  const cores = ['#FFD166', '#FF5A4F', '#6BD18B', '#FFFFFF', '#FFB347'];
-  let d = `M0 ${y0}`, bulbos = '', k = 0;
+/* =====================================================================
+   Temas da época do ano (escolhidos no gerenciador: config.json -> "tema")
+   Cada tema tem: efeito caindo, enfeite no alto, mensagem na faixa, slide especial,
+   título do mosaico de fotos e a frase de agradecimento da tela de avaliação.
+   Os textos podem ser trocados no gerenciador (config.json -> "temas").
+   ===================================================================== */
+const ICONE_TEMA = {
+  natal: '<svg viewBox="0 0 24 28"><path fill="#1E5B3A" d="M12 1l6 8h-3.5l5 7H15l6 8H3l6-8H4.5l5-7H6z"/><rect x="10.3" y="23.5" width="3.4" height="4" fill="#7a3a1a"/><circle cx="12" cy="2.6" r="1.7" fill="#F4C95D"/></svg>',
+  anonovo: '<svg viewBox="0 0 24 26"><path d="M6 2h12l-1.2 7.5a4.8 4.8 0 0 1-9.6 0z" fill="#F4C95D" stroke="#B8832A" stroke-width="1.2"/><path d="M12 14.5v7M7.5 23h9" stroke="#B8832A" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6" r="1" fill="#fff"/><circle cx="13.5" cy="8" r=".8" fill="#fff"/></svg>',
+  pascoa: '<svg viewBox="0 0 24 28"><ellipse cx="12" cy="15" rx="8.5" ry="11.5" fill="#F7A8C4"/><path d="M4 13.5l2.8-2 2.8 2 2.4-2 2.4 2 2.8-2 2.8 2" stroke="#fff" stroke-width="1.8" fill="none" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.3" fill="#8FD3C7"/><circle cx="15" cy="19.5" r="1.3" fill="#FFE07A"/></svg>',
+  junina: '<svg viewBox="0 0 26 18"><path d="M1 3h24" stroke="#7a3a1a" stroke-width="1.4"/><path d="M2 3h7l-3.5 9z" fill="#E63946"/><path d="M9.5 3h7L13 12z" fill="#F4C430"/><path d="M17 3h7l-3.5 9z" fill="#2A9D8F"/></svg>',
+  maes: '<svg viewBox="0 0 24 22"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z" fill="#E5486B"/><path d="M8 6.5a2.5 2.5 0 0 0-2.4 2.2" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/></svg>',
+  pais: '<svg viewBox="0 0 20 28"><path d="M6 1h8l-1.8 4H7.8z" fill="#1F4E8C"/><path d="M7.8 5h4.4l3 14-5.2 7-5.2-7z" fill="#2E6BC0"/><path d="M8.5 9l4 3M8 14l5 3.5" stroke="#9EC1F0" stroke-width="1.2"/></svg>'
+};
+
+const TEMAS = {
+  nenhum:  { nome: 'Sem tema', queda: null, enfeite: null, faixa: '', slide: null,
+             mosaico: 'Feito com carinho para você', obrigado: 'Obrigado pela preferência! ♥' },
+  natal:   { nome: 'Natal', queda: 'neve', enfeite: 'natal', faixa: 'Feliz Natal!',
+             slide: { selo: 'Boas Festas', titulo: 'Feliz Natal!', descricao: 'A equipe da Padaria Silmar deseja a você e à sua família um Natal cheio de sabor e alegria.' },
+             mosaico: 'Natal com sabor de Silmar', obrigado: 'Boas Festas e obrigado pela preferência! ♥' },
+  anonovo: { nome: 'Ano Novo', queda: 'confete', enfeite: 'anonovo', faixa: 'Feliz {ano}!',
+             slide: { selo: 'Feliz Ano Novo', titulo: 'Feliz {ano}!', descricao: 'Que o novo ano chegue cheio de sabor, saúde e alegria para você e sua família.' },
+             mosaico: 'Comece {ano} com sabor', obrigado: 'Feliz Ano Novo e obrigado pela preferência! ♥' },
+  pascoa:  { nome: 'Páscoa', queda: 'ovinhos', enfeite: 'pascoa', faixa: 'Feliz Páscoa!',
+             slide: { selo: 'Feliz Páscoa', titulo: 'Feliz Páscoa!', descricao: 'Que a Páscoa traga paz, renovação e muitos momentos doces para a sua família.' },
+             mosaico: 'Páscoa com sabor de Silmar', obrigado: 'Feliz Páscoa e obrigado pela preferência! ♥' },
+  junina:  { nome: 'Festa Junina', queda: 'confete-junino', enfeite: 'junina', faixa: 'Arraiá da Silmar!',
+             slide: { selo: 'Festa Junina', titulo: 'Arraiá da Silmar!', descricao: 'É tempo de festa junina! Venha aproveitar as delícias da época.' },
+             mosaico: 'Arraiá com sabor de Silmar', obrigado: 'Bom arraiá e obrigado pela preferência! ♥' },
+  maes:    { nome: 'Dia das Mães', queda: 'coracoes', enfeite: 'maes', faixa: 'Feliz Dia das Mães!',
+             slide: { selo: 'Dia das Mães', titulo: 'Feliz Dia das Mães!', descricao: 'Para quem cuida de todo mundo com carinho: o nosso abraço e a nossa homenagem.' },
+             mosaico: 'Para a mãe, com carinho', obrigado: 'Feliz Dia das Mães e obrigado pela preferência! ♥' },
+  pais:    { nome: 'Dia dos Pais', queda: 'estrelinhas', enfeite: 'pais', faixa: 'Feliz Dia dos Pais!',
+             slide: { selo: 'Dia dos Pais', titulo: 'Feliz Dia dos Pais!', descricao: 'Uma homenagem a todos os pais que fazem a diferença todos os dias.' },
+             mosaico: 'Para o pai, com carinho', obrigado: 'Feliz Dia dos Pais e obrigado pela preferência! ♥' }
+};
+
+// O gerenciador lê daqui os nomes, ícones e textos padrão dos temas (para mostrar na tela dele)
+window.TEMAS_TELA = TEMAS; window.ICONES_TEMA = ICONE_TEMA;
+
+// "{ano}" vira o ano que está chegando (de outubro em diante, o próximo)
+function comAno(t) { const d = new Date(); return String(t || '').replace(/\{ano\}/g, d.getFullYear() + (d.getMonth() >= 9 ? 1 : 0)); }
+
+let temaAtivo = { id: 'natal', ativo: true, queda: 'neve', enfeite: 'natal', slide: null, mosaico: '', obrigado: '' };
+let chaveTema = null;
+
+// Junta o tema escolhido com os textos trocados no gerenciador e com os efeitos ligados/desligados
+function aplicarTema(id, textos, efeitos) {
+  const chave = JSON.stringify([id, textos, efeitos]);
+  if (chave === chaveTema) return false;
+  chaveTema = chave;
+  const base = TEMAS[id] || TEMAS.natal, t = (textos && textos[id]) || {}, ef = efeitos || {};
+  const tid = TEMAS[id] ? id : 'natal';
+  const slideTitulo = t.slide_titulo ?? (base.slide && base.slide.titulo), slideTexto = t.slide_texto ?? (base.slide && base.slide.descricao);
+  temaAtivo = {
+    id: tid, ativo: tid !== 'nenhum',
+    queda: ef.queda === false ? null : base.queda,
+    enfeite: ef.enfeite === false ? null : base.enfeite,
+    slide: base.slide && slideTitulo ? { tipo: 'texto', selo: base.slide.selo, titulo: comAno(slideTitulo), descricao: comAno(slideTexto) } : null,
+    mosaico: comAno(t.mosaico ?? base.mosaico),
+    obrigado: comAno(t.obrigado ?? base.obrigado)
+  };
+  const faixa = comAno(t.faixa ?? base.faixa);
+  document.body.dataset.tema = tid;
+  $('#temaMsg').innerHTML = faixa ? (ICONE_TEMA[tid] || '') + esc(faixa) : '';
+  $('#qrObrigado').textContent = temaAtivo.obrigado;
+  montarEnfeite(temaAtivo.enfeite);
+  document.body.classList.toggle('enfeitado', (cenaAtual === 'promo' || cenaAtual === 'qr') && temaAtivo.ativo);
+  return true;
+}
+
+/* ---------- enfeite no alto: um cordão com pendentes que muda conforme o tema ---------- */
+function montarEnfeite(tipo) {
+  const svg = $('#guirlanda');
+  if (!tipo) { svg.innerHTML = ''; return; }
+  const W = 1366, N = 8, seg = W / N, y0 = 6, ctl = 74;
+  let d = `M0 ${y0}`, pend = '', k = 0;
+  const pontos = tipo === 'junina' ? [0.1, 0.25, 0.4, 0.55, 0.7, 0.85] : [0.2, 0.5, 0.8];
   for (let i = 0; i < N; i++) {
     const x0 = i * seg, x1 = x0 + seg, cx = x0 + seg / 2;
     d += ` Q${cx} ${ctl} ${x1} ${y0}`;
-    for (const t of [0.2, 0.5, 0.8]) {
+    for (const t of pontos) {
       const u = 1 - t, x = u * u * x0 + 2 * u * t * cx + t * t * x1, y = u * u * y0 + 2 * u * t * ctl + t * t * y0;
-      const c = cores[k % cores.length];
-      bulbos += `<g class="lampada" style="--c:${c};animation-delay:${((k * 0.37) % 2.6).toFixed(2)}s" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="-3" y="-1" width="6" height="6" rx="1" fill="#3a2410"/><ellipse cx="0" cy="12" rx="6.5" ry="9" fill="${c}"/><ellipse cx="-2" cy="9" rx="1.8" ry="3" fill="#fff" opacity=".55"/></g>`;
+      pend += pendenteEnfeite(tipo, k, x, y);
       k++;
     }
   }
-  const azevinho = lado => `<g transform="${lado < 0 ? 'translate(1366 0) scale(-1 1)' : ''}"><g fill="#1E5B3A" stroke="#13402a" stroke-width="1.2"><ellipse cx="22" cy="20" rx="26" ry="9" transform="rotate(35 22 20)"/><ellipse cx="46" cy="14" rx="24" ry="8" transform="rotate(10 46 14)"/><ellipse cx="16" cy="40" rx="22" ry="8" transform="rotate(62 16 40)"/></g><g fill="#D62828"><circle cx="26" cy="22" r="5.5"/><circle cx="35" cy="28" r="5.5"/><circle cx="30" cy="14" r="5.5"/></g></g>`;
-  svg.innerHTML = `<path d="${d}" fill="none" stroke="rgba(25,8,3,.75)" stroke-width="2.6"/>${bulbos}${azevinho(1)}${azevinho(-1)}`;
+  const cordao = tipo === 'junina' ? 'stroke="#6b3a1a" stroke-width="2"' : 'stroke="rgba(25,8,3,.75)" stroke-width="2.6"';
+  svg.innerHTML = `<path d="${d}" fill="none" ${cordao}/>${pend}${cantos(tipo)}`;
 }
 
-function iniciarNeve() {
-  const c = $('#neve'), x = c.getContext('2d');
-  let W = 0, H = 0, ultimo = 0;
+function pendenteEnfeite(tipo, k, x, y) {
+  const pos = `transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"`, atraso = ((k * 0.37) % 2.6).toFixed(2);
+  const lampada = c => `<g class="lampada" style="--c:${c};animation-delay:${atraso}s" ${pos}><rect x="-3" y="-1" width="6" height="6" rx="1" fill="#3a2410"/><ellipse cx="0" cy="12" rx="6.5" ry="9" fill="${c}"/><ellipse cx="-2" cy="9" rx="1.8" ry="3" fill="#fff" opacity=".55"/></g>`;
+  const balanca = corpo => `<g ${pos}><g class="balanca" style="animation-delay:-${atraso}s">${corpo}</g></g>`;
+  switch (tipo) {
+    case 'natal': return lampada(['#FFD166', '#FF5A4F', '#6BD18B', '#FFFFFF', '#FFB347'][k % 5]);
+    case 'anonovo': return lampada(['#F4C95D', '#FFFFFF', '#FFE7A3', '#D9D9D9'][k % 4]);
+    case 'junina': {
+      const c = ['#E63946', '#F4C430', '#2A9D8F', '#F77F00', '#4361EE', '#F72585'][k % 6];
+      return `<g ${pos}><path d="M-11 0h22l-11 22z" fill="${c}" stroke="rgba(0,0,0,.15)"/></g>`;
+    }
+    case 'pascoa': {
+      const c = ['#F7A8C4', '#8FD3C7', '#FFE07A', '#C3B1E1'][k % 4];
+      return balanca(`<path d="M0 0v6" stroke="#6b4a3a" stroke-width="1.4"/><ellipse cx="0" cy="17" rx="8.5" ry="11" fill="${c}"/><path d="M-8 15l3-2 2.6 2 2.4-2 2.4 2 2.6-2 3 2" stroke="#fff" stroke-width="1.8" fill="none"/>`);
+    }
+    case 'maes': {
+      const c = ['#E5486B', '#F7A8C4', '#FFFFFF', '#C2185B'][k % 4];
+      return balanca(`<path d="M0 0v5" stroke="#6b4a3a" stroke-width="1.4"/><path d="M0 26s-11-6.6-11-14a5.6 5.6 0 0 1 11-2.6A5.6 5.6 0 0 1 11 12c0 7.4-11 14-11 14z" fill="${c}" stroke="rgba(0,0,0,.12)"/>`);
+    }
+    case 'pais': {
+      const c = ['#F4C95D', '#5B8DEF', '#FFFFFF', '#2E6BC0'][k % 4];
+      return balanca(`<path d="M0 0v5" stroke="#6b4a3a" stroke-width="1.4"/><path d="M0 5l3.2 6.6 7.2 1-5.2 5 1.2 7.2L0 21.4l-6.4 3.4 1.2-7.2-5.2-5 7.2-1z" fill="${c}" stroke="rgba(0,0,0,.15)"/>`);
+    }
+  }
+  return '';
+}
+
+// enfeite dos dois cantos de cima
+function cantos(tipo) {
+  const dois = g => g + `<g transform="translate(1366 0) scale(-1 1)">${g}</g>`;
+  if (tipo === 'natal') return dois(`<g fill="#1E5B3A" stroke="#13402a" stroke-width="1.2"><ellipse cx="22" cy="20" rx="26" ry="9" transform="rotate(35 22 20)"/><ellipse cx="46" cy="14" rx="24" ry="8" transform="rotate(10 46 14)"/><ellipse cx="16" cy="40" rx="22" ry="8" transform="rotate(62 16 40)"/></g><g fill="#D62828"><circle cx="26" cy="22" r="5.5"/><circle cx="35" cy="28" r="5.5"/><circle cx="30" cy="14" r="5.5"/></g>`);
+  if (tipo === 'anonovo') return dois(`<g fill="#F4C95D" stroke="#B8832A" stroke-width="1.2"><path d="M30 6l4 10 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z"/></g><g stroke="#FFE7A3" stroke-width="2" stroke-linecap="round"><path d="M56 10l6-4M58 22h8M54 33l6 4"/></g>`);
+  if (tipo === 'junina') return dois(`<g transform="translate(26 8)"><path d="M0 0c-10 6-12 22 0 30c12-8 10-24 0-30z" fill="#F77F00" stroke="#9a4a00" stroke-width="1.2"/><path d="M0 0v30M-6 6c4 6 4 18 0 22M6 6c-4 6-4 18 0 22" stroke="#9a4a00" stroke-width="1" fill="none"/><path d="M-3 30h6l-1 5h-4z" fill="#6b3a1a"/></g>`);
+  if (tipo === 'pascoa') return dois(`<g transform="translate(14 4)"><ellipse cx="14" cy="22" rx="13" ry="12" fill="#FFFFFF" stroke="#d9cfc6" stroke-width="1.2"/><ellipse cx="8" cy="6" rx="3.6" ry="11" fill="#FFFFFF" stroke="#d9cfc6" stroke-width="1.2" transform="rotate(-12 8 6)"/><ellipse cx="20" cy="6" rx="3.6" ry="11" fill="#FFFFFF" stroke="#d9cfc6" stroke-width="1.2" transform="rotate(12 20 6)"/><ellipse cx="8" cy="6" rx="1.6" ry="7" fill="#F7A8C4" transform="rotate(-12 8 6)"/><ellipse cx="20" cy="6" rx="1.6" ry="7" fill="#F7A8C4" transform="rotate(12 20 6)"/><circle cx="10" cy="20" r="1.4" fill="#3a2410"/><circle cx="18" cy="20" r="1.4" fill="#3a2410"/><ellipse cx="14" cy="25" rx="2" ry="1.4" fill="#F7A8C4"/></g>`);
+  if (tipo === 'maes') return dois(`<g transform="translate(12 6)"><circle cx="16" cy="16" r="6" fill="#FFE07A"/><g fill="#E5486B">${[0, 72, 144, 216, 288].map(a => `<ellipse cx="16" cy="6" rx="5.5" ry="7" transform="rotate(${a} 16 16)"/>`).join('')}</g><circle cx="16" cy="16" r="4.5" fill="#FFE07A"/></g>`);
+  if (tipo === 'pais') return dois(`<g transform="translate(16 6)" fill="#F4C95D" stroke="#B8832A" stroke-width="1.2"><path d="M14 0l4 9 10 1-7.5 6.5 2.5 10-9-5.5-9 5.5 2.5-10L0 10l10-1z"/></g>`);
+  return '';
+}
+
+/* ---------- efeito caindo (neve, confete, ovinhos, corações, estrelinhas) ---------- */
+function iniciarQueda() {
+  const c = $('#queda'), x = c.getContext('2d');
+  let W = 0, H = 0, ultimo = 0, tipoAtual = null, fl = [];
   const dim = () => { W = c.width = innerWidth; H = c.height = innerHeight; };
   dim(); addEventListener('resize', dim);
-  const fl = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), r: 1.3 + Math.random() * 3.3, v: .035 + Math.random() * .09, s: Math.random() * 6.28, a: .55 + Math.random() * .45 }));
+  const CORES = {
+    confete: ['#F4C95D', '#FFFFFF', '#FFE7A3', '#D9D9D9', '#E8B04B'],
+    'confete-junino': ['#E63946', '#F4C430', '#2A9D8F', '#F77F00', '#4361EE', '#F72585'],
+    ovinhos: ['#F7A8C4', '#8FD3C7', '#FFE07A', '#C3B1E1'],
+    coracoes: ['#E5486B', '#F7A8C4', '#FFFFFF', '#FF8FAB'],
+    estrelinhas: ['#F4C95D', '#FFFFFF', '#FFE7A3']
+  };
+  const QTD = { neve: 70, confete: 55, 'confete-junino': 55, ovinhos: 26, coracoes: 34, estrelinhas: 40 };
+  function criar(tipo) {
+    const cores = CORES[tipo] || ['#fff'];
+    fl = Array.from({ length: QTD[tipo] || 50 }, () => ({
+      x: Math.random(), y: Math.random(), r: 1.3 + Math.random() * 3.3, v: .035 + Math.random() * .09,
+      s: Math.random() * 6.28, a: .55 + Math.random() * .45, g: Math.random() * 6.28, vg: (Math.random() - .5) * 3,
+      c: cores[Math.floor(Math.random() * cores.length)]
+    }));
+  }
+  function desenhar(f, px, py, esc) {
+    x.globalAlpha = f.a; x.fillStyle = f.c;
+    switch (tipoAtual) {
+      case 'neve': x.fillStyle = '#fff'; x.beginPath(); x.arc(px, py, f.r * esc, 0, 6.283); x.fill(); break;
+      case 'confete': case 'confete-junino':
+        x.save(); x.translate(px, py); x.rotate(f.g); x.scale(1, Math.cos(f.g * 1.7)); x.fillRect(-f.r * 1.6 * esc, -f.r * .7 * esc, f.r * 3.2 * esc, f.r * 1.4 * esc); x.restore(); break;
+      case 'ovinhos':
+        x.save(); x.translate(px, py); x.rotate(Math.sin(f.g) * .5); x.beginPath(); x.ellipse(0, 0, (f.r + 3) * esc, (f.r + 3) * 1.3 * esc, 0, 0, 6.283); x.fill(); x.restore(); break;
+      case 'coracoes': {
+        const s = (f.r + 3) * esc * .55; x.save(); x.translate(px, py); x.rotate(Math.sin(f.g) * .4); x.beginPath();
+        x.moveTo(0, s * 1.6); x.bezierCurveTo(-s * 2.4, 0, -s * 1.2, -s * 1.8, 0, -s * .6); x.bezierCurveTo(s * 1.2, -s * 1.8, s * 2.4, 0, 0, s * 1.6); x.fill(); x.restore(); break;
+      }
+      case 'estrelinhas': {
+        const s = (f.r + 2) * esc, br = .5 + .5 * Math.sin(f.g * 2); x.globalAlpha = f.a * (.35 + .65 * br);
+        x.beginPath(); x.moveTo(px, py - s * 1.6); x.lineTo(px + s * .4, py - s * .4); x.lineTo(px + s * 1.6, py); x.lineTo(px + s * .4, py + s * .4);
+        x.lineTo(px, py + s * 1.6); x.lineTo(px - s * .4, py + s * .4); x.lineTo(px - s * 1.6, py); x.lineTo(px - s * .4, py - s * .4); x.closePath(); x.fill(); break;
+      }
+    }
+  }
   function passo(t) {
     requestAnimationFrame(passo);
-    if (!document.body.classList.contains('natal')) return;
-    if (t - ultimo < 33) return;
+    const tipo = document.body.classList.contains('enfeitado') ? temaAtivo.queda : null;
+    if (tipo !== tipoAtual) { tipoAtual = tipo; x.clearRect(0, 0, W, H); if (tipo) criar(tipo); }
+    if (!tipoAtual || t - ultimo < 33) return;
     const dt = Math.min((t - ultimo) / 1000, .1); ultimo = t;
     x.clearRect(0, 0, W, H);
+    const esc = H / 768, vel = tipoAtual === 'neve' ? 1.3 : tipoAtual === 'ovinhos' ? .9 : 1.1;
     for (const f of fl) {
-      f.y += f.v * dt * 1.3; f.s += dt * .9;
+      f.y += f.v * dt * vel; f.s += dt * .9; f.g += dt * (1 + f.vg);
       if (f.y > 1.03) { f.y = -.03; f.x = Math.random(); }
-      const px = (f.x + Math.sin(f.s) * .012) * W, py = f.y * H;
-      x.globalAlpha = f.a; x.fillStyle = '#fff'; x.beginPath(); x.arc(px, py, f.r * (H / 768), 0, 6.283); x.fill();
+      desenhar(f, (f.x + Math.sin(f.s) * .012) * W, f.y * H, esc);
     }
     x.globalAlpha = 1;
   }
   requestAnimationFrame(passo);
 }
 
-montarGuirlanda();
-iniciarNeve();
+aplicarTema('natal', null, null);
+iniciarQueda();
 desenharLogos();
 carregarPromocoes();
 setInterval(carregarPromocoes, 60000);

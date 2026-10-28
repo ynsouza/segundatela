@@ -12,10 +12,15 @@ COMO FUNCIONA
   - Caixa entrou no pagamento: aparece o QR Code de avaliacao.
   - 30 segundos depois de finalizar a venda: volta para a divulgacao.
 
-TEMA DE NATAL
-  As telas de divulgacao e de avaliacao tem neve, pisca-pisca e mensagens de Natal.
-  O slide "Feliz Natal!" e o mosaico "Natal com sabor de Silmar" (precisa de 3 fotos)
-  entram sozinhos. Na tela do QR Code, a logo fica numa faixa branca embaixo.
+GERENCIADOR (no computador do Yan)
+  Tudo o que aparece na segunda tela e configurado pelo "Gerenciador da Segunda Tela"
+  (atalho na Area de Trabalho do computador do Yan). Veja gerenciador\LEIA-ME.txt.
+
+TEMAS DA EPOCA
+  Sem tema, Natal, Ano Novo, Pascoa, Festa Junina, Dia das Maes e Dia dos Pais.
+  Cada tema tem efeito caindo, enfeite no alto, mensagem na faixa, slide especial e
+  o titulo do mosaico de fotos (precisa de 3 fotos). Escolha no gerenciador.
+  Na tela do QR Code, a logo fica numa faixa branca embaixo.
   Foto larga (16:9) ocupa a tela toda; foto quadrada ou vertical aparece em moldura.
 
 LOGO DA LOJA
