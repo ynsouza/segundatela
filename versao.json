@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-10-27-102019",
+    "versao":  "2026-10-27-214400",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -143,7 +143,7 @@
                      },
                      {
                          "caminho":  "config.json",
-                         "sha256":  "eb29170c7decf6d753a7017f7ec935fc11b897a5f027b19ef0f0ca994e57b77a"
+                         "sha256":  "ff443a8315bec4e25e72d8ac88161b7680afa8e599a0f80b9dac978f61d5a380"
                      },
                      {
                          "caminho":  "divulgacao/.mantenha",
@@ -159,7 +159,7 @@
                      },
                      {
                          "caminho":  "LEIA-ME.txt",
-                         "sha256":  "f5d56757be430e9cd8be45e51ba2ec143a026a54ce04b4d4749dfa4bd2272ef2"
+                         "sha256":  "bd5f8435a57cd732fc9f7ef5d1681aec7803e6da32f4150263ac5211cf8211e6"
                      },
                      {
                          "caminho":  "logo.png",
@@ -175,11 +175,11 @@
                      },
                      {
                          "caminho":  "TelaCliente.ps1",
-                         "sha256":  "4c4c055de98f90d22f87573509d97263d8452f1759d05e55327684fd26a7cdd6"
+                         "sha256":  "5ec7ca95b07ebda911b44ea11b988a725c92f1088da7c1d4ca49584a17e9323d"
                      },
                      {
                          "caminho":  "web/index.html",
-                         "sha256":  "4ce500fa194a0ef4ce185c65591984842bd3699970097d6a1c7305f8b488bae0"
+                         "sha256":  "91d55f77738930335a87b262d1742efd03c9c9269e467eb908b6605f08d93aa9"
                      }
                  ]
 }
