@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-10-30-084706",
+    "versao":  "2026-10-30-092303",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -175,11 +175,11 @@
                      },
                      {
                          "caminho":  "TelaCliente.ps1",
-                         "sha256":  "5ec7ca95b07ebda911b44ea11b988a725c92f1088da7c1d4ca49584a17e9323d"
+                         "sha256":  "41bd9bc203ee1ffea548f89b3ff0315b053e5c9a790a5ff9836d5e929144a5b7"
                      },
                      {
                          "caminho":  "web/index.html",
-                         "sha256":  "69a8798a2bdf377ea1bfc16f6636c5be297de679bcf595d31824c3d6c7855562"
+                         "sha256":  "8f120f119f9efc80175f54ec975b283bf2fc0bfe1bf56ef2f6de9a674939a67a"
                      }
                  ]
 }

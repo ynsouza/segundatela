@@ -148,7 +148,7 @@ if (-not $Porta) { $Porta = 8765 }
 
 # ---------- estado da tela ----------
 $Estado = @{
-  cena        = 'promo'   # promo | itens | qr
+  cena        = 'promo'   # promo | itens | comanda | qr
   rota        = ''
   pago        = $false
   qrAte       = $null
@@ -161,6 +161,9 @@ $Estado = @{
   marcaTotal  = 0
   jpgItens    = $null
   jpgTotal    = $null
+  vComanda    = 0
+  marcaComanda = 0
+  imgComanda  = $null
   tipoCap     = 'image/png'
 }
 
@@ -175,6 +178,10 @@ function MudarCena([string]$nova, [string]$motivo) {
     # Descarta a imagem da venda anterior e captura a atual na hora
     $Estado.jpgItens = $null; $Estado.jpgTotal = $null; $Estado.marcaItens = 0L; $Estado.marcaTotal = 0L
     try { CapturarItens } catch {}
+  }
+  if ($nova -eq 'comanda') {
+    $Estado.imgComanda = $null; $Estado.marcaComanda = 0L
+    try { CapturarComanda } catch {}
   }
   if ($nova -ne 'qr') { $Estado.qrAte = $null }
 }
@@ -232,6 +239,9 @@ function ProcessarLinha([string]$l) {
   if ($l -match 'Mudando para a rota "([^"]+)"') {
     $rota = $Matches[1]
     $Estado.rota = $rota
+    # Comanda aberta no PDV: a funcionária confere os pedidos com o cliente
+    if ($rota -eq 'customer_service.service_details') { MudarCena 'comanda' 'comanda aberta no PDV'; return }
+    if ($Estado.cena -eq 'comanda') { MudarCena 'promo' ('saiu da comanda: ' + $rota) }
     if ($rota -like 'checkout*') {
       MudarCena 'qr' ('PDV entrou no pagamento: ' + $rota)
     } elseif ($rota -eq 'cashier') {
@@ -276,10 +286,20 @@ function CapturarItens {
   if ($img) { $Estado.marcaTotal = $m; $Estado.jpgTotal = $img; $Estado.vTotal++ }
 }
 
-# Guarda as últimas fotos da tela do caixa durante as vendas (para descobrir problemas depois)
+# Comanda: a tela inteira do PDV (a página acha os pedidos, o nome e o total pelas cores)
+function CapturarComanda {
+  $a = $null
+  if ($Cfg.area_comanda) { $a = Area $Cfg.area_comanda }
+  else { $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds; $a = @{ x = $b.X; y = $b.Y; w = $b.Width; h = $b.Height } }
+  $m = 0L
+  $img = [TelaCli]::CapturarSeMudou($a.x, $a.y, $a.w, $a.h, $Estado.marcaComanda, $true, 90, [ref]$m)
+  if ($img) { $Estado.marcaComanda = $m; $Estado.imgComanda = $img; $Estado.vComanda++; SalvarDiagnostico 'comanda' }
+}
+
+# Guarda as últimas fotos da tela do caixa durante as vendas e comandas (para descobrir problemas depois)
 $PastaDiag = Join-Path $Pasta 'diagnostico'
 $UltimoDiag = [DateTime]::MinValue
-function SalvarDiagnostico {
+function SalvarDiagnostico([string]$prefixo = 'caixa') {
   if ($Cfg.diagnostico -eq $false) { return }
   if (((Get-Date) - $UltimoDiag).TotalSeconds -lt 1.5) { return }
   $script:UltimoDiag = Get-Date
@@ -288,8 +308,8 @@ function SalvarDiagnostico {
     $tela = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
     $m = 0L
     $jpg = [TelaCli]::Capturar($tela.X, $tela.Y, $tela.Width, $tela.Height, 75, [ref]$m)
-    [IO.File]::WriteAllBytes((Join-Path $PastaDiag ('caixa_' + (Get-Date -Format 'yyyy-MM-dd_HH-mm-ss') + '.jpg')), $jpg)
-    $velhos = Get-ChildItem -Path $PastaDiag -Filter 'caixa_*.jpg' | Sort-Object Name -Descending | Select-Object -Skip 60
+    [IO.File]::WriteAllBytes((Join-Path $PastaDiag ($prefixo + '_' + (Get-Date -Format 'yyyy-MM-dd_HH-mm-ss') + '.jpg')), $jpg)
+    $velhos = Get-ChildItem -Path $PastaDiag -Filter ($prefixo + '_*.jpg') | Sort-Object Name -Descending | Select-Object -Skip 60
     foreach ($v in $velhos) { Remove-Item $v.FullName -Force -ErrorAction SilentlyContinue }
   } catch {}
 }
@@ -302,6 +322,8 @@ function TemItemNaTela {
 
 function VerificarTela {
   $agora = Get-Date
+  # comanda já aberta quando o programa ligou (ou depois do QR)
+  if ($Estado.rota -eq 'customer_service.service_details' -and $Estado.cena -eq 'promo') { MudarCena 'comanda' 'comanda aberta no PDV' }
   $noCaixa = ($Estado.rota -eq 'cashier')
   if ($noCaixa) {
     $tem = TemItemNaTela
@@ -417,13 +439,14 @@ function Atender($cli) {
         Responder $ns 200 $Tipos['.html'] ([IO.File]::ReadAllBytes((Join-Path $Pasta 'web\index.html'))); break
       }
       '^/estado$' {
-        $s = @{ cena = $Estado.cena; vi = $Estado.vItens; vt = $Estado.vTotal; qr = [string]$Cfg.qr_link
+        $s = @{ cena = $Estado.cena; vi = $Estado.vItens; vt = $Estado.vTotal; vc = $Estado.vComanda; qr = [string]$Cfg.qr_link
                 qrTitulo = [string]$Cfg.qr_titulo; qrTexto = [string]$Cfg.qr_texto; slide = [int]$Cfg.tempo_slide_segundos
                 nome = [string]$Cfg.nome_loja; logo = [bool](ArquivoLogo); logoNome = (Test-Path (Join-Path $Pasta 'logo-nome.png')); cardapio = [string]$Cfg.cardapio_link; encomendas = $Cfg.encomendas; layout = $Cfg.layout
                 tema = $(if ([string]$Cfg.tema) { [string]$Cfg.tema } else { 'natal' }); temas = $Cfg.temas; efeitos = $Cfg.efeitos; pagina = [string](Get-Item (Join-Path $Pasta 'web\index.html')).LastWriteTime.Ticks }
         Responder $ns 200 $Tipos['.json'] (Json $s); break
       }
       '^/cap/itens\.jpg$' { if ($Estado.jpgItens) { Responder $ns 200 $Estado.tipoCap $Estado.jpgItens } else { Responder $ns 404 'text/plain' $null }; break }
+      '^/cap/comanda\.png$' { if ($Estado.imgComanda) { Responder $ns 200 'image/png' $Estado.imgComanda } else { Responder $ns 404 'text/plain' $null }; break }
       '^/cap/total\.jpg$' { if ($Estado.jpgTotal) { Responder $ns 200 $Estado.tipoCap $Estado.jpgTotal } else { Responder $ns 404 'text/plain' $null }; break }
       '^/promocoes$' { Responder $ns 200 $Tipos['.json'] (Json @{ itens = (ListaPromocoes); cardapio = (ListaCardapio) }); break }
       '^/logo$' {
@@ -654,6 +677,11 @@ while ($true) {
     if ($Estado.cena -eq 'itens' -and $relCap.ElapsedMilliseconds -ge 250) {
       $relCap.Restart()
       CapturarItens
+    }
+
+    if ($Estado.cena -eq 'comanda' -and $relCap.ElapsedMilliseconds -ge 400) {
+      $relCap.Restart()
+      CapturarComanda
     }
 
     if ($relDet.ElapsedMilliseconds -ge 400) {

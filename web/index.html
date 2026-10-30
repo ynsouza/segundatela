@@ -142,7 +142,7 @@
   .pontos i.on { width: 3.4vh; border-radius: 1vh; background: var(--bordo); }
 
   /* ---------- itens (pensado para monitor de 11") ---------- */
-  #cena-itens { background: linear-gradient(180deg, var(--branco) 0%, var(--rosa) 100%); padding: 2.6vh 2.4vw; display: grid; grid-template-rows: auto 1fr auto; gap: 1.8vh; }
+  #cena-itens, #cena-comanda { background: linear-gradient(180deg, var(--branco) 0%, var(--rosa) 100%); padding: 2.6vh 2.4vw; display: grid; grid-template-rows: auto 1fr auto; gap: 1.8vh; }
   .topo { display: flex; align-items: center; justify-content: space-between; height: 8vh; }
   .topo .logo { height: 4.8vh; }
   .topo .logo .nome-txt { font-size: 4.4vh; }
@@ -176,7 +176,21 @@
             background: linear-gradient(120deg, var(--bordo-vivo) 0%, var(--bordo) 50%, var(--bordo-esc) 100%); }
   .rodape .rot b { display: block; font-family: var(--serif); font-weight: 700; font-size: 6vh; line-height: 1; }
   .rodape .rot canvas { height: 3.6vh; width: auto; display: block; margin-top: 1.4vh; }
-  #valorTotal { height: 12vh; width: auto; max-width: 52vw; display: block; }
+  #valorTotal, #totalComanda { height: 12vh; width: auto; max-width: 52vw; display: block; }
+
+  /* ---------- comanda (conferência dos pedidos com o cliente) ---------- */
+  .ola { display: flex; align-items: center; gap: .9vw; font-family: var(--serif); font-weight: 700; font-size: 5.4vh; color: var(--bordo); min-width: 0; }
+  .ola canvas { height: 5.6vh; width: auto; max-width: 52vw; display: block; }
+  .ola.sem-nome canvas { display: none; }
+  .cab.cmd, .linha.cmd { grid-template-columns: 1fr 19vw; }
+  .cab.cmd span:nth-child(2) { text-align: right; }
+  .linha.cmd .c1 { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: .7vh; min-width: 0; }
+  .linha.cmd canvas.n { height: calc(var(--lh) * .36); }
+  .linha.cmd .sub { display: flex; align-items: center; gap: .8vw; min-width: 0; }
+  .linha.cmd .sub canvas { height: calc(var(--lh) * .25); }
+  .linha.cmd .chip { background: var(--rosa2); border-radius: 999px; padding: .35vh .8vw; display: flex; }
+  .linha.cmd .chip canvas { height: calc(var(--lh) * .17); }
+  .linha.cmd .c3 canvas { height: calc(var(--lh) * .36); }
 
   /* ---------- QR (avaliação) ---------- */
   #cena-qr { color: var(--branco); overflow: hidden;
@@ -252,6 +266,23 @@
     <div class="rodape entra d2">
       <div class="rot"><b>Total</b><canvas id="qtdProdutos"></canvas></div>
       <canvas id="valorTotal"></canvas>
+    </div>
+  </section>
+
+  <section id="cena-comanda" class="cena">
+    <div class="topo entra">
+      <div class="logo" data-logo="nome"></div>
+      <div class="ola" id="olaComanda"><span>Olá,</span><canvas id="nomeComanda"></canvas></div>
+    </div>
+    <div class="cartao tabela entra d1" id="tabelaCmd">
+      <div class="cab cmd"><span>Confira seus pedidos</span><span>Valor</span></div>
+      <div class="mais-acima" id="maisAcimaCmd"></div>
+      <div class="linhas" id="linhasCmd"><div class="trilho" id="trilhoCmd"></div></div>
+      <div class="aguarde">Conferindo seus pedidos…</div>
+    </div>
+    <div class="rodape entra d2">
+      <div class="rot"><b>Total</b></div>
+      <canvas id="totalComanda"></canvas>
     </div>
   </section>
 
@@ -391,7 +422,7 @@ const $ = s => document.querySelector(s);
 const DEMO = new URLSearchParams(location.search).has('demo');
 let cfg = { nome: 'Padaria Silmar', logo: false, logoNome: false };
 let cenaAtual = null, trocando = false, pendente = null;
-let ultimoVi = -1, ultimoVt = -1, ultimoQr = null;
+let ultimoVi = -1, ultimoVt = -1, ultimoVc = -1, ultimoQr = null;
 
 // Estrela no mesmo desenho das estrelas da logo (usada como marca d'água nas ofertas)
 const ESTRELA = '<path d="M60 6 L75.4 39.2 L112 43.6 L85 68.6 L92.2 104.8 L60 87 L27.8 104.8 L35 68.6 L8 43.6 L44.6 39.2 Z"/>';
@@ -412,6 +443,7 @@ function mostrarCena(c) {
   document.body.classList.toggle('enfeitado', (c === 'promo' || c === 'qr') && temaAtivo.ativo);
   document.querySelectorAll('.cena').forEach(s => s.classList.toggle('ativa', s.id === 'cena-' + c));
   if (c === 'itens') limparBuffers();
+  if (c === 'comanda') limparComanda();
   if (c === 'promo') iniciarSlides(); else pararSlides();
   cenaAtual = c;
 }
@@ -460,7 +492,7 @@ function limparBuffers() {
 // Copia um pedaço da captura e repinta o texto na cor da marca, com fundo transparente.
 // Primeiro amplia a imagem original (tons de cinza suaves) e só depois transforma em letra:
 // assim a borda das letras sai nítida e lisa, sem o borrado de ampliar a letra já pintada.
-function recortar(origem, x, y, w, h, cor) {
+function recortar(origem, x, y, w, h, cor, tintaDe) {
   const sx = origem.getContext('2d', { willReadFrequently: true });
   x = Math.max(0, Math.round(x)); y = Math.max(0, Math.round(y));
   w = Math.min(Math.round(w), origem.width - x); h = Math.min(Math.round(h), origem.height - y);
@@ -469,7 +501,7 @@ function recortar(origem, x, y, w, h, cor) {
   let tinta = 0, minX = w, maxX = -1;
   for (let i = 0; i < p.length; i += 4) {
     const lum = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
-    if ((226 - lum) / 150 > 0.35) { tinta++; const px = (i / 4) % w; if (px < minX) minX = px; if (px > maxX) maxX = px; }
+    if ((tintaDe ? tintaDe(p[i], p[i + 1], p[i + 2]) : (226 - lum) / 150) > 0.35) { tinta++; const px = (i / 4) % w; if (px < minX) minX = px; if (px > maxX) maxX = px; }
   }
   if (maxX < 0) return { canvas: null, tinta: 0 };
   // corta as sobras dos lados para o texto ocupar o espaço certo
@@ -483,7 +515,7 @@ function recortar(origem, x, y, w, h, cor) {
   const img = g.getImageData(0, 0, c.width, c.height), q = img.data;
   for (let i = 0; i < q.length; i += 4) {
     const lum = 0.299 * q[i] + 0.587 * q[i + 1] + 0.114 * q[i + 2];
-    const t = Math.max(0, Math.min(1, (claro - lum) / (claro - escuro)));
+    const t = Math.max(0, Math.min(1, tintaDe ? (tintaDe(q[i], q[i + 1], q[i + 2]) - 0.2) / 0.6 : (claro - lum) / (claro - escuro)));
     q[i] = cor[0]; q[i + 1] = cor[1]; q[i + 2] = cor[2]; q[i + 3] = Math.round(t * t * (3 - 2 * t) * 255);
   }
   g.putImageData(img, 0, 0);
@@ -770,16 +802,20 @@ function renderLista() {
 
 // Encaixa todos os itens: diminui as linhas até um limite confortável de leitura;
 // passando disso, a lista rola sozinha, devagar, mostrando todos os itens
-function ajustarLista(n, cresceu) {
-  const caixa = $('#linhas'), vh = innerHeight / 100;
-  const disp = caixa.clientHeight, maxH = (L.linha_tela_max || 9.4) * vh, minH = (L.linha_tela_min || 7) * vh;
+const ROL_ITENS = { caixa: '#linhas', trilho: '#trilho', aviso: '#maisAcima', max: () => L.linha_tela_max || 9.4, min: () => L.linha_tela_min || 7 };
+const ROL_CMD = { caixa: '#linhasCmd', trilho: '#trilhoCmd', aviso: '#maisAcimaCmd', max: () => L.cmd_linha_tela_max || 12.5, min: () => L.cmd_linha_tela_min || 10 };
+let ROL = ROL_ITENS;
+function ajustarLista(n, cresceu, R) {
+  ROL = R || ROL_ITENS;
+  const caixa = $(ROL.caixa), vh = innerHeight / 100;
+  const disp = caixa.clientHeight, maxH = ROL.max() * vh, minH = ROL.min() * vh;
   const h = n ? Math.max(minH, Math.min(maxH, disp / n)) : maxH;
   caixa.style.setProperty('--lh', h + 'px');
   const sobra = n * h - disp;
-  const aviso = $('#maisAcima');
+  const aviso = $(ROL.aviso);
   if (sobra > 1) {
     caixa.classList.add('rolando');
-    aviso.textContent = `${n} itens no pedido`; aviso.classList.add('vis');
+    aviso.textContent = `${n} itens ${ROL === ROL_CMD ? 'na comanda' : 'no pedido'}`; aviso.classList.add('vis');
     iniciarRolagem(sobra, cresceu);
   } else {
     caixa.classList.remove('rolando'); aviso.classList.remove('vis');
@@ -789,7 +825,7 @@ function ajustarLista(n, cresceu) {
 
 let timerRolagem = null;
 function moverTrilho(y, seg, curva) {
-  const t = $('#trilho');
+  const t = $(ROL.trilho);
   t.style.transition = seg ? `transform ${seg}s ${curva || 'ease-in-out'}` : 'none';
   t.style.transform = `translateY(${-y}px)`;
 }
@@ -812,6 +848,204 @@ function desenharTotal(img) {
   const v = L.total_valor, q = L.total_produtos;
   copiarPara($('#valorTotal'), recortar(fonteTotal, v[0], v[1], v[2], v[3], COR_CLARA));
   copiarPara($('#qtdProdutos'), recortar(fonteTotal, q[0], q[1], q[2], q[3], [241, 214, 206]));
+}
+
+/* ---------- comanda: lê a tela "comanda aberta" do PDV e monta uma lista só ---------- */
+// Os pedidos aparecem em cartões, 3 por linha. Cada item começa com o × vermelho; pedido cancelado
+// não tem × e fica de fora (igual ao total do PDV). Tudo é achado pelas cores, não por posição fixa,
+// porque a faixa laranja de aviso do PDV aparece e some e empurra a tela.
+const fonteCmd = document.createElement('canvas');
+let cmdAssin = '';
+const COR_NOME = [128, 34, 11];
+
+function limparComanda() {
+  $('#trilhoCmd').innerHTML = ''; $('#tabelaCmd').classList.remove('com-itens'); $('#maisAcimaCmd').classList.remove('vis');
+  ['#nomeComanda', '#totalComanda'].forEach(id => { const c = $(id); c.width = 1; c.height = 1; });
+  $('#olaComanda').classList.add('sem-nome');
+  cmdAssin = ''; ultimoVc = -1; pararRolagem();
+}
+
+function desenharComanda(img) {
+  const W = img.naturalWidth, H = img.naturalHeight;
+  fonteCmd.width = W; fonteCmd.height = H;
+  const g = fonteCmd.getContext('2d', { willReadFrequently: true });
+  g.drawImage(img, 0, 0);
+  const D = g.getImageData(0, 0, W, H).data;
+  const px = (x, y) => (y * W + x) * 4;
+  const lum = i => 0.299 * D[i] + 0.587 * D[i + 1] + 0.114 * D[i + 2];
+  const verdeTotal = i => Math.abs(D[i] - 76) < 35 && Math.abs(D[i + 1] - 175) < 35 && Math.abs(D[i + 2] - 80) < 35 && D[i + 1] - D[i] > 60;
+  const verdeCifrao = i => D[i + 1] > 190 && D[i + 2] < 90 && D[i] < 150 && D[i + 1] - D[i] > 80;
+  const vermelho = i => D[i] > 200 && D[i + 1] < 140 && D[i + 2] < 140 && D[i] - D[i + 1] > 90;
+  const azulChip = i => D[i + 2] > 200 && D[i] < 130 && D[i + 1] > 120 && D[i + 1] < 205 && D[i + 2] - D[i] > 100;
+
+  // 1) Total verde no canto de cima, à direita
+  // É o primeiro bloco de texto verde sobre fundo claro, de cima para baixo: os ícones verdes da barra
+  // preta do topo ficam de fora pelo fundo, e o "FECHAR" (também verde) vem depois.
+  let tx0 = W, tx1 = -1, ty0 = -1, ty1 = -1;
+  { const xi = Math.floor(W * 0.6); let b0 = -1, b1 = -1, bx0 = W, bx1 = -1;
+    const fecha = () => {
+      let s = 0, k = 0;
+      for (let y = b0; y <= b1; y++) for (let x = Math.max(0, bx0 - 15); x <= Math.min(W - 1, bx1 + 15); x++) { const i = px(x, y); if (!verdeTotal(i)) { s += lum(i); k++; } }
+      if (k && s / k > 200 && b1 - b0 < 60) { tx0 = bx0; tx1 = bx1; ty0 = b0; ty1 = b1; return true; }
+      b0 = -1; bx0 = W; bx1 = -1; return false;
+    };
+    for (let y = 0; y < H * 0.45; y++) {
+      let tem = false;
+      for (let x = xi; x < W; x++) if (verdeTotal(px(x, y))) { tem = true; if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; }
+      if (tem) { if (b0 < 0) b0 = y; b1 = y; } else if (b0 >= 0 && y - b1 > 4 && fecha()) break;
+    } }
+  if (tx1 < 0) return;                  // não é a tela da comanda (pop-up, novo pedido...): mantém a última
+  const ty = (ty0 + ty1) / 2;
+
+  // pop-up do PDV escurece a tela: mantém a última lista
+  let soma = 0, n = 0;
+  for (let y = Math.round(ty + 60); y < H - 60; y += 4) for (let x = 2; x < 10; x += 2) { soma += lum(px(x, y)); n++; }
+  if (n && soma / n < (L.cmd_limite_brilho || 170)) return;
+
+  // 2) Nome da comanda: o texto mais alto na faixa do total, à esquerda dele
+  const nx0 = Math.round(W * 0.125), nx1 = tx0 - 30;
+  const faixas = [];
+  { let ini = -1, ult = -1;
+    for (let y = Math.max(0, Math.round(ty - 45)); y <= Math.min(H, ty + 30); y++) {
+      let tem = false;
+      if (y < H) for (let x = nx0; x < nx1; x++) if (lum(px(x, y)) < 110) { tem = true; break; }
+      if (tem) { if (ini < 0) ini = y; ult = y; } else if (ini >= 0) { faixas.push([ini, ult]); ini = -1; }   // qualquer linha vazia separa ("aberta por" fica colado)
+    }
+    if (ini >= 0) faixas.push([ini, ult]); }
+  let fn = faixas.slice().sort((a, b) => (b[1] - b[0]) - (a[1] - a[0]))[0];
+  if (fn) {   // acento solto logo acima do nome (Á, É...) volta para o nome
+    const acima = faixas[faixas.indexOf(fn) - 1];
+    if (acima && fn[0] - acima[1] <= 5 && acima[1] - acima[0] < 9) fn = [acima[0], fn[1]];
+  }
+
+  // 3) Os × vermelhos (um por item). O botão ⊗ é cheio e maior; o topo do pedido cancelado é um bloco grande.
+  const visto = new Uint8Array(W * H), xs = [];
+  for (let y = Math.round(ty + 50); y < H; y++) for (let x = 0; x < W; x++) {
+    const k = y * W + x;
+    if (visto[k] || !vermelho(k * 4)) continue;
+    let x0 = x, x1 = x, y0 = y, y1 = y, cont = 0; const pilha = [k]; visto[k] = 1;
+    while (pilha.length) {
+      const q = pilha.pop(), qx = q % W, qy = (q - qx) / W; cont++;
+      if (qx < x0) x0 = qx; if (qx > x1) x1 = qx; if (qy < y0) y0 = qy; if (qy > y1) y1 = qy;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const ax = qx + dx, ay = qy + dy; if (ax < 0 || ay < 0 || ax >= W || ay >= H) continue;
+        const a = ay * W + ax; if (!visto[a] && vermelho(a * 4)) { visto[a] = 1; pilha.push(a); }
+      }
+    }
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    if (w >= 9 && w <= 19 && h >= 9 && h <= 19 && cont / (w * h) < 0.5) xs.push({ x0, x1, y0, y1, cy: (y0 + y1) / 2 });
+  }
+
+  // 4) Ordem de leitura: cartões da esquerda para a direita, linha por linha; itens de cima para baixo.
+  // Um cartão novo começa quando há o cifrão verde ($) do cabeçalho entre dois × da mesma coluna.
+  const LARG = L.cmd_largura_item || 590;
+  const temCifrao = (xa, xb, ya, yb) => { for (let y = ya; y < yb; y += 2) for (let x = xa; x < xb; x += 2) if (verdeCifrao(px(x, y))) return true; return false; };
+  const colunas = [];
+  xs.sort((a, b) => a.x0 - b.x0 || a.y0 - b.y0).forEach(c => {
+    const col = colunas.find(k => Math.abs(k.x - c.x0) < 12); if (col) col.itens.push(c); else colunas.push({ x: c.x0, itens: [c] });
+  });
+  const cartoes = [];
+  colunas.forEach(col => {
+    col.itens.sort((a, b) => a.y0 - b.y0);
+    let atual = null;
+    col.itens.forEach(c => {
+      if (!atual || temCifrao(c.x0, Math.min(W, c.x0 + LARG), atual.ult.y1, c.y0)) { atual = { x: c.x0, y: c.y0, itens: [] }; cartoes.push(atual); }
+      atual.itens.push(c); atual.ult = c;
+    });
+  });
+  cartoes.sort((a, b) => a.y - b.y);
+  const linhasCartoes = [];
+  cartoes.forEach(c => { const l = linhasCartoes.find(k => Math.abs(k.y - c.y) < 15); if (l) l.c.push(c); else linhasCartoes.push({ y: c.y, c: [c] }); });
+  const ordem = [];
+  linhasCartoes.forEach(l => l.c.sort((a, b) => a.x - b.x).forEach(c => ordem.push(...c.itens)));
+
+  // 5) Cada item: nome, linha cinza ("1,00 Un x R$ 3,75"), valor à direita e as etiquetas azuis de opção
+  const itens = ordem.map(c => lerItemComanda(D, W, H, c, LARG, lum, azulChip, px)).filter(Boolean);
+  if (!itens.length && !fn) return;
+
+  const assin = (fn ? fn.join(',') : '') + '|' + tx0 + ',' + tx1 + '|' + itens.map(t => t.assin).join(';');
+  if (assin === cmdAssin) return;
+  cmdAssin = assin;
+
+  copiarPara($('#totalComanda'), recortar(fonteCmd, tx0 - 4, ty0 - 4, tx1 - tx0 + 9, ty1 - ty0 + 9, COR_CLARA, (r, g2, b) => Math.max(0, Math.min(1, (g2 - r - 20) / 80))));
+  if (fn) {
+    const r = recortar(fonteCmd, nx0, fn[0] - 1, nx1 - nx0, fn[1] - fn[0] + 2, COR_NOME);
+    copiarPara($('#nomeComanda'), r); $('#olaComanda').classList.toggle('sem-nome', !r.canvas);
+  } else $('#olaComanda').classList.add('sem-nome');
+
+  const trilho = $('#trilhoCmd'); trilho.innerHTML = '';
+  itens.forEach(t => {
+    const el = document.createElement('div'); el.className = 'linha cmd';
+    const c1 = document.createElement('div'); c1.className = 'c1';
+    const nome = document.createElement('canvas'); nome.className = 'n'; copiarPara(nome, t.nome); c1.appendChild(nome);
+    const sub = document.createElement('div'); sub.className = 'sub';
+    if (t.sub.canvas) { const cs = document.createElement('canvas'); copiarPara(cs, t.sub); sub.appendChild(cs); }
+    t.chips.forEach(ch => { const sp = document.createElement('span'); sp.className = 'chip'; const cc = document.createElement('canvas'); copiarPara(cc, ch); sp.appendChild(cc); sub.appendChild(sp); });
+    c1.appendChild(sub);
+    const c3 = document.createElement('div'); c3.className = 'c3';
+    const val = document.createElement('canvas'); copiarPara(val, t.valor); c3.appendChild(val);
+    el.appendChild(c1); el.appendChild(c3); trilho.appendChild(el);
+  });
+  $('#tabelaCmd').classList.toggle('com-itens', itens.length > 0);
+  ajustarLista(itens.length, false, ROL_CMD);
+}
+
+function lerItemComanda(D, W, H, c, LARG, lum, azulChip, px) {
+  const xa = c.x1 + 12, xb = Math.min(W, c.x0 + LARG);
+  if (xb - xa < 50) return null;
+  // linhas de texto do item, do nome até a linha de separação seguinte
+  const bandas = []; let ini = -1, ult = -1, azulIni = -1;
+  const y0 = Math.max(0, Math.round(c.cy - 30)), yMax = Math.min(H, Math.round(c.cy + 95));
+  for (let y = y0; y <= yMax; y++) {
+    let tinta = false, azul = false, linha = 0;
+    if (y < yMax) for (let x = xa; x < xb; x++) {
+      const i = px(x, y), l = lum(i);
+      if (azulChip(i)) azul = true; else if (l < 200) tinta = true;
+      if (l >= 195 && l <= 235) linha++;
+    }
+    if (y > c.cy + 20 && linha > (xb - xa) * 0.7 && !azul) { if (ini >= 0) bandas.push({ a: ini, b: ult, azul: azulIni >= 0 }); ini = -1; break; }  // separador
+    if (tinta || azul) { if (ini < 0) { ini = y; azulIni = -1; } if (azul) azulIni = y; ult = y; }
+    else if (ini >= 0 && y - ult > 2) { bandas.push({ a: ini, b: ult, azul: azulIni >= 0 }); ini = -1; }
+  }
+  if (ini >= 0) bandas.push({ a: ini, b: ult, azul: azulIni >= 0 });
+  const texto = bandas.filter(b => !b.azul), chipsB = bandas.filter(b => b.azul);
+  if (!texto.length) return null;
+  const bn = texto[0], bs = texto[1];
+  const altN = L.cmd_altura_item || 28, altS = L.cmd_altura_sub || 24;
+  const nome = recortar(fonteCmd, xa, (bn.a + bn.b) / 2 - altN / 2, xb - xa, altN, COR_TEXTO);
+  if (!nome.canvas) return null;
+  let valor = { canvas: null }, sub = { canvas: null }, assin = '';
+  if (bs) {
+    // valor: o último bloco escuro à direita da linha cinza
+    const meio = Math.round(xa + (xb - xa) * 0.5), cols = [];
+    for (let x = meio; x < xb; x++) { let e = false; for (let y = bs.a; y <= bs.b; y++) if (lum(px(x, y)) < 110) { e = true; break; } cols.push(e); }
+    let fim = -1, comeco = -1;
+    for (let k = cols.length - 1; k >= 0; k--) { if (cols[k]) { if (fim < 0) fim = k; comeco = k; } else if (fim >= 0 && comeco - k > 20) break; }
+    const vx0 = fim >= 0 ? meio + comeco : xb;
+    const cyS = (bs.a + bs.b) / 2;
+    if (fim >= 0) valor = recortar(fonteCmd, vx0 - 4, cyS - altN / 2, fim - comeco + 9, altN, COR_TEXTO);
+    sub = recortar(fonteCmd, xa, cyS - altS / 2, Math.max(1, vx0 - 20 - xa), altS, COR_TEXTO);
+    assin += vx0 + ':' + (fim - comeco);
+  }
+  // etiquetas de opção: letra branca sobre fundo azul; cada etiqueta é um trecho seguido de colunas com azul
+  const chips = [];
+  chipsB.forEach(b => {
+    let a = -1;
+    for (let x = xa - 20; x <= xb; x++) {
+      let tem = false; if (x < xb) for (let y = b.a; y <= b.b; y++) if (azulChip(px(x, y))) { tem = true; break; }
+      if (tem && a < 0) a = x;
+      else if (!tem && a >= 0) {
+        if (x - a > 12) {
+          const r = recortar(fonteCmd, a + 3, b.a + 3, x - a - 6, b.b - b.a - 5, COR_TEXTO, (rr, gg, bb) => Math.max(0, Math.min(1, (rr - 90) / 140)));
+          if (r.canvas) chips.push(r);
+        }
+        a = -1;
+      }
+    }
+  });
+  // "impressão digital" simples: soma da tinta de cada parte
+  assin += '|' + nome.tinta + '|' + (sub.tinta || 0) + '|' + (valor.tinta || 0) + '|' + chips.map(k => k.tinta).join(',') + '@' + c.x0 + ',' + c.y0;
+  return { nome, sub, valor, chips, assin };
 }
 
 function carregarCaptura(url, desenhar) {
@@ -1048,6 +1282,9 @@ function aplicar(s) {
     if (s.vi !== ultimoVi) { ultimoVi = s.vi; carregarCaptura(pre + 'itens.jpg?v=' + s.vi, desenharItens); }
     if (s.vt !== ultimoVt) { ultimoVt = s.vt; carregarCaptura(pre + 'total.jpg?v=' + s.vt, desenharTotal); }
   } else { ultimoVi = -1; ultimoVt = -1; }
+  if (s.cena === 'comanda') {
+    if (s.vc !== ultimoVc) { ultimoVc = s.vc; carregarCaptura((DEMO ? 'demo/' : '/cap/') + 'comanda.png?v=' + s.vc, desenharComanda); }
+  } else ultimoVc = -1;
 }
 
 async function consultar() {
