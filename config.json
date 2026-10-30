@@ -70,6 +70,19 @@
     "altura": 50
   },
   "deteccao_minimo": 12,
+  "deteccao_icone": {
+    "x": 355,
+    "largura": 40,
+    "minimo": 40
+  },
+  "ancora_seta": {
+    "x": 30,
+    "largura": 23,
+    "y": 132,
+    "y_min": 45,
+    "y_max": 420,
+    "maximo": 150
+  },
   "layout": {
     "linha_centro": 38,
     "linha_passo": 75.9,

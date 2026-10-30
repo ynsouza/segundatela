@@ -129,6 +129,55 @@ public static class TelaCli {
       } finally { bmp.UnlockBits(d); }
     }
   }
+
+  // Conta pixels vermelhos (o botão de remover de cada item). Vale também com a tela escurecida por pop-up.
+  public static int Vermelhos(int x, int y, int w, int h) {
+    using (Bitmap bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb)) {
+      using (Graphics g = Graphics.FromImage(bmp)) { g.CopyFromScreen(x, y, 0, 0, new Size(w, h)); }
+      BitmapData d = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+      try {
+        int n = d.Stride * h; byte[] b = new byte[n];
+        Marshal.Copy(d.Scan0, b, 0, n);
+        int cont = 0;
+        for (int yy = 0; yy < h; yy++) {
+          int lin = yy * d.Stride;
+          for (int xx = 0; xx < w; xx++) {
+            int i = lin + xx * 3; int bl = b[i], gr = b[i + 1], rd = b[i + 2];
+            if (rd > 80 && rd > 2 * gr && rd > 2 * bl) cont++;
+          }
+        }
+        return cont;
+      } finally { bmp.UnlockBits(d); }
+    }
+  }
+
+  // Acha a setinha azul do "VOLTAR" do PDV e devolve a linha de cima dela (-1 se não achou).
+  // Só aceita um trecho azul da altura da seta, para não confundir com a lista azul de categorias.
+  public static int AcharSeta(int x, int y, int w, int h, int altMin, int altMax) {
+    using (Bitmap bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb)) {
+      using (Graphics g = Graphics.FromImage(bmp)) { g.CopyFromScreen(x, y, 0, 0, new Size(w, h)); }
+      BitmapData d = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+      try {
+        int n = d.Stride * h; byte[] b = new byte[n];
+        Marshal.Copy(d.Scan0, b, 0, n);
+        int ini = -1, ult = -1;
+        for (int yy = 0; yy <= h; yy++) {
+          bool azul = false;
+          if (yy < h) for (int xx = 0; xx < w && !azul; xx++) {
+            int i = yy * d.Stride + xx * 3; int bl = b[i], gr = b[i + 1], rd = b[i + 2];
+            azul = bl > 200 && rd < 90 && gr > 110 && gr < 190;
+          }
+          if (azul) { if (ini < 0) ini = yy; ult = yy; }
+          else if (ini >= 0 && yy - ult > 2) {
+            int alt = ult - ini + 1;
+            if (alt >= altMin && alt <= altMax) return y + ini;
+            ini = -1;
+          }
+        }
+        return -1;
+      } finally { bmp.UnlockBits(d); }
+    }
+  }
 }
 "@
 
@@ -165,6 +214,7 @@ $Estado = @{
   marcaComanda = 0
   imgComanda  = $null
   tipoCap     = 'image/png'
+  dy          = 0         # quanto a tela do PDV está deslocada para cima/baixo (faixa laranja de aviso aparece e some)
 }
 
 function MudarCena([string]$nova, [string]$motivo) {
@@ -269,18 +319,34 @@ function ProcessarLinha([string]$l) {
 }
 
 # ---------- captura da tela do caixa ----------
-function Area($a) { return @{ x = [int]$a.x; y = [int]$a.y; w = [int]$a.largura; h = [int]$a.altura } }
+function Area($a, [int]$dy = 0) { return @{ x = [int]$a.x; y = [int]$a.y + $dy; w = [int]$a.largura; h = [int]$a.altura } }
+
+# A faixa laranja de aviso do PDV ("Saldo em caixa superior ao limite...") aparece e some e empurra a tela
+# toda para cima ou para baixo. A setinha azul do "VOLTAR" anda junto: a diferença da posição dela
+# (config.json -> "ancora_seta") é somada a todas as áreas de captura do caixa.
+function AtualizarDeslocamento {
+  $s = $Cfg.ancora_seta
+  if (-not $s) { return }
+  $y = [TelaCli]::AcharSeta([int]$s.x, [int]$s.y_min, [int]$s.largura, [int]$s.y_max - [int]$s.y_min, 10, 26)
+  if ($y -lt 0) { return }                      # não achou (pop-up aberto, outra tela): mantém o último
+  $dy = $y - [int]$s.y
+  if ([Math]::Abs($dy) -gt [int]$s.maximo) { return }
+  if ($dy -ne $Estado.dy) {
+    Registrar ("Tela do PDV deslocada: " + $Estado.dy + " -> " + $dy + " px")
+    $Estado.dy = $dy; $Estado.marcaItens = 0L; $Estado.marcaTotal = 0L
+  }
+}
 
 function CapturarItens {
   $q = [long]$Cfg.qualidade_imagem; if (-not $q) { $q = 88 }
   # PNG (sem perdas) por padrão; "formato_captura": "jpg" no config.json volta ao formato antigo
   $png = ([string]$Cfg.formato_captura -ne 'jpg')
   $Estado.tipoCap = $(if ($png) { 'image/png' } else { 'image/jpeg' })
-  $a = Area $Cfg.area_itens
+  $a = Area $Cfg.area_itens $Estado.dy
   $m = 0L
   $img = [TelaCli]::CapturarSeMudou($a.x, $a.y, $a.w, $a.h, $Estado.marcaItens, $png, $q, [ref]$m)
   if ($img) { $Estado.marcaItens = $m; $Estado.jpgItens = $img; $Estado.vItens++; SalvarDiagnostico }
-  $a = Area $Cfg.area_total
+  $a = Area $Cfg.area_total $Estado.dy
   $m = 0L
   $img = [TelaCli]::CapturarSeMudou($a.x, $a.y, $a.w, $a.h, $Estado.marcaTotal, $png, $q, [ref]$m)
   if ($img) { $Estado.marcaTotal = $m; $Estado.jpgTotal = $img; $Estado.vTotal++ }
@@ -315,7 +381,13 @@ function SalvarDiagnostico([string]$prefixo = 'caixa') {
 }
 
 function TemItemNaTela {
-  $a = Area $Cfg.area_deteccao
+  # Botão vermelho de remover em qualquer linha visível da lista: tem item (não depende da altura da tela)
+  $ic = $Cfg.deteccao_icone
+  if ($ic) {
+    $li = Area $Cfg.area_itens $Estado.dy
+    if ([TelaCli]::Vermelhos([int]$ic.x, $li.y, [int]$ic.largura, $li.h) -ge [int]$ic.minimo) { return $true }
+  }
+  $a = Area $Cfg.area_deteccao $Estado.dy
   $lim = [int]$Cfg.deteccao_minimo; if (-not $lim) { $lim = 25 }
   return ([TelaCli]::Escuros($a.x, $a.y, $a.w, $a.h) -ge $lim)
 }
@@ -326,6 +398,7 @@ function VerificarTela {
   if ($Estado.rota -eq 'customer_service.service_details' -and $Estado.cena -eq 'promo') { MudarCena 'comanda' 'comanda aberta no PDV' }
   $noCaixa = ($Estado.rota -eq 'cashier')
   if ($noCaixa) {
+    AtualizarDeslocamento
     $tem = TemItemNaTela
     if ($tem) {
       $Estado.vazioDesde = $null
