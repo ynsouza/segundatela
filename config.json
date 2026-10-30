@@ -52,69 +52,70 @@
   "porta": 8765,
   "qualidade_imagem": 88,
   "area_itens": {
-    "x": 320,
-    "y": 150,
-    "largura": 1052,
-    "altura": 435
+    "x": 343,
+    "y": 239,
+    "largura": 1051,
+    "altura": 341
   },
   "area_total": {
-    "x": 1380,
-    "y": 212,
-    "largura": 535,
-    "altura": 176
+    "x": 1396,
+    "y": 239,
+    "largura": 520,
+    "altura": 300
   },
   "area_deteccao": {
-    "x": 330,
-    "y": 212,
-    "largura": 1030,
+    "x": 410,
+    "y": 247,
+    "largura": 920,
     "altura": 50
   },
-  "deteccao_minimo": 25,
+  "deteccao_minimo": 12,
   "layout": {
-    "linha_centro": 88,
-    "linha_passo": 60.6,
-    "linha_meia_altura": 13,
-    "cabecalho_altura": 58,
+    "linha_centro": 38,
+    "linha_passo": 75.9,
+    "linha_meia_altura": 16,
+    "cabecalho_altura": 0,
     "linha_tela_max": 9.4,
     "linha_tela_min": 7,
     "velocidade_rolagem": 40,
     "col_produto": [
-      5,
-      352
+      62,
+      398
     ],
     "col_qtd": [
-      412,
+      450,
       525
     ],
     "col_valor": [
-      860,
-      1005
+      845,
+      945
     ],
-    "limite_direita": 1005,
+    "limite_direita": 995,
     "total_valor": [
-      300,
-      125,
-      232,
-      42
+      290,
+      178,
+      226,
+      44
     ],
     "total_produtos": [
-      8,
-      12,
-      150,
-      30
+      14,
+      83,
+      160,
+      32
     ],
     "faixa_branca_itens": [
+      45,
       0,
-      0,
-      8,
-      435
+      10,
+      341
     ],
     "faixa_branca_total": [
-      522,
+      300,
       0,
       11,
-      176
+      300
     ],
-    "limite_brilho": 205
+    "limite_brilho": 205,
+    "linha_meia_altura_qtd": 28
   }
 }

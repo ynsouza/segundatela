@@ -601,6 +601,34 @@ function analisarLinha(canvas, y, h, limiteX) {
   };
 }
 
+// Quantidade: com a letra maior o PDV quebra em duas linhas ("1,000" e "Kg").
+// Recorta cada linha do mesmo tamanho do nome e coloca lado a lado: "1,000 Kg".
+function recortarQtd(origem, x, cy, w, cor) {
+  const m = L.linha_meia_altura, mq = L.linha_meia_altura_qtd || m;
+  const y0 = Math.max(0, Math.round(cy - mq)), h = Math.min(Math.round(mq * 2), origem.height - y0);
+  x = Math.max(0, Math.round(x)); w = Math.min(Math.round(w), origem.width - x);
+  if (w <= 0 || h <= 0) return { canvas: null, tinta: 0 };
+  const p = origem.getContext('2d', { willReadFrequently: true }).getImageData(x, y0, w, h).data;
+  const faixas = []; let ini = -1, ult = -1;
+  for (let y = 0; y <= h; y++) {
+    let n = 0;
+    if (y < h) for (let xx = 0; xx < w; xx++) { const i = (y * w + xx) * 4; if (0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2] < 150) n++; }
+    if (n) { if (ini < 0) ini = y; ult = y; }
+    else if (ini >= 0 && (y >= h || y - ult > 3)) { faixas.push(ini); ini = -1; }
+  }
+  if (faixas.length < 2) return recortar(origem, x, cy - m, w, m * 2, cor);
+  // cada linha começa no topo das letras, com a mesma folga que o nome tem acima
+  const folga = m - Math.round((L.altura_letra || 15) / 2);
+  const partes = faixas.map(t => recortar(origem, x, y0 + t - folga, w, m * 2, cor)).filter(r => r.canvas);
+  if (partes.length < 2) return partes[0] || { canvas: null, tinta: 0 };
+  const alt = Math.max(...partes.map(r => r.canvas.height)), vao = Math.round(alt * 0.3);
+  const c = document.createElement('canvas');
+  c.width = partes.reduce((s, r) => s + r.canvas.width, 0) + vao * (partes.length - 1); c.height = alt;
+  const g = c.getContext('2d'); let px = 0;
+  partes.forEach(r => { g.drawImage(r.canvas, px, 0); px += r.canvas.width + vao; });
+  return { canvas: c, tinta: partes.reduce((s, r) => s + r.tinta, 0) };
+}
+
 // "Impressão digital" de uma linha, para saber se ela mudou
 function assinatura(canvas, y, h, limiteX) {
   const x0 = L.col_produto[0], x1 = Math.min(canvas.width, limiteX || canvas.width), w = x1 - x0;
@@ -628,7 +656,7 @@ function desenharItens(img) {
   const f = L.faixa_branca_itens || [0, 0, 8, 435];
   if (escurecida(fonteItens, f[0], f[1], f[2], f[3])) return;   // pop-up aberto: mantém a última lista
 
-  const CAB = L.cabecalho_altura || 58, PASSO = L.linha_passo || 60.6;
+  const CAB = L.cabecalho_altura ?? 58, PASSO = L.linha_passo || 60.6;
   const barra = lerBarra(fonteItens);
   let rolagem = 0, total = null;
   if (barra) {
@@ -683,7 +711,7 @@ function desenharItens(img) {
     if (!nome.canvas) return;
     pedido[v.idx] = {
       sig: v.sig, ver: ++versaoLinha, nome,
-      qtd: recortar(fonteItens, col.qtd[0], y, col.qtd[1] - col.qtd[0], h, COR_TEXTO),
+      qtd: recortarQtd(fonteItens, col.qtd[0], v.cy, col.qtd[1] - col.qtd[0], COR_TEXTO),
       valor: recortar(fonteItens, col.valor[0], y, col.valor[1] - col.valor[0], h, COR_TEXTO)
     };
   });
