@@ -534,6 +534,24 @@ function acharLinhas(canvas) {
   });
 }
 
+// Toda linha de item do PDV tem o botão vermelho de remover (antes do nome) ou o lápis azul de editar.
+// Sem nenhum dos dois, o texto é outra coisa da tela (ex.: o campo de busca) e não entra no pedido.
+function ehItem(canvas, cy) {
+  const m = L.linha_meia_altura, y = Math.max(0, Math.round(cy - m)), h = Math.min(Math.round(m * 2), canvas.height - y);
+  const W = Math.min(canvas.width, L.limite_direita || canvas.width);
+  if (h <= 0) return false;
+  const p = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, y, W, h).data;
+  let vermelho = 0, azul = 0;
+  for (let i = 0; i < p.length; i += 4) {
+    const r = p[i], g = p[i + 1], b = p[i + 2];
+    if (r > 190 && g < 130 && b < 120) vermelho++;                  // botão de remover: ~300 pontos
+    else if (b > 200 && r < 90 && g > 110 && g < 190) azul++;       // lápis: ~100 pontos
+  }
+  // exige um ícone inteiro: as bordas coloridas das letras (ClearType) não chegam perto disso
+  const min = L.item_minimo_icone || 50;
+  return vermelho >= min || azul >= min;
+}
+
 // O cabeçalho "PRODUTO" do PDV é cinza-claro; se ele está no topo, a lista não está rolada
 function temCabecalho(canvas) {
   const c = L.cabecalho || [10, 18, 100, 14];
@@ -671,6 +689,7 @@ function desenharItens(img) {
     const cy = (fx.topo + fx.base) / 2;
     const idx = Math.floor((rolagem + cy - CAB) / PASSO);
     if (idx < 0) return;                                            // cabeçalho do PDV
+    if (!ehItem(fonteItens, cy)) return;                            // busca ou outro texto do PDV: não é item
     vistos.push({ idx, cy });
   });
   // As linhas visíveis são sempre seguidas: corrige qualquer arredondamento
