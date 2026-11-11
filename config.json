@@ -11,7 +11,11 @@
     "queda": true,
     "enfeite": true
   },
-  "temas": {},
+  "temas": {
+    "natal": {
+      "slide_titulo": "Boas Festas!"
+    }
+  },
   "cardapio_link": "https://padaria-silmar.vercel.app/",
   "encomendas": [
     {

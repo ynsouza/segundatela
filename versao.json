@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-11-10-221310",
+    "versao":  "2026-11-10-221815",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -63,7 +63,7 @@
                      },
                      {
                          "caminho":  "config.json",
-                         "sha256":  "f527f81728ccaaa56437a8d95e7b010d71a1e2b229cf48965b89151094ef5609"
+                         "sha256":  "d8e276b13b423a8ed49efecae2d1da675e91b5937b5bc499ac01a228eea655f1"
                      },
                      {
                          "caminho":  "divulgacao/.mantenha",
