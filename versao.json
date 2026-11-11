@@ -1,17 +1,9 @@
 {
-    "versao":  "2026-10-30-092713",
+    "versao":  "2026-11-10-211502",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
                          "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-                     },
-                     {
-                         "caminho":  "cardapio/Baguete.jpg",
-                         "sha256":  "0e7c17aa903a8f7b19a5566ca6cbad125023217df18c0320b310da6342f3df58"
-                     },
-                     {
-                         "caminho":  "cardapio/Biscoitos Amanteigados 500g.jpg",
-                         "sha256":  "0759c0fe2ad01e657007f1daaee54efda610075f1d0a9aa077c09f778bba025d"
                      },
                      {
                          "caminho":  "cardapio/Bolo Piscininha (Cenoura com Chocolate).jpg",
@@ -30,10 +22,6 @@
                          "sha256":  "4b47c2317ad18f8fac97d8179a897a5001869cd1a2f4e244654e262c9a7b7443"
                      },
                      {
-                         "caminho":  "cardapio/Caseirinhos.jpg",
-                         "sha256":  "648c8ef7a972dfb4bafc41f8279ae352279086be33b59552edca5bc330fb42ee"
-                     },
-                     {
                          "caminho":  "cardapio/Docinhos 50 uni.jpg",
                          "sha256":  "e0c9cdbbd195fdb6fa94465b2b0af46e9af75393e6dac388c8adf288e5adf488"
                      },
@@ -46,8 +34,8 @@
                          "sha256":  "2b5e944e5c608dc36dad3cd5b3194948b38127d2a7860ce4f21df3abf8b73db8"
                      },
                      {
-                         "caminho":  "cardapio/Massa de Pizza (2 un).jpg",
-                         "sha256":  "bf73eac9551d4af63d6946a0c6557ddba5536dbb459cb815fe315f5580fc83dd"
+                         "caminho":  "cardapio/Festival de Rabanadas.jpg",
+                         "sha256":  "992151a45425b9924a9b1268e04ea3c29b2884066aaea4df7f048a7de317d6b2"
                      },
                      {
                          "caminho":  "cardapio/Mini Croissant 500g.jpg",
@@ -78,14 +66,6 @@
                          "sha256":  "59c86f69b62a7ee7e68454655b7b237cd6c24e8c0eba8c21e08049b62a8277bc"
                      },
                      {
-                         "caminho":  "cardapio/Pão de Cachorro Quente.jpg",
-                         "sha256":  "939aac76f9293bc686edea4a66761e6e4a6d5761de37f60edebdd48a4c98631e"
-                     },
-                     {
-                         "caminho":  "cardapio/Pão de Hambúrguer.jpg",
-                         "sha256":  "544dcaa940d2e3ac4a7703b779f55b59908d330dad34c469a836e369cb2d181b"
-                     },
-                     {
                          "caminho":  "cardapio/Pão de Queijo 500g.jpg",
                          "sha256":  "6610b4a16356da4a16a9179757601141724894a6968f07d4e29c9da51db5937d"
                      },
@@ -114,7 +94,7 @@
                          "sha256":  "27e5b4503b86746a0c0a841c85357aba918d64c3972bf48e838ccd24beb16023"
                      },
                      {
-                         "caminho":  "cardapio/Rosquinhas de Laranja 200g.jpg",
+                         "caminho":  "cardapio/Rosquinhas de Laranja.jpg",
                          "sha256":  "0b7ace7a469c5429d0b0a30e52542cfe58d6535df189880e7409e93f66744e46"
                      },
                      {
@@ -143,7 +123,7 @@
                      },
                      {
                          "caminho":  "config.json",
-                         "sha256":  "69e6936ea0f3379a1fab1d53bcfe1c17e5f102bba0ed6785003fc8808b5fd9c1"
+                         "sha256":  "344fdaf8f87696b69228f0af3c875c2f3e21bdb4a0a6c813846b3f7d6e4617e7"
                      },
                      {
                          "caminho":  "divulgacao/.mantenha",
@@ -179,7 +159,7 @@
                      },
                      {
                          "caminho":  "web/index.html",
-                         "sha256":  "8f120f119f9efc80175f54ec975b283bf2fc0bfe1bf56ef2f6de9a674939a67a"
+                         "sha256":  "b37e2109fa49e936349b46fadefdacfa9cbaa6445a2c49973c028e64151c4413"
                      }
                  ]
 }

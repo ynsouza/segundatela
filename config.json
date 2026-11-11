@@ -3,7 +3,7 @@
   "qr_link": "https://g.page/r/CbaBbz-4ojjUEAE/review?utm_source=gbp&utm_medium=reviews&utm_campaign=qr",
   "qr_titulo": "Sua opinião é o nosso melhor presente!",
   "qr_texto": "Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.",
-  "qr_segundos_apos_pagamento": 30,
+  "qr_segundos_apos_pagamento": 20,
   "tempo_slide_segundos": 9,
   "tema": "natal",
   "efeitos": {
@@ -13,6 +13,14 @@
   "temas": {},
   "cardapio_link": "https://padaria-silmar.vercel.app/",
   "encomendas": [
+    {
+      "selo": "Sábado, 14/11",
+      "titulo": "Festival de Rabanadas",
+      "descricao": "Rabanadas quentinhas com coberturas especiais: morango, pistache, chocolate, doce de leite e muito mais.",
+      "info": "Dia 14/11, aqui na Padaria Silmar",
+      "icone": "agenda",
+      "ate": "2026-11-14"
+    },
     {
       "selo": "Mais pedido",
       "titulo": "Sanduíche a metro",

@@ -259,7 +259,7 @@ function mostrarTema() {
 
 /* ---------- listas: encomendas e ofertas ---------- */
 const LISTAS = {
-  encomendas: { el: '#encomendas', nome: 'Aviso', campos: [['selo', 'Etiqueta (ex.: Mais pedido)'], ['titulo', 'Título'], ['descricao', 'Descrição', 'area'], ['info', 'Linha de destaque (telefone, prazo…)'], ['icone', 'Ícone', 'icone']],
+  encomendas: { el: '#encomendas', nome: 'Aviso', campos: [['selo', 'Etiqueta (ex.: Mais pedido)'], ['titulo', 'Título'], ['descricao', 'Descrição', 'area'], ['info', 'Linha de destaque (telefone, prazo…)'], ['icone', 'Ícone', 'icone'], ['ate', 'Mostrar até o dia (opcional — depois some sozinho)', 'data']],
                 novo: () => ({ selo: 'Encomendas', titulo: 'Novo aviso', descricao: '', info: '', icone: 'agenda' }) },
   promocoes: { el: '#ofertas', nome: 'Oferta', campos: [['selo', 'Etiqueta (ex.: Doce do dia)'], ['titulo', 'Produto'], ['descricao', 'Descrição', 'area'], ['preco', 'Preço (ex.: R$ 14,00)']],
                novo: () => ({ selo: 'Oferta', titulo: 'Nova oferta', descricao: '', preco: 'R$ 0,00' }) }
@@ -273,6 +273,7 @@ function montarLista(chave) {
       <button class="botao perigo" data-rem="${i}">Remover</button></div>
       ${L.campos.map(([k, rot, tipo]) => tipo === 'icone'
         ? `<label class="campo">${rot}<select data-i="${i}" data-k="${k}"><option value="agenda">Calendário</option><option value="whats">WhatsApp</option><option value="relogio">Relógio</option></select></label>`
+        : tipo === 'data' ? `<label class="campo">${rot}<input type="date" data-i="${i}" data-k="${k}" value="${esc(it[k] || '')}"></label>`
         : `<label class="campo">${rot}${tipo === 'area' ? `<textarea data-i="${i}" data-k="${k}">${esc(it[k])}</textarea>` : `<input type="text" data-i="${i}" data-k="${k}" value="${esc(it[k])}">`}</label>`).join('')}
     </div>`).join('');
   caixa.querySelectorAll('select[data-k]').forEach(s => s.value = arr[s.dataset.i][s.dataset.k] || 'agenda');
