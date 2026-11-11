@@ -169,7 +169,7 @@
       <h2>Geral</h2>
       <div class="duas">
         <label class="campo">Nome da loja<input type="text" data-c="nome_loja"></label>
-        <label class="campo">Segundos de cada slide<input type="number" min="4" max="60" data-c="tempo_slide_segundos" data-num></label>
+        <label class="campo">Segundos de cada slide <span class="dica">· padrão; cada anúncio pode ter o seu</span><input type="number" min="4" max="60" data-c="tempo_slide_segundos" data-num></label>
       </div>
     </section>
   </div>
@@ -259,9 +259,10 @@ function mostrarTema() {
 
 /* ---------- listas: encomendas e ofertas ---------- */
 const LISTAS = {
-  encomendas: { el: '#encomendas', nome: 'Aviso', campos: [['selo', 'Etiqueta (ex.: Mais pedido)'], ['titulo', 'Título'], ['descricao', 'Descrição', 'area'], ['info', 'Linha de destaque (telefone, prazo…)'], ['icone', 'Ícone', 'icone'], ['ate', 'Mostrar até o dia (opcional — depois some sozinho)', 'data']],
+  encomendas: { el: '#encomendas', nome: 'Aviso', campos: [['selo', 'Etiqueta (ex.: Mais pedido)'], ['titulo', 'Título'], ['descricao', 'Descrição', 'area'], ['info', 'Linha de destaque (telefone, prazo…)'], ['icone', 'Ícone', 'icone'], ['ate', 'Mostrar até o dia (opcional — depois some sozinho)', 'data'],
+                         ['segundos', 'Segundos na tela', 'num'], ['tela_cheia', 'Foto em tela cheia (se tiver foto com o mesmo nome no cardápio)', 'check']],
                 novo: () => ({ selo: 'Encomendas', titulo: 'Novo aviso', descricao: '', info: '', icone: 'agenda' }) },
-  promocoes: { el: '#ofertas', nome: 'Oferta', campos: [['selo', 'Etiqueta (ex.: Doce do dia)'], ['titulo', 'Produto'], ['descricao', 'Descrição', 'area'], ['preco', 'Preço (ex.: R$ 14,00)']],
+  promocoes: { el: '#ofertas', nome: 'Oferta', campos: [['selo', 'Etiqueta (ex.: Doce do dia)'], ['titulo', 'Produto'], ['descricao', 'Descrição', 'area'], ['preco', 'Preço (ex.: R$ 14,00)'], ['segundos', 'Segundos na tela', 'num']],
                novo: () => ({ selo: 'Oferta', titulo: 'Nova oferta', descricao: '', preco: 'R$ 0,00' }) }
 };
 function montarLista(chave) {
@@ -274,10 +275,20 @@ function montarLista(chave) {
       ${L.campos.map(([k, rot, tipo]) => tipo === 'icone'
         ? `<label class="campo">${rot}<select data-i="${i}" data-k="${k}"><option value="agenda">Calendário</option><option value="whats">WhatsApp</option><option value="relogio">Relógio</option></select></label>`
         : tipo === 'data' ? `<label class="campo">${rot}<input type="date" data-i="${i}" data-k="${k}" value="${esc(it[k] || '')}"></label>`
+        : tipo === 'num' ? `<label class="campo">${rot} <span class="dica">· vazio = ${esc(cfg.tempo_slide_segundos || 9)} s (o padrão)</span><input type="number" min="3" max="120" placeholder="${esc(cfg.tempo_slide_segundos || 9)}" data-i="${i}" data-k="${k}" data-num value="${esc(it[k] || '')}"></label>`
+        : tipo === 'check' ? `<label class="chave" style="margin-top:14px"><input type="checkbox" data-i="${i}" data-k="${k}" data-check ${it[k] ? 'checked' : ''}><i></i>${rot}</label>`
         : `<label class="campo">${rot}${tipo === 'area' ? `<textarea data-i="${i}" data-k="${k}">${esc(it[k])}</textarea>` : `<input type="text" data-i="${i}" data-k="${k}" value="${esc(it[k])}">`}</label>`).join('')}
     </div>`).join('');
   caixa.querySelectorAll('select[data-k]').forEach(s => s.value = arr[s.dataset.i][s.dataset.k] || 'agenda');
-  caixa.querySelectorAll('[data-k]').forEach(el => el.addEventListener('input', () => { arr[el.dataset.i][el.dataset.k] = el.value; salvar(); }));
+  // número e caixinha: vazio/desligado tira o campo (volta ao padrão)
+  caixa.querySelectorAll('[data-k]').forEach(el => el.addEventListener(el.hasAttribute('data-check') ? 'change' : 'input', () => {
+    const it = arr[el.dataset.i], k = el.dataset.k;
+    if (el.hasAttribute('data-check')) { if (el.checked) it[k] = true; else delete it[k]; }
+    else if (el.hasAttribute('data-num')) { const n = parseInt(el.value, 10); if (n > 0) it[k] = n; else delete it[k]; }
+    else if (el.type === 'date' && !el.value) delete it[k];
+    else it[k] = el.value;
+    salvar();
+  }));
   caixa.querySelectorAll('[data-mov]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.i, j = i + +b.dataset.mov; [arr[i], arr[j]] = [arr[j], arr[i]]; montarLista(chave); salvar(); }));
   caixa.querySelectorAll('[data-rem]').forEach(b => b.addEventListener('click', () => { if (confirm('Remover este item?')) { arr.splice(+b.dataset.rem, 1); montarLista(chave); salvar(); } }));
 }
@@ -305,18 +316,28 @@ function montarFotos(pasta) {
     return `<div class="foto"><div class="img" ${f.video ? '' : `style="background-image:url('${url}')"`}>${f.video ? `<video src="${url}" muted preload="metadata"></video><span class="tag">vídeo</span>` : ''}</div>
       <div class="info"><input type="text" placeholder="Nome na tela" value="${esc(p.titulo)}" data-f="${i}" data-campo="titulo">
       <input type="text" placeholder="Preço (opcional)" value="${esc(p.preco)}" data-f="${i}" data-campo="preco">
+      ${f.video ? '' : `<input type="number" min="3" max="120" title="Segundos na tela (vazio = padrão)" placeholder="Segundos na tela (padrão ${esc(cfg.tempo_slide_segundos || 9)})" value="${esc(tempos()[pasta + '/' + f.nome] || '')}" data-f="${i}" data-tempo>`}
       <div class="acoes"><button class="mini" data-fmov="-1" data-f="${i}" ${i === 0 ? 'disabled' : ''} title="Mais para a frente">←</button>
       <button class="mini" data-fmov="1" data-f="${i}" ${i === lista.length - 1 ? 'disabled' : ''} title="Mais para trás">→</button>
       <button class="botao perigo" data-frem="${i}">Apagar</button></div></div></div>`;
   }).join('');
   caixa.querySelectorAll('input[data-campo]').forEach(el => el.addEventListener('change', () => renomearFoto(pasta, +el.dataset.f)));
+  caixa.querySelectorAll('input[data-tempo]').forEach(el => el.addEventListener('input', () => {
+    const k = pasta + '/' + lista[+el.dataset.f].nome, n = parseInt(el.value, 10);
+    if (n > 0) tempos()[k] = n; else delete tempos()[k];
+    salvar();
+  }));
   caixa.querySelectorAll('[data-fmov]').forEach(b => b.addEventListener('click', () => reordenar(pasta, +b.dataset.f, +b.dataset.fmov)));
   caixa.querySelectorAll('[data-frem]').forEach(b => b.addEventListener('click', () => apagarFoto(pasta, +b.dataset.frem)));
 }
+// Tempo de cada foto fica no config.json -> "tempos_fotos", pelo nome do arquivo
+function tempos() { if (!cfg.tempos_fotos || typeof cfg.tempos_fotos !== 'object' || Array.isArray(cfg.tempos_fotos)) cfg.tempos_fotos = {}; return cfg.tempos_fotos; }
 async function renomear(pasta, de, para) {
   if (de === para) return;
   const r = await api(`/api/renomear?pasta=${pasta}&de=${encodeURIComponent(de)}&para=${encodeURIComponent(para)}`, { method: 'POST' });
   mostrarSituacao(r.situacao);
+  const t = tempos(), a = pasta + '/' + de;
+  if (a in t) { t[pasta + '/' + para] = t[a]; delete t[a]; await salvarAgora(); }   // o tempo acompanha a foto
 }
 async function renomearFoto(pasta, i) {
   const f = fotos[pasta][i], p = partesNome(f.nome), caixa = $('#fotos-' + pasta);
@@ -337,7 +358,10 @@ async function reordenar(pasta, i, mov) {
 async function apagarFoto(pasta, i) {
   const f = fotos[pasta][i];
   if (!confirm(`Apagar "${partesNome(f.nome).titulo}"?`)) return;
-  try { const r = await api(`/api/apagar?pasta=${pasta}&nome=${encodeURIComponent(f.nome)}`, { method: 'POST' }); mostrarSituacao(r.situacao); } catch (e) { aviso(e.message, true); }
+  try {
+    const r = await api(`/api/apagar?pasta=${pasta}&nome=${encodeURIComponent(f.nome)}`, { method: 'POST' }); mostrarSituacao(r.situacao);
+    if ((pasta + '/' + f.nome) in tempos()) { delete tempos()[pasta + '/' + f.nome]; await salvarAgora(); }
+  } catch (e) { aviso(e.message, true); }
   await carregarFotos();
 }
 // Diminui fotos grandes para no máximo 1600 px (fica leve e nítida na tela de 1366x768)

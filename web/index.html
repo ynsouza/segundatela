@@ -1184,10 +1184,11 @@ function rotuloHtml(d) {
   </div>`;
 }
 
+// "tela_cheia": true (no aviso) põe a foto ocupando a tela toda, mesmo que ela não seja larga
 function slideFoto(d, url) {
   const el = document.createElement('div');
   const temRotulo = !!(d.titulo || d.selo || d.descricao || d.preco || d.info);
-  el.className = 'slide foto quadrada' + (temRotulo ? '' : ' sem-rotulo');
+  el.className = 'slide foto ' + (d.tela_cheia ? 'larga' : 'quadrada') + (temRotulo ? '' : ' sem-rotulo');
   el.innerHTML = `<img class="fundo" src="${url}" alt=""><img class="principal" src="${url}" alt="">` + (temRotulo ? rotuloHtml(d) : '');
   const im = el.querySelector('.principal');
   const ajustar = () => { if (im.naturalWidth / im.naturalHeight >= 1.6) { el.classList.remove('quadrada'); el.classList.add('larga'); } };
@@ -1195,8 +1196,16 @@ function slideFoto(d, url) {
   return el;
 }
 
+// Tempo de cada anúncio: "segundos" no aviso/oferta, ou config.json -> "tempos_fotos" { "cardapio/Pudim.jpg": 12 }
+let temposFotos = {};
+function chaveFoto(url) {
+  const m = String(url || '').match(/^\/(cardapio-img|div)\/(.+)$/);
+  return m ? (m[1] === 'div' ? 'divulgacao/' : 'cardapio/') + decodeURIComponent(m[2]) : '';
+}
+function segundosDe(it) { return +it.segundos > 0 ? +it.segundos : (+temposFotos[chaveFoto(it.fotoUrl || it.arquivo)] || 0); }
+
 function montarSlides(itens) {
-  const chave = JSON.stringify(itens);
+  const chave = JSON.stringify([itens, temposFotos]);
   if (chave === montarSlides.ultima) return;
   montarSlides.ultima = chave;
   const caixa = $('#slides'); caixa.innerHTML = '';
@@ -1221,6 +1230,7 @@ function montarSlides(itens) {
       el.innerHTML = `<svg class="emblema" viewBox="0 0 120 120">${temaAtivo.id === 'natal' ? FLOCO : ESTRELA}</svg>` + rotuloHtml(it);
     }
     el.dataset.tipo = it.tipo === 'video' ? 'video' : 'x';
+    const seg = segundosDe(it); if (seg > 0) el.dataset.seg = seg;
     caixa.appendChild(el);
     return el;
   });
@@ -1238,7 +1248,8 @@ function proximoSlide() {
   idxSlide = (idxSlide + 1) % slides.length;
   const el = slides[idxSlide];
   if (ant && ant !== el) { ant.classList.remove('vis'); const v = ant.querySelector('video'); if (v) setTimeout(() => v.pause(), 1400); }
-  el.style.setProperty('--dur', (tempoSlide + 2) + 's');
+  const dur = +el.dataset.seg || tempoSlide;
+  el.style.setProperty('--dur', (dur + 2) + 's');
   el.classList.remove('vis'); void el.offsetWidth; el.classList.add('vis');
   document.querySelectorAll('#pontos i').forEach((p, i) => p.classList.toggle('on', i === idxSlide));
   const prog = $('#pontos b'); if (prog) prog.style.width = ((idxSlide + 1) / slides.length * 100) + '%';
@@ -1249,7 +1260,7 @@ function proximoSlide() {
     v.onended = () => proximoSlide();
     timerSlide = setTimeout(proximoSlide, 90000);
   } else {
-    timerSlide = setTimeout(proximoSlide, tempoSlide * 1000);
+    timerSlide = setTimeout(proximoSlide, dur * 1000);
   }
 }
 function iniciarSlides() { if (idxSlide === -1 || !slides[idxSlide] || !slides[idxSlide].classList.contains('vis')) { idxSlide = idxSlide; } proximoSlide(); }
@@ -1270,6 +1281,8 @@ function aplicar(s) {
   if (s.slide && s.slide !== tempoSlide) tempoSlide = s.slide;
   if (s.layout && typeof s.layout === 'object') L = Object.assign({}, L, s.layout);
   if (aplicarTema(s.tema || 'natal', s.temas || null, s.efeitos || null)) montarSlides(intercalar(ultimosItensPromo));
+  const tf = (s.tempos_fotos && typeof s.tempos_fotos === 'object') ? s.tempos_fotos : {};
+  if (JSON.stringify(tf) !== JSON.stringify(temposFotos)) { temposFotos = tf; montarSlides(intercalar(ultimosItensPromo)); }
   const novoCard = s.cardapio || 'https://padaria-silmar.vercel.app/', novasEnc = s.encomendas || null;
   if (novoCard !== cardapio || JSON.stringify(novasEnc) !== JSON.stringify(encomendasCfg)) {
     cardapio = novoCard; encomendasCfg = novasEnc; $('#siteCardapio').textContent = siteCurto(cardapio);

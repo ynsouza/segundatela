@@ -91,7 +91,7 @@ function ListaPromocoes($cfg) {
   foreach ($f in (ListaPasta 'divulgacao')) {
     [void]$itens.Add(@{ tipo = $(if ($f.video) { 'video' } else { 'imagem' }); arquivo = '/div/' + [Uri]::EscapeDataString($f.nome); nome = [IO.Path]::GetFileNameWithoutExtension($f.nome) })
   }
-  foreach ($p in $cfg.promocoes) { [void]$itens.Add(@{ tipo = 'texto'; titulo = $p.titulo; descricao = $p.descricao; preco = $p.preco; selo = $p.selo }) }
+  foreach ($p in $cfg.promocoes) { [void]$itens.Add(@{ tipo = 'texto'; titulo = $p.titulo; descricao = $p.descricao; preco = $p.preco; selo = $p.selo; segundos = $p.segundos }) }
   $card = New-Object System.Collections.ArrayList
   foreach ($f in (ListaPasta 'cardapio')) { if (-not $f.video) { [void]$card.Add(@{ arquivo = '/cardapio-img/' + [Uri]::EscapeDataString($f.nome); nome = [IO.Path]::GetFileNameWithoutExtension($f.nome) }) } }
   return @{ itens = $itens; cardapio = $card }
@@ -156,7 +156,7 @@ function Atender($cli) {
         Json $ns @{ cena = $script:Previa; vi = 0; vt = 0; qr = [string]$cfg.qr_link; qrTitulo = [string]$cfg.qr_titulo; qrTexto = [string]$cfg.qr_texto
                     slide = [int]$cfg.tempo_slide_segundos; nome = [string]$cfg.nome_loja; logo = (Test-Path (Join-Path $Raiz 'logo.png')); logoNome = (Test-Path (Join-Path $Raiz 'logo-nome.png'))
                     cardapio = [string]$cfg.cardapio_link; encomendas = $cfg.encomendas; layout = $cfg.layout
-                    tema = $(if ([string]$cfg.tema) { [string]$cfg.tema } else { 'natal' }); temas = $cfg.temas; efeitos = $cfg.efeitos
+                    tema = $(if ([string]$cfg.tema) { [string]$cfg.tema } else { 'natal' }); temas = $cfg.temas; efeitos = $cfg.efeitos; tempos_fotos = $cfg.tempos_fotos
                     pagina = [string](Get-Item (Join-Path $Raiz 'web\index.html')).LastWriteTime.Ticks }
         break
       }

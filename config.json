@@ -19,7 +19,8 @@
       "descricao": "Rabanadas quentinhas com coberturas especiais: morango, pistache, chocolate, doce de leite e muito mais.",
       "info": "Dia 14/11, aqui na Padaria Silmar",
       "icone": "agenda",
-      "ate": "2026-11-14"
+      "ate": "2026-11-14",
+      "tela_cheia": true
     },
     {
       "selo": "Mais pedido",
