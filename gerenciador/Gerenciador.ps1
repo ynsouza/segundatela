@@ -156,7 +156,7 @@ function Atender($cli) {
         Json $ns @{ cena = $script:Previa; vi = 0; vt = 0; qr = [string]$cfg.qr_link; qrTitulo = [string]$cfg.qr_titulo; qrTexto = [string]$cfg.qr_texto
                     slide = [int]$cfg.tempo_slide_segundos; nome = [string]$cfg.nome_loja; logo = (Test-Path (Join-Path $Raiz 'logo.png')); logoNome = (Test-Path (Join-Path $Raiz 'logo-nome.png'))
                     cardapio = [string]$cfg.cardapio_link; encomendas = $cfg.encomendas; layout = $cfg.layout
-                    tema = $(if ([string]$cfg.tema) { [string]$cfg.tema } else { 'natal' }); temas = $cfg.temas; efeitos = $cfg.efeitos; tempos_fotos = $cfg.tempos_fotos
+                    tema = $(if ([string]$cfg.tema) { [string]$cfg.tema } else { 'natal' }); temas = $cfg.temas; efeitos = $cfg.efeitos; tempos_fotos = $cfg.tempos_fotos; cardapio_tela_cheia = [bool]$cfg.cardapio_tela_cheia
                     pagina = [string](Get-Item (Join-Path $Raiz 'web\index.html')).LastWriteTime.Ticks }
         break
       }

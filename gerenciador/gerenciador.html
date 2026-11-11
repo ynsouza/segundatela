@@ -154,6 +154,7 @@
     <section class="bloco">
       <h2>Fotos do cardápio</h2>
       <p class="ajuda">Cada foto vira um slide "Do nosso cardápio". O nome e o preço aparecem na tela. As fotos são diminuídas sozinhas para não pesar.</p>
+      <label class="chave" style="margin-bottom:14px"><input type="checkbox" id="cardTelaCheia"><i></i>Fotos do cardápio em tela cheia</label>
       <div class="enviar"><label class="botao secundario">+ Enviar fotos<input type="file" accept="image/*" multiple data-envio="cardapio"></label><span class="vazio" data-cont="cardapio"></span></div>
       <div class="fotos" id="fotos-cardapio"></div>
     </section>
@@ -432,10 +433,19 @@ async function iniciar() {
   await new Promise(ok => { const ver = () => fr.contentWindow && fr.contentWindow.TEMAS_TELA ? ok() : setTimeout(ver, 100); ver(); });
   TEMAS = fr.contentWindow.TEMAS_TELA; ICONES = fr.contentWindow.ICONES_TEMA || {};
   ligarCampos(); montarTemas(); montarLista('encomendas'); montarLista('promocoes');
+  $('#cardTelaCheia').checked = !!cfg.cardapio_tela_cheia;
+  $('#cardTelaCheia').addEventListener('change', e => { if (e.target.checked) cfg.cardapio_tela_cheia = true; else delete cfg.cardapio_tela_cheia; salvar(); });
   await carregarFotos();
   mostrarSituacao(await api('/api/situacao'));
 }
 iniciar().catch(e => aviso('Erro ao abrir: ' + e.message, true));
+
+// Se o config.json mudou por fora (por exemplo, publicado pelo Claude), recarrega ao voltar para esta janela,
+// para não salvar por cima com a versão antiga que está na memória da página
+addEventListener('focus', async () => {
+  if (!cfg || timerSalvar) return;
+  try { const atual = await api('/api/config'); if (JSON.stringify(atual) !== JSON.stringify(cfg)) location.reload(); } catch (e) {}
+});
 </script>
 </body>
 </html>

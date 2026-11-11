@@ -5,6 +5,7 @@
   "qr_texto": "Deixe suas 5 estrelas! Aponte a câmera do celular para o QR Code.",
   "qr_segundos_apos_pagamento": 20,
   "tempo_slide_segundos": 9,
+  "cardapio_tela_cheia": true,
   "tema": "natal",
   "efeitos": {
     "queda": true,
@@ -20,35 +21,40 @@
       "info": "Dia 14/11, aqui na Padaria Silmar",
       "icone": "agenda",
       "ate": "2026-11-14",
-      "tela_cheia": true
+      "tela_cheia": true,
+      "segundos": 15
     },
     {
       "selo": "Mais pedido",
       "titulo": "Sanduíche a metro",
       "descricao": "Recheado à sua escolha e feito na hora. Perfeito para eventos, confraternizações e celebrações.",
       "info": "Encomende com 48h de antecedência",
-      "icone": "agenda"
+      "icone": "agenda",
+      "segundos": 5
     },
     {
       "selo": "Encomendas",
       "titulo": "Da nossa cozinha para a sua ocasião especial",
       "descricao": "Do mini croissant ao sanduíche a metro: tudo pronto para a sua mesa.",
       "info": "Festas e celebrações: (22) 99254-5260",
-      "icone": "whats"
+      "icone": "whats",
+      "segundos": 5
     },
     {
       "selo": "Para empresas",
       "titulo": "Coffee break personalizado",
       "descricao": "Para reuniões, eventos e confraternizações. Pagamento faturado para CNPJ, sujeito a análise.",
       "info": "Empresas: (22) 99223-2695",
-      "icone": "whats"
+      "icone": "whats",
+      "segundos": 5
     },
     {
       "selo": "Peça pelo site",
       "titulo": "Escolha o dia e o horário de retirada",
       "descricao": "Pague por Pix ou cartão e receba a confirmação pelo WhatsApp.",
       "info": "Retirada das 7h20 às 19h",
-      "icone": "relogio"
+      "icone": "relogio",
+      "segundos": 5
     }
   ],
   "promocoes": [],
@@ -139,5 +145,20 @@
     ],
     "limite_brilho": 205,
     "linha_meia_altura_qtd": 28
+  },
+  "tempos_fotos": {
+    "cardapio/09 Mini Croissant 500g.jpg": 4,
+    "cardapio/10 Mini Croissant Doce 500g.jpg": 4,
+    "cardapio/11 Mini Folhados 500g.jpg": 4,
+    "cardapio/12 Mini Hambúrguer.jpg": 4,
+    "cardapio/13 Mini Pizza.jpg": 4,
+    "cardapio/14 Mini Salgado Assado Doce 500g.jpg": 4,
+    "cardapio/15 Mini Sonho.jpg": 4,
+    "cardapio/19 Pudim.jpg": 4,
+    "cardapio/20 Rabanada 500g.jpg": 4,
+    "cardapio/22 Rosquinhas de Laranja.jpg": 4,
+    "cardapio/23 Salgadinho Assado 500g.jpg": 4,
+    "cardapio/24 Sanduíche a Metro.jpg": 6,
+    "cardapio/27 Torta Salgada.jpg": 4
   }
 }

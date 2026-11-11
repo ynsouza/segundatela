@@ -1129,7 +1129,7 @@ function slidesCardapio() {
   fotosCardapio.filter(f => !usadas.has(f.arquivo)).forEach(f => {
     const leg = legendaDoArquivo(f.nome);
     lista.push({ tipo: 'encomenda', selo: 'Do nosso cardápio', titulo: leg.titulo, preco: leg.preco, fotoUrl: f.arquivo,
-                 info: 'Encomende com 48h de antecedência', icone: 'agenda' });
+                 info: 'Encomende com 48h de antecedência', icone: 'agenda', tela_cheia: cardapioTelaCheia });
   });
   // Intercala: com foto, sem foto, com foto...
   const com = lista.filter(i => i.fotoUrl), sem = lista.filter(i => !i.fotoUrl), saida = [];
@@ -1198,6 +1198,7 @@ function slideFoto(d, url) {
 
 // Tempo de cada anúncio: "segundos" no aviso/oferta, ou config.json -> "tempos_fotos" { "cardapio/Pudim.jpg": 12 }
 let temposFotos = {};
+let cardapioTelaCheia = false;   // config.json -> "cardapio_tela_cheia": as fotos do cardápio ocupam a tela toda
 function chaveFoto(url) {
   const m = String(url || '').match(/^\/(cardapio-img|div)\/(.+)$/);
   return m ? (m[1] === 'div' ? 'divulgacao/' : 'cardapio/') + decodeURIComponent(m[2]) : '';
@@ -1283,6 +1284,7 @@ function aplicar(s) {
   if (aplicarTema(s.tema || 'natal', s.temas || null, s.efeitos || null)) montarSlides(intercalar(ultimosItensPromo));
   const tf = (s.tempos_fotos && typeof s.tempos_fotos === 'object') ? s.tempos_fotos : {};
   if (JSON.stringify(tf) !== JSON.stringify(temposFotos)) { temposFotos = tf; montarSlides(intercalar(ultimosItensPromo)); }
+  if (!!s.cardapio_tela_cheia !== cardapioTelaCheia) { cardapioTelaCheia = !!s.cardapio_tela_cheia; montarSlides(intercalar(ultimosItensPromo)); }
   const novoCard = s.cardapio || 'https://padaria-silmar.vercel.app/', novasEnc = s.encomendas || null;
   if (novoCard !== cardapio || JSON.stringify(novasEnc) !== JSON.stringify(encomendasCfg)) {
     cardapio = novoCard; encomendasCfg = novasEnc; $('#siteCardapio').textContent = siteCurto(cardapio);
