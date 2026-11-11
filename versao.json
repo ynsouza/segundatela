@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-11-10-215020",
+    "versao":  "2026-11-10-221310",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -10,15 +10,15 @@
                          "sha256":  "992151a45425b9924a9b1268e04ea3c29b2884066aaea4df7f048a7de317d6b2"
                      },
                      {
-                         "caminho":  "cardapio/09 Mini Croissant 500g.jpg",
+                         "caminho":  "cardapio/09 Mini Croissant.jpg",
                          "sha256":  "83bc5d08f81caefdfa53afdb9451e0512fb77b1d635e198a5b59266b4256a14f"
                      },
                      {
-                         "caminho":  "cardapio/10 Mini Croissant Doce 500g.jpg",
+                         "caminho":  "cardapio/10 Mini Croissant Doce.jpg",
                          "sha256":  "4bbae1d9b65ffa57d3bc96256d2794880aab7aebd81271198bdd465a44c6d50e"
                      },
                      {
-                         "caminho":  "cardapio/11 Mini Folhados 500g.jpg",
+                         "caminho":  "cardapio/11 Mini Folhados.jpg",
                          "sha256":  "2deff4439dae8f2e72eb9dcf58cc7ad50e3584b631397890eb1bb320d3d57314"
                      },
                      {
@@ -42,7 +42,7 @@
                          "sha256":  "d727369264413b56f952b141c1af63d6ec60796bc84ce4b29345cd9aed73c3d1"
                      },
                      {
-                         "caminho":  "cardapio/20 Rabanada 500g.jpg",
+                         "caminho":  "cardapio/20 Rabanada.jpg",
                          "sha256":  "e62bc906e352cda9500b429e01cc6aef4b5aa1e08c06121bb20423b62e8d826a"
                      },
                      {
@@ -50,7 +50,7 @@
                          "sha256":  "0b7ace7a469c5429d0b0a30e52542cfe58d6535df189880e7409e93f66744e46"
                      },
                      {
-                         "caminho":  "cardapio/23 Salgadinho Assado 500g.jpg",
+                         "caminho":  "cardapio/23 Salgadinho Assado.jpg",
                          "sha256":  "264482d2b24257392be84780083bd5488f4eb6b7eae77ce505448a07c577220a"
                      },
                      {
@@ -63,7 +63,7 @@
                      },
                      {
                          "caminho":  "config.json",
-                         "sha256":  "53052b5288e7ee78960b7afe75bf03c661327f61f791030ccfda904dd5dd9bc2"
+                         "sha256":  "f527f81728ccaaa56437a8d95e7b010d71a1e2b229cf48965b89151094ef5609"
                      },
                      {
                          "caminho":  "divulgacao/.mantenha",
