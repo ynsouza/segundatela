@@ -237,6 +237,54 @@
   @keyframes balanca { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
   /* o laço dourado no cartão do QR só combina com o Natal */
   body:not([data-tema="natal"]) .qr-cartao .laco { display: none; }
+
+  /* ---------- Natal em dourado, bege e branco (divulgação e avaliação) ----------
+     As telas de conferência do pedido e da comanda continuam nas cores da padaria. */
+  body[data-tema="natal"] {
+    --n-ouro: #C9A24A; --n-ouro-claro: #EAD49C; --n-ouro-esc: #7A5A16; --n-texto: #4A3510; --n-texto2: #7A6237;
+    --n-bege: #F6EEDF; --n-bege2: #EADBC0; --n-bege3: #DCC59C;
+    --n-fundo: radial-gradient(circle at 80% 18%, rgba(255, 255, 255, .85) 0%, rgba(255, 255, 255, 0) 46%), linear-gradient(135deg, #FCF8F0 0%, var(--n-bege) 45%, var(--n-bege2) 100%);
+    --n-sombra: rgba(74, 53, 16, .28);
+  }
+  body[data-tema="natal"] #cena-promo { background: var(--n-bege); }
+  /* slides de texto, mosaico e fotos em moldura: fundo bege, letras douradas */
+  body[data-tema="natal"] .slide.texto, body[data-tema="natal"] .slide.mosaico, body[data-tema="natal"] .slide.foto { background: var(--n-fundo); }
+  body[data-tema="natal"] .slide.texto, body[data-tema="natal"] .slide.mosaico,
+  body[data-tema="natal"] .slide.foto.quadrada .rotulo { color: var(--n-texto); }
+  body[data-tema="natal"] .slide.texto .rotulo h2, body[data-tema="natal"] .slide.foto.quadrada .rotulo h2,
+  body[data-tema="natal"] .mosaico .cab-mos h2 { color: var(--n-ouro-esc); text-shadow: 0 .3vh 1.2vh rgba(255, 255, 255, .7); }
+  body[data-tema="natal"] .slide.texto .rotulo p, body[data-tema="natal"] .slide.foto.quadrada .rotulo p,
+  body[data-tema="natal"] .mosaico .cab-mos p { color: var(--n-texto2); text-shadow: none; }
+  body[data-tema="natal"] .slide.texto .emblema { stroke: var(--n-ouro); opacity: .28; }
+  body[data-tema="natal"] .slide.texto .rotulo .info, body[data-tema="natal"] .slide.foto.quadrada .rotulo .info { color: var(--n-ouro-esc); background: rgba(255, 255, 255, .6); border-color: var(--n-ouro); }
+  body[data-tema="natal"] .slide.texto .rotulo .info svg, body[data-tema="natal"] .slide.foto.quadrada .rotulo .info svg { stroke: var(--n-ouro-esc); }
+  body[data-tema="natal"] .slide.foto .fundo { filter: blur(26px) brightness(1.1) saturate(.8); opacity: .35; }
+  body[data-tema="natal"] .slide.foto.quadrada .principal { border-color: var(--branco); box-shadow: 0 3vh 7vh var(--n-sombra); }
+  /* foto em tela cheia: sombra neutra (sem bordô) para a letra branca continuar legível */
+  body[data-tema="natal"] .slide.foto.larga::after, body[data-tema="natal"] .slide.video::after {
+    background: linear-gradient(0deg, rgba(38, 27, 8, .9) 0%, rgba(38, 27, 8, .55) 32%, transparent 62%), linear-gradient(180deg, rgba(38, 27, 8, .45) 0%, transparent 20%); }
+  body[data-tema="natal"] .rotulo h2, body[data-tema="natal"] .rotulo p { text-shadow: 0 .4vh 2vh rgba(30, 20, 4, .55); }
+  /* selo e preço: dourado com letra escura */
+  body[data-tema="natal"] .rotulo .selo, body[data-tema="natal"] .rotulo .preco, body[data-tema="natal"] .obrigado {
+    background: linear-gradient(135deg, #F3E2B0 0%, var(--n-ouro-claro) 40%, var(--n-ouro) 100%); color: var(--n-texto); box-shadow: 0 .8vh 2vh var(--n-sombra); }
+  body[data-tema="natal"] .pola { box-shadow: 0 2.4vh 5vh var(--n-sombra); }
+  body[data-tema="natal"] .pola figcaption { color: var(--n-ouro-esc); }
+  /* faixa de baixo: branca com fio dourado */
+  body[data-tema="natal"] .faixa { border-top-color: var(--n-ouro); box-shadow: 0 -6px 24px rgba(74, 53, 16, .16); }
+  body[data-tema="natal"] .faixa .tema-msg, body[data-tema="natal"] .faixa .site b, body[data-tema="natal"] .logo .nome-txt { color: var(--n-ouro-esc); }
+  body[data-tema="natal"] .faixa .site { color: var(--n-texto2); }
+  body[data-tema="natal"] .pontos i, body[data-tema="natal"] .pontos.barra { background: var(--n-bege3); }
+  body[data-tema="natal"] .pontos i.on, body[data-tema="natal"] .pontos.barra b { background: var(--n-ouro); }
+  /* avaliação (QR Code) */
+  body[data-tema="natal"] #cena-qr { color: var(--n-texto); background: var(--n-fundo); }
+  body[data-tema="natal"] .qr-texto h1 { color: var(--n-ouro-esc); text-shadow: 0 .3vh 1.2vh rgba(255, 255, 255, .7); }
+  body[data-tema="natal"] .qr-texto p { color: var(--n-texto2); }
+  body[data-tema="natal"] .estrelas svg { filter: drop-shadow(0 .4vh .6vh var(--n-sombra)); }
+  body[data-tema="natal"] .qr-cartao { border-color: var(--n-ouro); box-shadow: 0 2vh 5vh var(--n-sombra); }
+  body[data-tema="natal"] .qr-cartao::before { border-color: rgba(201, 162, 74, .6); }
+  body[data-tema="natal"] .qr-cartao .dica { color: var(--n-ouro-esc); }
+  body[data-tema="natal"] .qr-cartao .dica small { color: var(--n-texto2); }
+  body[data-tema="natal"] .conf { opacity: .9; }
 </style>
 </head>
 <body>
@@ -1055,8 +1103,10 @@ function carregarCaptura(url, desenhar) {
 }
 
 /* ---------- QR ---------- */
+// No Natal (dourado, bege e branco) o confete da tela de avaliação acompanha a paleta: aplicarTema troca as cores
+const CORES_CONFETE = { padrao: ['#FFC83D', '#FFE08A', '#E4C2B8', '#F1DDD6', '#FFFFFF'], natal: ['#C9A24A', '#EAD49C', '#DCC59C', '#FFFFFF', '#B8903A'] };
 (function confete() {
-  const cores = ['#FFC83D', '#FFE08A', '#E4C2B8', '#F1DDD6', '#FFFFFF'];
+  const cores = CORES_CONFETE.padrao;
   const cena = document.getElementById('cena-qr');
   for (let i = 0; i < 22; i++) {
     const e = document.createElement('span'); e.className = 'conf';
@@ -1072,7 +1122,7 @@ function desenharQr(link) {
   link = String(link || '').trim() || QR_PADRAO;
   const alvo = $('#qr');
   if (!link) { alvo.innerHTML = '<div class="semlink">Link de avaliação ainda não configurado.<br>Preencha <b>qr_link</b> no config.json.</div>'; return; }
-  try { alvo.innerHTML = QR.svg(link, '#80220B'); } catch (e) { alvo.innerHTML = '<div class="semlink">Link longo demais para o QR Code.</div>'; }
+  try { alvo.innerHTML = QR.svg(link, temaAtivo.id === 'natal' ? '#4A3510' : '#80220B'); } catch (e) { alvo.innerHTML = '<div class="semlink">Link longo demais para o QR Code.</div>'; }
 }
 
 /* ---------- divulgação ---------- */
@@ -1107,8 +1157,9 @@ async function carregarPromocoes() {
 // Compara nomes sem acento, maiúscula ou pontuação ("Sanduíche a metro" = "sanduiche-a-metro.jpg")
 // "R$ 2,50 a unidade" -> preço grande e "a unidade" menor
 function precoHtml(p) {
-  const m = String(p).match(/^\s*(R\$\s*[\d.,]+)\s*(.*)$/i);
-  return m ? `<div class="preco">${esc(m[1])}${m[2] ? `<small>${esc(m[2])}</small>` : ''}</div>` : `<div class="preco">${esc(p)}</div>`;
+  const m = String(p).match(/^\s*(.*?)\s*(R\$\s*[\d.,]+)\s*(.*)$/i);
+  if (!m) return `<div class="preco">${esc(p)}</div>`;
+  return `<div class="preco">${m[1] ? `<small>${esc(m[1].toLowerCase())}</small>` : ''}${esc(m[2])}${m[3] ? `<small>${esc(m[3])}</small>` : ''}</div>`;
 }
 
 function chave(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/^\d+[\s._-]*/, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
@@ -1319,7 +1370,7 @@ async function consultar() {
    Os textos podem ser trocados no gerenciador (config.json -> "temas").
    ===================================================================== */
 const ICONE_TEMA = {
-  natal: '<svg viewBox="0 0 24 28"><path fill="#1E5B3A" d="M12 1l6 8h-3.5l5 7H15l6 8H3l6-8H4.5l5-7H6z"/><rect x="10.3" y="23.5" width="3.4" height="4" fill="#7a3a1a"/><circle cx="12" cy="2.6" r="1.7" fill="#F4C95D"/></svg>',
+  natal: '<svg viewBox="0 0 24 28"><path fill="#C9A24A" stroke="#9C7A2A" stroke-width=".6" stroke-linejoin="round" d="M12 1l6 8h-3.5l5 7H15l6 8H3l6-8H4.5l5-7H6z"/><rect x="10.3" y="23.5" width="3.4" height="4" fill="#8A6A22"/><circle cx="12" cy="2.6" r="1.7" fill="#FFFFFF" stroke="#C9A24A" stroke-width=".6"/></svg>',
   anonovo: '<svg viewBox="0 0 24 26"><path d="M6 2h12l-1.2 7.5a4.8 4.8 0 0 1-9.6 0z" fill="#F4C95D" stroke="#B8832A" stroke-width="1.2"/><path d="M12 14.5v7M7.5 23h9" stroke="#B8832A" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6" r="1" fill="#fff"/><circle cx="13.5" cy="8" r=".8" fill="#fff"/></svg>',
   pascoa: '<svg viewBox="0 0 24 28"><ellipse cx="12" cy="15" rx="8.5" ry="11.5" fill="#F7A8C4"/><path d="M4 13.5l2.8-2 2.8 2 2.4-2 2.4 2 2.8-2 2.8 2" stroke="#fff" stroke-width="1.8" fill="none" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.3" fill="#8FD3C7"/><circle cx="15" cy="19.5" r="1.3" fill="#FFE07A"/></svg>',
   junina: '<svg viewBox="0 0 26 18"><path d="M1 3h24" stroke="#7a3a1a" stroke-width="1.4"/><path d="M2 3h7l-3.5 9z" fill="#E63946"/><path d="M9.5 3h7L13 12z" fill="#F4C430"/><path d="M17 3h7l-3.5 9z" fill="#2A9D8F"/></svg>',
@@ -1380,6 +1431,9 @@ function aplicarTema(id, textos, efeitos) {
   $('#temaMsg').innerHTML = faixa ? (ICONE_TEMA[tid] || '') + esc(faixa) : '';
   $('#qrObrigado').textContent = temaAtivo.obrigado;
   montarEnfeite(temaAtivo.enfeite);
+  const cc = CORES_CONFETE[tid] || CORES_CONFETE.padrao;
+  document.querySelectorAll('#cena-qr .conf').forEach((e, i) => { e.style.background = cc[i % cc.length]; });
+  if (ultimoQr !== null) desenharQr(ultimoQr);
   document.body.classList.toggle('enfeitado', (cenaAtual === 'promo' || cenaAtual === 'qr') && temaAtivo.ativo);
   return true;
 }
@@ -1400,7 +1454,7 @@ function montarEnfeite(tipo) {
       k++;
     }
   }
-  const cordao = tipo === 'junina' ? 'stroke="#6b3a1a" stroke-width="2"' : 'stroke="rgba(25,8,3,.75)" stroke-width="2.6"';
+  const cordao = tipo === 'junina' ? 'stroke="#6b3a1a" stroke-width="2"' : tipo === 'natal' ? 'stroke="#A8862F" stroke-width="2.6"' : 'stroke="rgba(25,8,3,.75)" stroke-width="2.6"';
   svg.innerHTML = `<path d="${d}" fill="none" ${cordao}/>${pend}${cantos(tipo)}`;
 }
 
@@ -1409,7 +1463,7 @@ function pendenteEnfeite(tipo, k, x, y) {
   const lampada = c => `<g class="lampada" style="--c:${c};animation-delay:${atraso}s" ${pos}><rect x="-3" y="-1" width="6" height="6" rx="1" fill="#3a2410"/><ellipse cx="0" cy="12" rx="6.5" ry="9" fill="${c}"/><ellipse cx="-2" cy="9" rx="1.8" ry="3" fill="#fff" opacity=".55"/></g>`;
   const balanca = corpo => `<g ${pos}><g class="balanca" style="animation-delay:-${atraso}s">${corpo}</g></g>`;
   switch (tipo) {
-    case 'natal': return lampada(['#FFD166', '#FF5A4F', '#6BD18B', '#FFFFFF', '#FFB347'][k % 5]);
+    case 'natal': return lampada(['#F2D27E', '#FFFFFF', '#D9B25A', '#FFF4DC', '#E8C56E'][k % 5]);
     case 'anonovo': return lampada(['#F4C95D', '#FFFFFF', '#FFE7A3', '#D9D9D9'][k % 4]);
     case 'junina': {
       const c = ['#E63946', '#F4C430', '#2A9D8F', '#F77F00', '#4361EE', '#F72585'][k % 6];
@@ -1434,7 +1488,7 @@ function pendenteEnfeite(tipo, k, x, y) {
 // enfeite dos dois cantos de cima
 function cantos(tipo) {
   const dois = g => g + `<g transform="translate(1366 0) scale(-1 1)">${g}</g>`;
-  if (tipo === 'natal') return dois(`<g fill="#1E5B3A" stroke="#13402a" stroke-width="1.2"><ellipse cx="22" cy="20" rx="26" ry="9" transform="rotate(35 22 20)"/><ellipse cx="46" cy="14" rx="24" ry="8" transform="rotate(10 46 14)"/><ellipse cx="16" cy="40" rx="22" ry="8" transform="rotate(62 16 40)"/></g><g fill="#D62828"><circle cx="26" cy="22" r="5.5"/><circle cx="35" cy="28" r="5.5"/><circle cx="30" cy="14" r="5.5"/></g>`);
+  if (tipo === 'natal') return dois(`<g fill="#D4AF5A" stroke="#9C7A2A" stroke-width="1.2"><ellipse cx="22" cy="20" rx="26" ry="9" transform="rotate(35 22 20)"/><ellipse cx="46" cy="14" rx="24" ry="8" transform="rotate(10 46 14)"/><ellipse cx="16" cy="40" rx="22" ry="8" transform="rotate(62 16 40)"/></g><g fill="#FFFFFF" stroke="#D9C49A" stroke-width="1"><circle cx="26" cy="22" r="5.5"/><circle cx="35" cy="28" r="5.5"/><circle cx="30" cy="14" r="5.5"/></g>`);
   if (tipo === 'anonovo') return dois(`<g fill="#F4C95D" stroke="#B8832A" stroke-width="1.2"><path d="M30 6l4 10 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z"/></g><g stroke="#FFE7A3" stroke-width="2" stroke-linecap="round"><path d="M56 10l6-4M58 22h8M54 33l6 4"/></g>`);
   if (tipo === 'junina') return dois(`<g transform="translate(26 8)"><path d="M0 0c-10 6-12 22 0 30c12-8 10-24 0-30z" fill="#F77F00" stroke="#9a4a00" stroke-width="1.2"/><path d="M0 0v30M-6 6c4 6 4 18 0 22M6 6c-4 6-4 18 0 22" stroke="#9a4a00" stroke-width="1" fill="none"/><path d="M-3 30h6l-1 5h-4z" fill="#6b3a1a"/></g>`);
   if (tipo === 'pascoa') return dois(`<g transform="translate(14 4)"><ellipse cx="14" cy="22" rx="13" ry="12" fill="#FFFFFF" stroke="#d9cfc6" stroke-width="1.2"/><ellipse cx="8" cy="6" rx="3.6" ry="11" fill="#FFFFFF" stroke="#d9cfc6" stroke-width="1.2" transform="rotate(-12 8 6)"/><ellipse cx="20" cy="6" rx="3.6" ry="11" fill="#FFFFFF" stroke="#d9cfc6" stroke-width="1.2" transform="rotate(12 20 6)"/><ellipse cx="8" cy="6" rx="1.6" ry="7" fill="#F7A8C4" transform="rotate(-12 8 6)"/><ellipse cx="20" cy="6" rx="1.6" ry="7" fill="#F7A8C4" transform="rotate(12 20 6)"/><circle cx="10" cy="20" r="1.4" fill="#3a2410"/><circle cx="18" cy="20" r="1.4" fill="#3a2410"/><ellipse cx="14" cy="25" rx="2" ry="1.4" fill="#F7A8C4"/></g>`);
@@ -1454,7 +1508,8 @@ function iniciarQueda() {
     'confete-junino': ['#E63946', '#F4C430', '#2A9D8F', '#F77F00', '#4361EE', '#F72585'],
     ovinhos: ['#F7A8C4', '#8FD3C7', '#FFE07A', '#C3B1E1'],
     coracoes: ['#E5486B', '#F7A8C4', '#FFFFFF', '#FF8FAB'],
-    estrelinhas: ['#F4C95D', '#FFFFFF', '#FFE7A3']
+    estrelinhas: ['#F4C95D', '#FFFFFF', '#FFE7A3'],
+    neve: ['#FFFFFF', '#FFFFFF', '#E6CB86', '#D2AE58']
   };
   const QTD = { neve: 70, confete: 55, 'confete-junino': 55, ovinhos: 26, coracoes: 34, estrelinhas: 40 };
   function criar(tipo) {
@@ -1468,7 +1523,7 @@ function iniciarQueda() {
   function desenhar(f, px, py, esc) {
     x.globalAlpha = f.a; x.fillStyle = f.c;
     switch (tipoAtual) {
-      case 'neve': x.fillStyle = '#fff'; x.beginPath(); x.arc(px, py, f.r * esc, 0, 6.283); x.fill(); break;
+      case 'neve': x.beginPath(); x.arc(px, py, f.r * esc, 0, 6.283); x.fill(); break;
       case 'confete': case 'confete-junino':
         x.save(); x.translate(px, py); x.rotate(f.g); x.scale(1, Math.cos(f.g * 1.7)); x.fillRect(-f.r * 1.6 * esc, -f.r * .7 * esc, f.r * 3.2 * esc, f.r * 1.4 * esc); x.restore(); break;
       case 'ovinhos':
