@@ -73,3 +73,15 @@ PROBLEMAS
   A pasta C:\TelaCliente\diagnostico guarda as ultimas 60 fotos da tela do caixa
   tiradas durante as vendas. Se algo nao funcionar como esperado, compacte essa
   pasta junto com o registro.log e envie.
+
+SENHA DO SORTEIO (CESTA DE NATAL)
+  Toda venda finalizada com valor igual ou maior que o minimo do sorteio (R$ 40,00)
+  imprime um cupom com uma senha e um QR Code. A pessoa cadastra a senha no site
+  (padaria-silmar.vercel.app/cesta) para concorrer.
+  - Precisa do arquivo sorteio.chave nesta pasta (a frase do Secret SORTEIO_CHAVE do Supabase).
+    Esse arquivo NAO vai para o GitHub; sem ele a senha nao e emitida.
+  - TestarSenha.bat: lista as impressoras e imprime um cupom de teste.
+  - Impressora e tamanho do papel: config.json -> "sorteio" (impressora, papel_largura_mm, ...).
+  - Ligar/desligar, datas e sorteio: painel da padaria -> Encomendas -> Sorteio da Cesta.
+  - O que aconteceu em cada venda fica no registro.log (linhas "Senha do sorteio").
+  - Passo a passo completo: docs/SORTEIO_CESTA.md no repositorio da padaria (padaria-silmar).
