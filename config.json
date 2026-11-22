@@ -53,6 +53,17 @@
     }
   ],
   "promocoes": [],
+  "sorteio": {
+    "ativo": true,
+    "funcao_url": "https://lqoveirtpcitwprpywcx.supabase.co/functions/v1/connectplug-sync",
+    "chave_publica": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxb3ZlaXJ0cGNpdHdwcnB5d2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNjcxNzIsImV4cCI6MjA5Nzc0MzE3Mn0.-0x_ubRvNGcdWO7KEuCcao18_YD2KeCdSwIyqgOuOMM",
+    "site": "https://padaria-silmar.vercel.app/cesta",
+    "impressora": "",
+    "papel_largura_mm": 72,
+    "papel_altura_mm": 0,
+    "copias": 1,
+    "tentativas": 6
+  },
   "atualizacao": {
     "repositorio": "ynsouza/segundatela",
     "ramo": "main",

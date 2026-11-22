@@ -1,7 +1,7 @@
 # Gera o versao.json (lista de arquivos + impressão digital SHA-256) antes de publicar no GitHub.
 # O caixa compara essa lista com os arquivos dele e baixa só o que mudou.
 $Pasta = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Fora = @('versao.json', 'gerar-versao.ps1', 'registro.log', 'registro.log.antigo', 'atualizacao-pendente')
+$Fora = @('versao.json', 'gerar-versao.ps1', 'registro.log', 'registro.log.antigo', 'atualizacao-pendente', 'sorteio.chave')
 $PastasFora = @('.git', 'gerenciador', 'diagnostico', 'perfil-edge', 'versao-anterior', 'atualizando')
 
 $arquivos = Get-ChildItem -LiteralPath $Pasta -Recurse -File | Where-Object {

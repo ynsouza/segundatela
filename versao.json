@@ -1,5 +1,5 @@
 {
-    "versao":  "2026-11-20-204318",
+    "versao":  "2026-11-22-001453",
     "arquivos":  [
                      {
                          "caminho":  "cardapio/.mantenha",
@@ -47,7 +47,7 @@
                      },
                      {
                          "caminho":  "config.json",
-                         "sha256":  "ee8ef509a646367b6704b3f28c1056d11ead15221d3f63f4f5963051285c0f88"
+                         "sha256":  "fa3d02cc60cd51c8868fa20759f0b08aa375afed910eeb34522d6aa660ecbab5"
                      },
                      {
                          "caminho":  "divulgacao/.mantenha",
@@ -63,7 +63,7 @@
                      },
                      {
                          "caminho":  "LEIA-ME.txt",
-                         "sha256":  "bd5f8435a57cd732fc9f7ef5d1681aec7803e6da32f4150263ac5211cf8211e6"
+                         "sha256":  "e219442353d8859078afbc6c4256693863df93e857f4aa5d2658d7f3efd71998"
                      },
                      {
                          "caminho":  "logo-nome.png",
@@ -78,8 +78,28 @@
                          "sha256":  "799e7185736fef5b639994fe367c9ce18a79fe03a8cb7d42e2eebd3a1e01fb7d"
                      },
                      {
+                         "caminho":  "qr.cs",
+                         "sha256":  "e2824dbe21f230735ac9969fade69df83bfa9069c1c0240fdee2382d5003c851"
+                     },
+                     {
+                         "caminho":  "senha.cs",
+                         "sha256":  "25d33b18df2c1a3376acef336ceb00d9905165c965b85f45acd8e67c69cd1408"
+                     },
+                     {
+                         "caminho":  "senha.ps1",
+                         "sha256":  "8adadc17a972529ccdcc3dee4212368dd8b9e088ec0c7dfe93101a5ecbcdd5bd"
+                     },
+                     {
                          "caminho":  "TelaCliente.ps1",
-                         "sha256":  "396aa9841f207b78bc1f9fb324e5a9fd5490447cc0c73bc3d07a80d5b23cf1ae"
+                         "sha256":  "6dac2155921ba7fa10161812708ccfd6788ef96f83c34d706af3c4fb7f900d78"
+                     },
+                     {
+                         "caminho":  "TestarSenha.bat",
+                         "sha256":  "d6baac4d2b9c8a3b3498aa0769950d59637651f0bd6b84956ee6c736dcdab069"
+                     },
+                     {
+                         "caminho":  "TestarSenha.ps1",
+                         "sha256":  "e630c6375b5780a41fed15e8a0366cfbb1c285b081369c5e0bd620314a6a551b"
                      },
                      {
                          "caminho":  "web/index.html",

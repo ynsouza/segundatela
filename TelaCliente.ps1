@@ -195,6 +195,14 @@ $CfgData = (Get-Item $ArqConfig).LastWriteTime
 $Porta = [int]$Cfg.porta
 if (-not $Porta) { $Porta = 8765 }
 
+# ---------- senha do sorteio (impressa no fim da venda) ----------
+# Fica em senha.ps1. Se o arquivo faltar ou der erro, a tela do cliente segue normal, sem a senha.
+$SenhaOk = $false
+try {
+  $ArqSenha = Join-Path $Pasta 'senha.ps1'
+  if (Test-Path -LiteralPath $ArqSenha) { . $ArqSenha; $SenhaOk = $true }
+} catch { Registrar ('Senha do sorteio indisponível: ' + $_.Exception.Message) }
+
 # ---------- estado da tela ----------
 $Estado = @{
   cena        = 'promo'   # promo | itens | comanda | qr
@@ -314,6 +322,7 @@ function ProcessarLinha([string]$l) {
     if ($seg -le 0) { $seg = 30 }
     $Estado.qrAte = (Get-Date).AddSeconds($seg)
     Registrar ("Venda finalizada. QR até " + $Estado.qrAte.ToString('HH:mm:ss'))
+    if ($SenhaOk) { IniciarSenha }
     return
   }
 }
@@ -746,6 +755,8 @@ while ($true) {
       $relLog.Restart()
       foreach ($l in (LerNovasLinhas)) { ProcessarLinha $l }
     }
+
+    if ($SenhaOk) { VerificarSenha }
 
     if ($Estado.cena -eq 'itens' -and $relCap.ElapsedMilliseconds -ge 250) {
       $relCap.Restart()
